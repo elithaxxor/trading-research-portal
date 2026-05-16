@@ -91,11 +91,11 @@ Deployment checklist:
 8. Store real secrets in the Netlify UI, not in committed files.
 9. Deploy and review the build log for the first real error if deployment fails.
 
-Current routing note: `netlify.toml` includes explicit redirects for the static
-Phase 1 pages so the manual Netlify deploy can serve the generated Next output.
-Treat those redirects as temporary for the public marketing phase and revisit
-them before adding SSR, authentication, protected routes, API routes, or
-server-side integrations.
+Routing note: the temporary internal-output redirects for `/server/app/*.html`
+have been removed. A Netlify draft deploy using the Next.js runtime verified
+that the public routes resolve through Netlify's generated Next server handler
+without those manual rewrites. A Git-backed branch deploy should still be
+configured before Phase 2 work moves beyond planning.
 
 ## Environment Variables
 
