@@ -1,10 +1,16 @@
 # Trading Research Portal
 
-A professional public marketing website for a future trading research portal. The Phase 1 site is built with Next.js App Router, TypeScript, Tailwind CSS, and shadcn/ui.
+A professional trading research portal built with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Netlify, and Supabase schema preparation.
 
-Phase 1 is static only. It does not include Supabase, Stripe, authentication, database logic, API routes, TradingView charts, email delivery, or member-gated content.
+The public site is live as a static marketing experience. Supabase schema, RLS, seed data, and typed client utilities have been prepared for future backend phases, but public pages are not connected to Supabase yet.
 
-## Phase 1 Status
+## Phase Status
+
+- Phase 0: Complete. Project foundation, Netlify configuration, dark financial design system, and deployment baseline are in place.
+- Phase 1: Complete / cleanup-ready. Public marketing routes and early-access copy are in place.
+- Phase 2: Complete in repo. Supabase packages, CLI structure, migrations, RLS policies, seed data, env structure, and client utility scaffolding are in place. Migrations still need to be applied to a local or remote Supabase project before real generated types replace the placeholder.
+
+## Phase 1 Public Site
 
 Completed public routes:
 
@@ -34,7 +40,7 @@ Completed UI foundation:
 - Page-level metadata and Open Graph placeholders
 - Static login and registration placeholders
 
-All content is placeholder marketing content for educational market research. Premium features are described as planned future functionality only.
+All public content is early-access marketing content for educational market research. Premium features are described as planned future functionality only.
 
 ## Local Development
 
@@ -99,27 +105,90 @@ configured before Phase 2 work moves beyond planning.
 
 ## Environment Variables
 
-No environment variables are required for Phase 1 to build.
+No environment variables are required for the current public site to build.
 
-Future integrations may use the placeholders in `.env.example`:
+Real Supabase values must be stored locally in `.env.local` and in Netlify environment variables. Never commit secret keys, service-role keys, or production credentials.
+
+Current Supabase placeholders in `.env.example`:
 
 ```bash
 NEXT_PUBLIC_SITE_URL=
 NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_SECRET_KEY=
 ```
 
-Do not commit real secrets. Production secrets should be configured in the Netlify UI.
+Legacy Supabase projects may still expose anon/service-role key names. Use those fallback names only when needed for an older key setup, and never commit their values:
 
-## Phase 2 Plan
+```bash
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+```
 
-Phase 2 will prepare the data foundation. Planned work:
+Auth UI, protected routes, middleware session refresh, and dashboard data fetching
+come later. Phase 2 should remain schema-only.
 
-- Supabase database schema
-- Content models for market notes, chart breakdowns, watchlists, trading ideas, update logs, and reviews
-- Row Level Security planning for public, member, and future admin access patterns
+## Supabase Local Development
 
-Phase 2 should still avoid Stripe billing and real authentication wiring unless those are explicitly moved forward in the project plan.
+Phase 2 uses Supabase CLI project files and migrations for local schema work.
+The application does not connect public routes to Supabase yet.
+
+Useful commands:
+
+```bash
+npm run supabase:start
+npm run supabase:reset
+npm run supabase:types
+npm run supabase:stop
+```
+
+Migration workflow:
+
+1. Create reviewed SQL migrations under `supabase/migrations/`.
+2. Use `npm run supabase:reset` locally to replay migrations against the local database.
+3. Regenerate local TypeScript database types with `npm run supabase:types` after schema changes.
+4. Review migrations before pushing them to any production Supabase project.
+
+Seed data lives in `supabase/seed.sql` for local development only. The seed
+records are educational sample content for testing the schema and RLS model;
+they are not financial advice, trading recommendations, performance claims, or
+production research.
+
+Do not run remote `db push` or apply production migrations until the schema,
+Row Level Security policies, and access model have been reviewed.
+
+## Phase 2 Data Model
+
+The initial schema includes:
+
+- `profiles`: user profile metadata linked to Supabase Auth users.
+- `subscriptions`: subscription tier/status metadata for future billing integration.
+- `trading_ideas`: structured research cards with ticker, thesis, visibility, status, risk, and publication fields.
+- `idea_updates`: timestamped updates for a trading idea.
+- `idea_charts`: chart metadata for future TradingView/image/lightweight chart integrations.
+- `posts`: market commentary, educational posts, and chart breakdown content.
+- `tags`: reusable content labels.
+- `idea_tags`: many-to-many link table between ideas and tags.
+- `watchlist_items`: user-owned watchlist records.
+- `email_notifications`: future notification tracking records.
+
+## RLS Model
+
+Row Level Security is enabled for all public schema tables.
+
+- Published free content can be read publicly.
+- Premium and pro content require an authenticated user with sufficient access.
+- Admins can manage content, subscriptions, tags, and notification records.
+- Users can read their own profile, subscription, watchlist, and notification records.
+- Users can create, update, and delete their own watchlist items.
+- The admin Supabase client is server-only, uses the secret/service-role key, bypasses RLS, and must never be imported into client components.
+
+## Phase 3 Auth Warning
+
+Before building real auth, protected routes, premium gating, or dashboard fetching:
+
+1. Resolve or fully understand the Netlify routing behavior for Next.js SSR routes.
+2. Add Supabase SSR auth middleware/proxy carefully and test cookie refresh behavior.
+3. Keep `SUPABASE_SECRET_KEY` and service-role keys server-only.
+4. Verify protected routing and auth flows on a Netlify deploy preview before merging.
+5. Do not add Stripe billing, API routes, admin mutations, or TradingView charts until their planned phases.
