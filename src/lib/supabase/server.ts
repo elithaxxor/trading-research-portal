@@ -21,11 +21,14 @@ export async function createSupabaseServerClient(): Promise<
       },
       setAll(cookiesToSet) {
         try {
+          // `@supabase/ssr` represents both cookie writes and removals through
+          // setAll, including removal options such as maxAge: 0.
           cookiesToSet.forEach(({ name, value, options }) => {
             cookieStore.set(name, value, options);
           });
         } catch {
-          // TODO Phase 3: move auth token refresh into middleware/proxy.
+          // Server Components cannot mutate cookies. The Phase 3 middleware
+          // step should refresh auth tokens before protected pages render.
         }
       },
     },

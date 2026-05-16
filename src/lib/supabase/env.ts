@@ -7,6 +7,8 @@ type SupabaseAdminConfig = SupabasePublicConfig & {
   supabaseSecretKey: string;
 };
 
+// Keep env reads inside functions so static public pages can import modules
+// without requiring Supabase variables at build/import time.
 function getOptionalEnv(name: string) {
   return process.env[name]?.trim();
 }
@@ -45,6 +47,12 @@ export function getSupabaseBrowserConfig(): SupabasePublicConfig {
 
 export function getSupabaseServerConfig(): SupabasePublicConfig {
   return getSupabaseBrowserConfig();
+}
+
+export function getSiteUrl() {
+  return requireEnv(getOptionalEnv("NEXT_PUBLIC_SITE_URL"), [
+    "NEXT_PUBLIC_SITE_URL",
+  ]).replace(/\/$/, "");
 }
 
 export function getSupabaseAdminConfig(): SupabaseAdminConfig {

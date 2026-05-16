@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { Badge } from "@/components/badge";
+import { AuthNotice } from "@/components/auth-notice";
 import { CardShell } from "@/components/card-shell";
 import { ComparisonTable } from "@/components/comparison-table";
 import { Container } from "@/components/container";
@@ -41,6 +42,16 @@ export const metadata: Metadata = {
     absolute: `${pageTitle} | Trading Research Portal`,
   },
 };
+
+type HomePageProps = {
+  searchParams?: Promise<{
+    status?: string | string[];
+  }>;
+};
+
+function getFirstParam(value?: string | string[]) {
+  return Array.isArray(value) ? value[0] : value;
+}
 
 const dashboardCards = [
   {
@@ -191,9 +202,20 @@ const comparisonRows = [
   },
 ];
 
-export default function Home() {
+export default async function Home({ searchParams }: HomePageProps) {
+  const params = await searchParams;
+  const status = getFirstParam(params?.status);
+
   return (
     <main className="flex-1">
+      {status === "signed_out" ? (
+        <Container className="pt-6">
+          <AuthNotice
+            message="You have been signed out."
+            tone="success"
+          />
+        </Container>
+      ) : null}
       <HeroSection />
       <TrustSection />
       <ProductPreviewSection />

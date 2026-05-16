@@ -9,7 +9,8 @@ import { getSupabaseAdminConfig } from "./env";
 
 // This client uses the Supabase secret/service-role key and bypasses RLS.
 // Only use it from secure server-only code paths for trusted administrative
-// tasks such as future webhooks or maintenance jobs.
+// tasks such as future webhooks or maintenance jobs. Never import this module
+// into client components, public pages, or browser-side utilities.
 export function createSupabaseAdminClient(): SupabaseClient<Database> {
   const { supabaseUrl, supabaseSecretKey } = getSupabaseAdminConfig();
 

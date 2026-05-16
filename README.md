@@ -8,7 +8,7 @@ The public site is live as a static marketing experience. Supabase schema, RLS, 
 
 - Phase 0: Complete. Project foundation, Netlify configuration, dark financial design system, and deployment baseline are in place.
 - Phase 1: Complete / cleanup-ready. Public marketing routes and early-access copy are in place.
-- Phase 2: Complete in repo. Supabase packages, CLI structure, migrations, RLS policies, seed data, env structure, and client utility scaffolding are in place. Migrations still need to be applied to a local or remote Supabase project before real generated types replace the placeholder.
+- Phase 2: Complete. Supabase packages, CLI structure, migrations, RLS policies, seed data, env structure, client utility scaffolding, remote migration verification, and generated database types are in place.
 
 ## Phase 1 Public Site
 
@@ -126,7 +126,7 @@ SUPABASE_SERVICE_ROLE_KEY=
 ```
 
 Auth UI, protected routes, middleware session refresh, and dashboard data fetching
-come later. Phase 2 should remain schema-only.
+begin in Phase 3. Payment and billing features come later.
 
 ## Supabase Local Development
 
@@ -183,12 +183,50 @@ Row Level Security is enabled for all public schema tables.
 - Users can create, update, and delete their own watchlist items.
 - The admin Supabase client is server-only, uses the secret/service-role key, bypasses RLS, and must never be imported into client components.
 
-## Phase 3 Auth Warning
+## Phase 3 Auth Setup
 
-Before building real auth, protected routes, premium gating, or dashboard fetching:
+Before implementing Supabase Auth, create a local `.env.local` file with real
+development project values. Do not commit this file.
 
-1. Resolve or fully understand the Netlify routing behavior for Next.js SSR routes.
-2. Add Supabase SSR auth middleware/proxy carefully and test cookie refresh behavior.
-3. Keep `SUPABASE_SECRET_KEY` and service-role keys server-only.
-4. Verify protected routing and auth flows on a Netlify deploy preview before merging.
-5. Do not add Stripe billing, API routes, admin mutations, or TradingView charts until their planned phases.
+```bash
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_SUPABASE_URL=<your-dev-project-url>
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<your-publishable-key>
+SUPABASE_SECRET_KEY=<server-only-secret-key>
+```
+
+The repository ignores `.env`, `.env.local`, `.env.development`, and
+`.env.production` through the `.env*` rule in `.gitignore`, while still allowing
+`.env.example` to be committed.
+
+Supabase dashboard checklist:
+
+1. Set the local development Site URL to `http://localhost:3000`.
+2. Add the local auth redirect URL: `http://localhost:3000/auth/callback`.
+3. Add a Netlify deploy-preview redirect pattern if needed: `https://*.netlify.app/auth/callback`.
+4. Add the production redirect URL once a custom domain is available: `https://YOUR_DOMAIN.com/auth/callback`.
+
+Netlify environment variable checklist:
+
+```bash
+NEXT_PUBLIC_SITE_URL
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+SUPABASE_SECRET_KEY
+```
+
+Public `NEXT_PUBLIC_*` values may be used by browser clients. Secret and
+service-role keys must only be used server-side, must never be imported into
+client components, and must never be committed to the repository.
+
+Auth-aware navigation uses the server-side Supabase session. Local builds
+fallback to logged-out navigation when Supabase env vars are absent, but Netlify
+deployments need the Supabase variables above to show real logged-in dashboard,
+account, and sign-out actions.
+
+Before merging Phase 3:
+
+1. Add Supabase SSR auth middleware/proxy carefully and test cookie refresh behavior.
+2. Verify protected routing and auth flows on a Netlify deploy preview.
+3. Re-run authenticated RLS checks for free, premium, pro, and admin users.
+4. Do not add Stripe billing, API routes, admin mutations, or TradingView charts until their planned phases.
