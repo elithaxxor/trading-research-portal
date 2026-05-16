@@ -1,14 +1,16 @@
 # Trading Research Portal
 
-A professional trading research portal built with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Netlify, and Supabase schema preparation.
+A professional trading research portal built with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Netlify, and Supabase.
 
-The public site is live as a static marketing experience. Supabase schema, RLS, seed data, and typed client utilities have been prepared for future backend phases, but public pages are not connected to Supabase yet.
+The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, and Phase 3 authentication are in place for development. Stripe, paid-tier upgrades, admin CRUD, TradingView charts, and email notification backend work are intentionally out of scope for the current build.
 
 ## Phase Status
 
 - Phase 0: Complete. Project foundation, Netlify configuration, dark financial design system, and deployment baseline are in place.
-- Phase 1: Complete / cleanup-ready. Public marketing routes and early-access copy are in place.
-- Phase 2: Complete. Supabase packages, CLI structure, migrations, RLS policies, seed data, env structure, client utility scaffolding, remote migration verification, and generated database types are in place.
+- Phase 1: Complete. Public marketing routes, early-access copy, legal/support pages, metadata, and responsive polish are in place.
+- Phase 2: Complete. Supabase packages, CLI structure, migrations, RLS policies, seed data, environment structure, client utility scaffolding, remote migration verification, and generated database types are in place.
+- Phase 2.5: Complete. Supabase schema/RLS verification passed, including anonymous read/write smoke tests and authenticated RLS validation for free, premium, pro, and admin access.
+- Phase 3: Auth implementation complete locally. Supabase Auth, SSR cookie sessions, protected routes, auth callback, password reset, and account/dashboard shells are implemented and locally verified. Netlify deploy-preview route QA passes, but full hosted auth testing still requires deploy-preview Supabase environment variables.
 
 ## Phase 1 Public Site
 
@@ -38,7 +40,7 @@ Completed UI foundation:
 - Stat cards
 - Dark financial design system
 - Page-level metadata and Open Graph placeholders
-- Static login and registration placeholders
+- Auth routes now use real Supabase Auth forms in Phase 3
 
 All public content is early-access marketing content for educational market research. Premium features are described as planned future functionality only.
 
@@ -105,7 +107,7 @@ configured before Phase 2 work moves beyond planning.
 
 ## Environment Variables
 
-No environment variables are required for the current public site to build.
+Public marketing pages can build without Supabase variables, but Phase 3 authentication requires Supabase variables when auth routes or protected pages are used.
 
 Real Supabase values must be stored locally in `.env.local` and in Netlify environment variables. Never commit secret keys, service-role keys, or production credentials.
 
@@ -125,8 +127,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 ```
 
-Auth UI, protected routes, middleware session refresh, and dashboard data fetching
-begin in Phase 3. Payment and billing features come later.
+Auth UI, protected routes, SSR session refresh, and account/dashboard shells are implemented in Phase 3. Payment and billing features come later.
 
 ## Supabase Local Development
 
@@ -183,10 +184,31 @@ Row Level Security is enabled for all public schema tables.
 - Users can create, update, and delete their own watchlist items.
 - The admin Supabase client is server-only, uses the secret/service-role key, bypasses RLS, and must never be imported into client components.
 
-## Phase 3 Auth Setup
+## Phase 3 Auth System
 
-Before implementing Supabase Auth, create a local `.env.local` file with real
-development project values. Do not commit this file.
+Phase 3 uses Supabase Auth with SSR cookie-based sessions in the Next.js App Router.
+
+Implemented auth pieces:
+
+- Supabase email/password registration and login.
+- Server actions for sign in, sign up, sign out, password reset request, and password update.
+- Next.js 16 `proxy.ts` session refresh and route protection.
+- Protected `/dashboard` route.
+- Protected `/account` route.
+- `/auth/callback` route for Supabase email confirmation and password recovery redirects.
+- `/forgot-password` and `/reset-password` flows.
+- Auth-aware public navigation.
+- Safe user bootstrap for `profiles` and free `subscriptions` rows.
+
+Protected routes:
+
+- `/dashboard`
+- `/account`
+
+Unauthenticated users are redirected to `/login?redirectedFrom=<path>`.
+Authenticated users visiting `/login` or `/register` are redirected to `/dashboard`.
+
+Create a local `.env.local` file with real development project values. Do not commit this file.
 
 ```bash
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
@@ -203,8 +225,9 @@ Supabase dashboard checklist:
 
 1. Set the local development Site URL to `http://localhost:3000`.
 2. Add the local auth redirect URL: `http://localhost:3000/auth/callback`.
-3. Add a Netlify deploy-preview redirect pattern if needed: `https://*.netlify.app/auth/callback`.
-4. Add the production redirect URL once a custom domain is available: `https://YOUR_DOMAIN.com/auth/callback`.
+3. Add the current Netlify deploy-preview callback URL when testing hosted auth, for example `https://deploy-preview-4--trading-research-portal.netlify.app/auth/callback`.
+4. Add a Netlify deploy-preview redirect pattern if supported by the Supabase project settings: `https://*.netlify.app/auth/callback`.
+5. Add the production redirect URL once a custom domain is available: `https://YOUR_DOMAIN.com/auth/callback`.
 
 Netlify environment variable checklist:
 
@@ -224,9 +247,45 @@ fallback to logged-out navigation when Supabase env vars are absent, but Netlify
 deployments need the Supabase variables above to show real logged-in dashboard,
 account, and sign-out actions.
 
-Before merging Phase 3:
+## Phase 3 Testing Checklist
 
-1. Add Supabase SSR auth middleware/proxy carefully and test cookie refresh behavior.
-2. Verify protected routing and auth flows on a Netlify deploy preview.
-3. Re-run authenticated RLS checks for free, premium, pro, and admin users.
-4. Do not add Stripe billing, API routes, admin mutations, or TradingView charts until their planned phases.
+Use this checklist before merging or promoting Phase 3:
+
+```bash
+npm ci
+npm run build
+npm run lint
+npx tsc --noEmit
+```
+
+Auth-specific checks:
+
+1. Local auth registration, login, logout, password reset, and account/dashboard access.
+2. Profile and free subscription bootstrap after signup/login.
+3. Anonymous protected route redirects for `/dashboard` and `/account`.
+4. Deploy-preview public route checks and protected route redirects.
+5. Deploy-preview registration/login/logout/password reset after Netlify Supabase env vars are configured.
+6. Development-only authenticated RLS tests with `npm run test:rls:auth`.
+
+Latest known deploy-preview result:
+
+- Preview URL: `https://deploy-preview-4--trading-research-portal.netlify.app`
+- Public routes: passing.
+- Protected redirects: passing.
+- CSS/JS assets: passing.
+- Full hosted auth flows: blocked until the Netlify deploy-preview context has `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and `SUPABASE_SECRET_KEY`.
+
+## Security Notes
+
+- Never commit `.env`, `.env.local`, `.env.development`, or `.env.production`.
+- Never commit Supabase secret keys, service-role keys, database passwords, or access tokens.
+- `SUPABASE_SECRET_KEY` and legacy `SUPABASE_SERVICE_ROLE_KEY` are server-only and must never be imported into client components.
+- The admin Supabase client bypasses RLS and is only for secure server-side repair/bootstrap tasks.
+- No Stripe, payment, billing portal, premium upgrade, admin CRUD, TradingView chart, or email notification backend logic exists yet.
+- New users remain free unless later subscription logic updates them.
+
+## Next Phase
+
+Recommended next phase: Phase 4 - Free and Premium Content System.
+
+Phase 4 should focus on content fetching and access-aware display using the existing Supabase schema and RLS model. Do not add Stripe payments, billing portal behavior, admin CRUD, or TradingView integration until their planned phases.
