@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.netlify
+coverage
+out
+build
+*.log
+*.tsbuildinfo

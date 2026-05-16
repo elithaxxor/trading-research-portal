@@ -1,0 +1,76 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[[redirects]]
+  from = "/_next/static/*"
+  to = "/static/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/favicon.ico"
+  to = "/server/app/favicon.ico"
+  status = 200
+
+[[redirects]]
+  from = "/"
+  to = "/server/app/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/pricing"
+  to = "/server/app/pricing.html"
+  status = 200
+
+[[redirects]]
+  from = "/about"
+  to = "/server/app/about.html"
+  status = 200
+
+[[redirects]]
+  from = "/free"
+  to = "/server/app/free.html"
+  status = 200
+
+[[redirects]]
+  from = "/disclaimer"
+  to = "/server/app/disclaimer.html"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "/server/app/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/register"
+  to = "/server/app/register.html"
+  status = 200
+
+[[redirects]]
+  from = "/terms"
+  to = "/server/app/terms.html"
+  status = 200
+
+[[redirects]]
+  from = "/privacy"
+  to = "/server/app/privacy.html"
+  status = 200
+
+[[redirects]]
+  from = "/contact"
+  to = "/server/app/contact.html"
+  status = 200
+
+[[redirects]]
+  from = "/refund-policy"
+  to = "/server/app/refund-policy.html"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/server/app/_not-found.html"
+  status = 404
