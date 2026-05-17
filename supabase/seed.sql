@@ -254,6 +254,15 @@ values
     'NASDAQ:NVDA',
     'D',
     'Educational NVDA chart metadata for local premium preview testing. Not a real-time data claim.'
+  ),
+  (
+    '44444444-4444-4444-8444-444444444404',
+    '22222222-2222-4222-8222-222222222204',
+    'tradingview_embed',
+    'SPY',
+    'SPY',
+    'W',
+    'Educational macro chart context. Not financial advice.'
   )
 on conflict (id) do update
 set

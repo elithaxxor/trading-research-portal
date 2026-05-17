@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { ensureUserRecords } from "@/lib/auth/ensure-user-records";
-import { getSiteUrl } from "@/lib/supabase/env";
+import { buildAuthCallbackUrl, getAuthRedirectOrigin } from "@/lib/auth/site-url";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 import type { AuthActionState } from "./auth-state";
@@ -98,14 +98,6 @@ async function getAuthClient() {
   }
 }
 
-function getConfiguredSiteUrl() {
-  try {
-    return getSiteUrl();
-  } catch {
-    return null;
-  }
-}
-
 export async function signInAction(
   stateOrFormData: AuthActionState | FormData,
   formData?: FormData
@@ -181,8 +173,8 @@ export async function signUpAction(
     return errorState("Passwords must match.");
   }
 
-  const siteUrl = getConfiguredSiteUrl();
-  if (!siteUrl) {
+  const redirectOrigin = await getAuthRedirectOrigin();
+  if (!redirectOrigin) {
     return errorState("Authentication redirects are not configured yet.");
   }
 
@@ -198,7 +190,7 @@ export async function signUpAction(
       data: {
         full_name: fullName,
       },
-      emailRedirectTo: `${siteUrl}/auth/callback`,
+      emailRedirectTo: buildAuthCallbackUrl(redirectOrigin),
     },
   });
 
@@ -236,12 +228,12 @@ export async function requestPasswordResetAction(
     return errorState(emailError);
   }
 
-  const siteUrl = getConfiguredSiteUrl();
+  const redirectOrigin = await getAuthRedirectOrigin();
   const supabase = await getAuthClient();
 
-  if (siteUrl && supabase) {
+  if (redirectOrigin && supabase) {
     await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${siteUrl}/auth/callback?next=/reset-password`,
+      redirectTo: buildAuthCallbackUrl(redirectOrigin, "/reset-password"),
     });
   }
 
