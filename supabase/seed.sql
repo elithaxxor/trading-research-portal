@@ -235,7 +235,7 @@ values
     'SPY',
     'SPY',
     'D',
-    'TradingView-style metadata for a local educational SPY sample.'
+    'Educational SPY chart metadata for local development only. Not a real-time data claim.'
   ),
   (
     '44444444-4444-4444-8444-444444444402',
@@ -244,16 +244,16 @@ values
     'QQQ',
     'QQQ',
     'D',
-    'TradingView-style metadata for a local educational QQQ sample.'
+    'Educational QQQ chart metadata for local development only. Not a real-time data claim.'
   ),
   (
     '44444444-4444-4444-8444-444444444403',
     '22222222-2222-4222-8222-222222222203',
     'tradingview_embed',
     'NVDA',
-    'NVDA',
+    'NASDAQ:NVDA',
     'D',
-    'TradingView-style metadata for a local premium research preview.'
+    'Educational NVDA chart metadata for local premium preview testing. Not a real-time data claim.'
   )
 on conflict (id) do update
 set

@@ -399,6 +399,43 @@ Phase 5 deploy-preview QA:
 - Local `npm run build`, `npm run lint`, and `npx tsc --noEmit`: passing.
 - Phase 5 is merge-ready.
 
+## Phase 6 — Chart Integration
+
+Phase 6 integrates chart display from the existing `idea_charts` metadata model.
+It does not add broker connections, order execution, copy trading, payments,
+email notifications, or live market data licensing features.
+
+Chart integration rules:
+
+- TradingView widgets are used for visual chart display only.
+- Chart metadata is stored in the `idea_charts` table.
+- Full chart widgets should only render on full-access idea pages.
+- Locked premium/pro ideas should not expose private chart metadata when that
+  metadata is treated as part of the premium research.
+- No broker connection exists.
+- No order execution exists.
+- No copy trading exists.
+- No guarantee is made about real-time exchange data.
+- Real-time data licensing is not handled by this app.
+- TradingView widget availability depends on TradingView-supported symbols and
+  markets.
+
+Accepted chart types:
+
+- `tradingview_embed`
+- `image`
+- `lightweight_chart`
+
+Phase 6 implementation focus:
+
+- Implement `tradingview_embed` rendering from approved chart metadata.
+- Keep `image` and `lightweight_chart` as fallback or placeholder modes unless
+  they are explicitly implemented in a later prompt.
+- Lightweight Charts may be considered later for custom static chart snapshots.
+- Real market data licensing and any curated data pipeline must be handled
+  separately before custom chart rendering is implemented.
+- Preserve existing RLS and locked-content behavior when adding chart rendering.
+
 ## Security Notes
 
 - Never commit `.env`, `.env.local`, `.env.development`, or `.env.production`.
@@ -406,7 +443,7 @@ Phase 5 deploy-preview QA:
 - `SUPABASE_SECRET_KEY` and legacy `SUPABASE_SERVICE_ROLE_KEY` are server-only and must never be imported into client components.
 - The admin Supabase client bypasses RLS and is only for secure server-side repair/bootstrap tasks.
 - Routine admin CRUD should use the normal server Supabase client and database RLS.
-- No Stripe, payment, billing portal, premium upgrade, TradingView chart embed, or email notification backend logic exists yet.
+- No Stripe, payment, billing portal, premium upgrade, broker integration, order execution, or email notification backend logic exists yet.
 - New users remain free unless later subscription logic updates them.
 
 ## Next Phase

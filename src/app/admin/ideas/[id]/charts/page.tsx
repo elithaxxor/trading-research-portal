@@ -76,7 +76,7 @@ export default async function AdminIdeaChartsPage({
           { href: `/admin/ideas/${idea.id}/edit`, label: "Edit Idea" },
           { label: "Charts" },
         ]}
-        description="Add, edit, and remove chart metadata for this trading idea. TradingView embeds are intentionally not rendered yet."
+        description="Add, edit, preview, and remove chart metadata for this trading idea."
         eyebrow="Chart Metadata"
         title="Manage idea charts"
       />

@@ -17,6 +17,14 @@ import {
   validateChartType,
 } from "@/lib/admin/validation";
 import { requireAdmin } from "@/lib/auth/admin";
+import {
+  normalizeTickerSymbol,
+  normalizeTradingViewSymbol,
+  sanitizeChartUrl,
+  validateTradingViewInterval,
+} from "@/lib/charts/validation";
+
+const maxCaptionLength = 300;
 
 export type IdeaChartActionState = {
   fieldErrors?: Record<string, string>;
@@ -76,19 +84,80 @@ function sanitizeOptionalUrl(
     return null;
   }
 
-  try {
-    const url = new URL(normalized);
+  const sanitized = sanitizeChartUrl(normalized);
 
-    if (url.protocol !== "https:" && url.protocol !== "http:") {
-      addFieldError(fieldErrors, fieldName, "Use an http or https URL.");
-      return null;
-    }
-
-    return url.toString();
-  } catch {
-    addFieldError(fieldErrors, fieldName, "Enter a valid URL.");
+  if (!sanitized) {
+    addFieldError(
+      fieldErrors,
+      fieldName,
+      "Enter a valid http or https URL. JavaScript, data, and malformed URLs are not allowed."
+    );
     return null;
   }
+
+  return sanitized;
+}
+
+function normalizeOptionalTickerSymbol(
+  value: string,
+  fieldErrors: Record<string, string>
+) {
+  const normalized = normalizeEmptyString(value);
+
+  if (!normalized) {
+    return null;
+  }
+
+  const result = normalizeTickerSymbol(normalized);
+
+  if (!result.ok) {
+    addFieldError(fieldErrors, "symbol", result.error);
+    return null;
+  }
+
+  return result.value;
+}
+
+function normalizeOptionalTradingViewSymbol(
+  value: string,
+  fieldErrors: Record<string, string>
+) {
+  const normalized = normalizeEmptyString(value);
+
+  if (!normalized) {
+    return null;
+  }
+
+  const result = normalizeTradingViewSymbol(normalized);
+
+  if (!result.ok) {
+    addFieldError(fieldErrors, "tradingview_symbol", result.error);
+    return null;
+  }
+
+  return result.value;
+}
+
+function normalizeOptionalCaption(
+  value: string,
+  fieldErrors: Record<string, string>
+) {
+  const normalized = normalizeEmptyString(value);
+
+  if (!normalized) {
+    return null;
+  }
+
+  if (normalized.length > maxCaptionLength) {
+    addFieldError(
+      fieldErrors,
+      "caption",
+      `Caption must be ${maxCaptionLength} characters or fewer.`
+    );
+    return null;
+  }
+
+  return normalized;
 }
 
 async function getParentIdea(ideaId: string) {
@@ -130,8 +199,37 @@ function buildChartInput(
     "image_url",
     fieldErrors
   );
+  const symbol = normalizeOptionalTickerSymbol(
+    getFormValue(formData, "symbol"),
+    fieldErrors
+  );
+  const tradingviewSymbol = normalizeOptionalTradingViewSymbol(
+    getFormValue(formData, "tradingview_symbol"),
+    fieldErrors
+  );
+  const interval = validateTradingViewInterval(
+    getFormValue(formData, "interval")
+  );
+  const caption = normalizeOptionalCaption(
+    getFormValue(formData, "caption"),
+    fieldErrors
+  );
 
-  if (Object.keys(fieldErrors).length > 0 || !chartType.ok) {
+  if (!interval.ok) {
+    addFieldError(fieldErrors, "interval", interval.error);
+  }
+
+  if (chartType.ok && chartType.value === "tradingview_embed") {
+    if (!symbol && !tradingviewSymbol) {
+      addFieldError(
+        fieldErrors,
+        "tradingview_symbol",
+        "TradingView charts require a TradingView symbol or symbol."
+      );
+    }
+  }
+
+  if (Object.keys(fieldErrors).length > 0 || !chartType.ok || !interval.ok) {
     return {
       fieldErrors,
       input: null,
@@ -141,15 +239,13 @@ function buildChartInput(
   return {
     fieldErrors,
     input: {
-      caption: normalizeEmptyString(getFormValue(formData, "caption")),
+      caption,
       chart_type: chartType.value,
       embed_url: embedUrl,
       image_url: imageUrl,
-      interval: normalizeEmptyString(getFormValue(formData, "interval")),
-      symbol: normalizeEmptyString(getFormValue(formData, "symbol")),
-      tradingview_symbol: normalizeEmptyString(
-        getFormValue(formData, "tradingview_symbol")
-      ),
+      interval: interval.value,
+      symbol,
+      tradingview_symbol: tradingviewSymbol,
     },
   };
 }

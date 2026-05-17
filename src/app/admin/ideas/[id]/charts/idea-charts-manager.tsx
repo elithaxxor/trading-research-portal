@@ -13,9 +13,11 @@ import { AdminTextInput } from "@/components/admin/forms/AdminTextInput";
 import { AdminTextarea } from "@/components/admin/forms/AdminTextarea";
 import { Badge } from "@/components/badge";
 import { CardShell } from "@/components/card-shell";
+import { ChartCard } from "@/components/charts/ChartCard";
 import { buttonVariants } from "@/components/ui/button";
 import type { AdminIdea, AdminIdeaChart } from "@/lib/admin/types";
 import { chartTypeValues } from "@/lib/admin/validation";
+import { sanitizeChartUrl } from "@/lib/charts/validation";
 import { formatDate } from "@/lib/content/format";
 import { cn } from "@/lib/utils";
 
@@ -51,7 +53,7 @@ export function IdeaChartsManager({ charts, idea }: IdeaChartsManagerProps) {
   return (
     <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
       <AdminFormSection
-        description="Add metadata that Phase 6 can use for chart rendering. This page stores metadata only and does not render TradingView embeds."
+        description="Add metadata for chart rendering. Saved TradingView metadata can be previewed after it is created."
         title="Create chart metadata"
       >
         <form action={formAction} className="flex flex-col gap-5">
@@ -73,25 +75,28 @@ export function IdeaChartsManager({ charts, idea }: IdeaChartsManagerProps) {
           <div className="grid gap-5 lg:grid-cols-2">
             <AdminTextInput
               description="Recommended when available."
+              error={fieldError("symbol")}
               id="new-chart-symbol"
               label="Symbol"
               name="symbol"
               placeholder="SPY"
             />
             <AdminTextInput
-              description="Recommended for future TradingView metadata."
+              description="Required for TradingView charts when the symbol field is empty."
+              error={fieldError("tradingview_symbol")}
               id="new-chart-tradingview-symbol"
               label="TradingView symbol"
               name="tradingview_symbol"
-              placeholder="SPY"
+              placeholder="NASDAQ:NVDA"
             />
           </div>
           <div className="grid gap-5 lg:grid-cols-2">
             <AdminTextInput
+              error={fieldError("interval")}
               id="new-chart-interval"
               label="Interval"
               name="interval"
-              placeholder="1D"
+              placeholder="D"
             />
             <AdminTextInput
               error={fieldError("embed_url")}
@@ -111,6 +116,7 @@ export function IdeaChartsManager({ charts, idea }: IdeaChartsManagerProps) {
             type="url"
           />
           <AdminTextarea
+            error={fieldError("caption")}
             id="new-chart-caption"
             label="Caption"
             name="caption"
@@ -127,8 +133,8 @@ export function IdeaChartsManager({ charts, idea }: IdeaChartsManagerProps) {
               Existing chart metadata
             </h2>
             <p className="text-sm leading-6 text-muted-foreground">
-              URLs are stored and displayed as metadata only. No embed HTML is
-              rendered in Phase 5.
+              TradingView previews are rendered from validated metadata. Embed
+              HTML from the database is never rendered.
             </p>
           </div>
 
@@ -170,6 +176,9 @@ function ChartEditor({
   function fieldError(name: string) {
     return updateState.fieldErrors?.[name];
   }
+
+  const safeEmbedUrl = sanitizeChartUrl(chart.embed_url);
+  const safeImageUrl = sanitizeChartUrl(chart.image_url);
 
   return (
     <CardShell padding="md" tone="subtle">
@@ -214,12 +223,14 @@ function ChartEditor({
           <div className="grid gap-5 lg:grid-cols-2">
             <AdminTextInput
               defaultValue={chart.symbol ?? ""}
+              error={fieldError("symbol")}
               id={`chart-symbol-${chart.id}`}
               label="Symbol"
               name="symbol"
             />
             <AdminTextInput
               defaultValue={chart.tradingview_symbol ?? ""}
+              error={fieldError("tradingview_symbol")}
               id={`chart-tradingview-symbol-${chart.id}`}
               label="TradingView symbol"
               name="tradingview_symbol"
@@ -228,6 +239,7 @@ function ChartEditor({
           <div className="grid gap-5 lg:grid-cols-2">
             <AdminTextInput
               defaultValue={chart.interval ?? ""}
+              error={fieldError("interval")}
               id={`chart-interval-${chart.id}`}
               label="Interval"
               name="interval"
@@ -251,22 +263,30 @@ function ChartEditor({
           />
           <AdminTextarea
             defaultValue={chart.caption ?? ""}
+            error={fieldError("caption")}
             id={`chart-caption-${chart.id}`}
             label="Caption"
             name="caption"
           />
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-wrap gap-2">
-              {chart.embed_url ? (
-                <MetadataLink href={chart.embed_url} label="Open embed URL" />
+              {safeEmbedUrl ? (
+                <MetadataLink href={safeEmbedUrl} label="Open embed URL" />
               ) : null}
-              {chart.image_url ? (
-                <MetadataLink href={chart.image_url} label="Open image URL" />
+              {safeImageUrl ? (
+                <MetadataLink href={safeImageUrl} label="Open image URL" />
               ) : null}
             </div>
             <SaveChartButton />
           </div>
         </form>
+
+        <div className="border-t border-border pt-4">
+          <p className="mb-3 font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
+            Saved preview
+          </p>
+          <ChartCard chart={chart} />
+        </div>
       </div>
     </CardShell>
   );
