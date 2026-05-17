@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -327,6 +327,7 @@ export type Database = {
           id: string
           invalidation_level: string | null
           position_disclosure: string | null
+          public_preview: string | null
           published: boolean
           published_at: string | null
           risk_disclosure: string | null
@@ -355,6 +356,7 @@ export type Database = {
           id?: string
           invalidation_level?: string | null
           position_disclosure?: string | null
+          public_preview?: string | null
           published?: boolean
           published_at?: string | null
           risk_disclosure?: string | null
@@ -383,6 +385,7 @@ export type Database = {
           id?: string
           invalidation_level?: string | null
           position_disclosure?: string | null
+          public_preview?: string | null
           published?: boolean
           published_at?: string | null
           risk_disclosure?: string | null
@@ -451,6 +454,85 @@ export type Database = {
           required_visibility: Database["public"]["Enums"]["content_visibility"]
         }
         Returns: boolean
+      }
+      get_post_preview_by_slug: {
+        Args: { p_slug: string }
+        Returns: {
+          excerpt: string
+          id: string
+          is_locked: boolean
+          published_at: string
+          slug: string
+          title: string
+          updated_at: string
+          visibility: Database["public"]["Enums"]["content_visibility"]
+        }[]
+      }
+      get_post_previews: {
+        Args: {
+          p_limit?: number
+          p_offset?: number
+          p_search?: string
+          p_visibility?: Database["public"]["Enums"]["content_visibility"]
+        }
+        Returns: {
+          excerpt: string
+          id: string
+          is_locked: boolean
+          published_at: string
+          slug: string
+          title: string
+          updated_at: string
+          visibility: Database["public"]["Enums"]["content_visibility"]
+        }[]
+      }
+      get_trading_idea_preview_by_slug: {
+        Args: { p_slug: string }
+        Returns: {
+          asset_class: Database["public"]["Enums"]["asset_class"]
+          bias: Database["public"]["Enums"]["idea_bias"]
+          id: string
+          is_locked: boolean
+          public_preview: string
+          published_at: string
+          risk_level: Database["public"]["Enums"]["risk_level"]
+          setup_type: string
+          slug: string
+          status: Database["public"]["Enums"]["idea_status"]
+          ticker: string
+          timeframe: string
+          title: string
+          updated_at: string
+          visibility: Database["public"]["Enums"]["content_visibility"]
+        }[]
+      }
+      get_trading_idea_previews: {
+        Args: {
+          p_asset_class?: Database["public"]["Enums"]["asset_class"]
+          p_limit?: number
+          p_offset?: number
+          p_search?: string
+          p_sort?: string
+          p_status?: Database["public"]["Enums"]["idea_status"]
+          p_visibility?: Database["public"]["Enums"]["content_visibility"]
+        }
+        Returns: {
+          asset_class: Database["public"]["Enums"]["asset_class"]
+          bias: Database["public"]["Enums"]["idea_bias"]
+          id: string
+          is_locked: boolean
+          public_preview: string
+          published_at: string
+          risk_level: Database["public"]["Enums"]["risk_level"]
+          setup_type: string
+          slug: string
+          status: Database["public"]["Enums"]["idea_status"]
+          ticker: string
+          timeframe: string
+          title: string
+          updated_at: string
+          visibility: Database["public"]["Enums"]["content_visibility"]
+        }[]
       }
       get_user_tier: {
         Args: never

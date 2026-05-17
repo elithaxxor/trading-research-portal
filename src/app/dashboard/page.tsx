@@ -1,22 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import {
-  ArrowUpRight,
-  BarChart3,
-  BookOpenText,
-  ListChecks,
-  UserRound,
-} from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 import { signOutAction } from "@/app/(auth)/actions";
 import { Badge } from "@/components/badge";
 import { AuthNotice } from "@/components/auth-notice";
 import { CardShell } from "@/components/card-shell";
 import { Container } from "@/components/container";
+import { EmptyState } from "@/components/content/empty-state";
+import { IdeaCard } from "@/components/content/idea-card";
+import { ResearchPostCard } from "@/components/content/research-post-card";
 import { SignOutSubmitButton } from "@/components/sign-out-submit-button";
+import { buttonVariants } from "@/components/ui/button";
 import { ensureUserRecords } from "@/lib/auth/ensure-user-records";
+import { getIdeaPreviews } from "@/lib/content/ideas";
+import { getPostPreviews } from "@/lib/content/posts";
+import type { IdeaPreview, PostPreview } from "@/lib/content/types";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { cn } from "@/lib/utils";
 import type { Database } from "@/types/database.types";
 
 export const metadata: Metadata = {
@@ -38,37 +40,6 @@ export const dynamic = "force-dynamic";
 
 type SubscriptionRow =
   Database["public"]["Tables"]["subscriptions"]["Row"];
-
-const dashboardCards = [
-  {
-    description:
-      "A future workspace for risk-defined research cards and status tracking.",
-    href: null,
-    icon: BarChart3,
-    label: "Active Ideas",
-  },
-  {
-    description:
-      "A future place to organize symbols and research notes you want to monitor.",
-    href: null,
-    icon: ListChecks,
-    label: "Watchlist",
-  },
-  {
-    description:
-      "A future feed for market commentary, chart breakdowns, and update logs.",
-    href: null,
-    icon: BookOpenText,
-    label: "Latest Research",
-  },
-  {
-    description:
-      "Review account details and future profile settings when the account page opens.",
-    href: "/account",
-    icon: UserRound,
-    label: "Account",
-  },
-];
 
 function loginRedirect(): never {
   redirect("/login?redirectedFrom=%2Fdashboard");
@@ -109,7 +80,39 @@ async function getDashboardContext() {
     );
   }
 
+  const [
+    latestIdeasResult,
+    recentlyUpdatedIdeasResult,
+    latestResearchResult,
+  ] = await Promise.allSettled([
+    getIdeaPreviews({ limit: 3 }),
+    getIdeaPreviews({ limit: 3, sort: "updated" }),
+    getPostPreviews({ limit: 3 }),
+  ]);
+
+  if (latestIdeasResult.status === "rejected") {
+    warnings.push("Latest trading idea previews could not be loaded.");
+  }
+
+  if (recentlyUpdatedIdeasResult.status === "rejected") {
+    warnings.push("Recently updated idea previews could not be loaded.");
+  }
+
+  if (latestResearchResult.status === "rejected") {
+    warnings.push("Latest research previews could not be loaded.");
+  }
+
   return {
+    latestIdeas:
+      latestIdeasResult.status === "fulfilled" ? latestIdeasResult.value : [],
+    latestResearch:
+      latestResearchResult.status === "fulfilled"
+        ? latestResearchResult.value
+        : [],
+    recentlyUpdatedIdeas:
+      recentlyUpdatedIdeasResult.status === "fulfilled"
+        ? recentlyUpdatedIdeasResult.value
+        : [],
     subscription,
     user,
     warnings,
@@ -136,7 +139,14 @@ function formatStatus(
 }
 
 export default async function DashboardPage() {
-  const { subscription, user, warnings } = await getDashboardContext();
+  const {
+    latestIdeas,
+    latestResearch,
+    recentlyUpdatedIdeas,
+    subscription,
+    user,
+    warnings,
+  } = await getDashboardContext();
   const tierLabel = formatTier(subscription);
   const statusLabel = formatStatus(subscription);
 
@@ -152,9 +162,8 @@ export default async function DashboardPage() {
                   Welcome to your research dashboard.
                 </h1>
                 <p className="text-base leading-7 text-muted-foreground sm:text-lg">
-                  This Phase 3 shell confirms secure account access before
-                  premium research content, watchlists, and update logs are
-                  connected.
+                  Review RLS-aware research previews, recent updates, and your
+                  current account tier from one protected workspace.
                 </p>
               </div>
             </div>
@@ -212,63 +221,154 @@ export default async function DashboardPage() {
             <CardShell padding="lg" tone="subtle">
               <div className="flex h-full flex-col justify-between gap-6">
                 <div>
-                  <Badge tone="muted">Access note</Badge>
+                  <Badge tone="gold">Account Tier Summary</Badge>
                   <h2 className="mt-3 text-2xl font-semibold text-foreground">
-                    Research modules are coming soon
+                    {tierLabel} research access
                   </h2>
                   <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                    The dashboard is intentionally limited to account access in
-                    this step. Premium ideas, watchlists, and chart breakdowns
-                    will be connected in later authenticated phases.
+                    Your account is currently shown as {tierLabel.toLowerCase()}{" "}
+                    with status {statusLabel.toLowerCase()}. Content access is
+                    enforced by Supabase RLS, not client-side hiding.
                   </p>
                 </div>
-                <p className="text-sm leading-6 text-muted-foreground">
-                  No trading results are guaranteed. All research content is
-                  educational and should be reviewed independently.
-                </p>
+                <Link
+                  className={cn(
+                    "w-full sm:w-fit",
+                    buttonVariants({ size: "lg", variant: "outline" })
+                  )}
+                  href="/pricing"
+                >
+                  View access options
+                  <ArrowUpRight data-icon="inline-end" />
+                </Link>
               </div>
             </CardShell>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {dashboardCards.map((card) => (
-              <CardShell
-                className="flex min-h-56 flex-col justify-between"
-                key={card.label}
-                padding="md"
-              >
-                <div className="flex flex-col gap-5">
-                  <div className="flex size-11 items-center justify-center rounded-lg border border-border bg-secondary text-primary">
-                    <card.icon aria-hidden />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-semibold text-foreground">
-                      {card.label}
-                    </h2>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                      {card.description}
-                    </p>
-                  </div>
-                </div>
+          <DashboardIdeaSection
+            description="Latest safe previews across free, premium, and pro trading research. Locked cards do not expose full thesis, levels, or targets."
+            emptyDescription="No trading idea previews are available yet."
+            ideas={latestIdeas}
+            title="Latest Trading Ideas"
+          />
 
-                {card.href ? (
-                  <Link
-                    className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-foreground"
-                    href={card.href}
-                  >
-                    Open account
-                    <ArrowUpRight aria-hidden className="size-4" />
-                  </Link>
-                ) : (
-                  <p className="mt-6 text-sm font-medium text-muted-foreground">
-                    Coming soon
-                  </p>
-                )}
-              </CardShell>
-            ))}
-          </div>
+          <DashboardIdeaSection
+            description="Recent preview cards ordered by updated date, useful for quickly spotting refreshed research."
+            emptyDescription="No recently updated idea previews are available yet."
+            ideas={recentlyUpdatedIdeas}
+            title="Recently Updated Ideas"
+          />
+
+          <DashboardResearchSection posts={latestResearch} />
         </Container>
       </section>
     </main>
+  );
+}
+
+function DashboardIdeaSection({
+  description,
+  emptyDescription,
+  ideas,
+  title,
+}: {
+  description: string;
+  emptyDescription: string;
+  ideas: IdeaPreview[];
+  title: string;
+}) {
+  return (
+    <section className="flex flex-col gap-5">
+      <WidgetHeader
+        ctaHref="/ideas"
+        ctaLabel="View all ideas"
+        description={description}
+        title={title}
+      />
+
+      {ideas.length > 0 ? (
+        <div className="grid gap-5 xl:grid-cols-3">
+          {ideas.map((idea) => (
+            <IdeaCard
+              key={`${title}-${idea.id}`}
+              lockedCtaHref="/pricing"
+              lockedCtaLabel="View access options"
+              {...idea}
+            />
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          actionHref="/ideas"
+          description={emptyDescription}
+          title="No ideas found"
+        />
+      )}
+    </section>
+  );
+}
+
+function DashboardResearchSection({ posts }: { posts: PostPreview[] }) {
+  return (
+    <section className="flex flex-col gap-5">
+      <WidgetHeader
+        ctaHref="/research"
+        ctaLabel="View all research"
+        description="Latest market commentary and educational research previews. Locked posts keep full body content protected."
+        title="Latest Research"
+      />
+
+      {posts.length > 0 ? (
+        <div className="grid gap-5 xl:grid-cols-3">
+          {posts.map((post) => (
+            <ResearchPostCard
+              key={post.id}
+              lockedCtaHref="/pricing"
+              lockedCtaLabel="View access options"
+              {...post}
+            />
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          actionHref="/research"
+          description="No research post previews are available yet."
+          title="No research found"
+        />
+      )}
+    </section>
+  );
+}
+
+function WidgetHeader({
+  ctaHref,
+  ctaLabel,
+  description,
+  title,
+}: {
+  ctaHref: string;
+  ctaLabel: string;
+  description: string;
+  title: string;
+}) {
+  return (
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="max-w-3xl">
+        <h2 className="text-2xl font-semibold text-foreground">{title}</h2>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          {description}
+        </p>
+      </div>
+      <Link
+        className={cn(
+          "w-full sm:w-auto",
+          buttonVariants({ size: "lg", variant: "outline" })
+        )}
+        href={ctaHref}
+      >
+        {ctaLabel}
+        <ArrowUpRight data-icon="inline-end" />
+      </Link>
+    </div>
   );
 }
