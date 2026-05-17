@@ -1,83 +1,64 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { ShieldCheck, UserPlus } from "lucide-react";
+import { KeyRound, ShieldCheck } from "lucide-react";
 
 import { Badge } from "@/components/badge";
 import { CardShell } from "@/components/card-shell";
 import { Container } from "@/components/container";
 import { PageHero } from "@/components/page-hero";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-import { RegisterForm } from "./register-form";
+import { ForgotPasswordForm } from "./forgot-password-form";
 
 export const metadata: Metadata = {
   alternates: {
-    canonical: "/register",
+    canonical: "/forgot-password",
   },
   description:
-    "Create an account for future access to the Trading Research Portal private research dashboard.",
+    "Request a password reset link for your Trading Research Portal account.",
   openGraph: {
     description:
-      "Create an account for future access to the Trading Research Portal private research dashboard.",
-    title: "Create Your Account",
-    url: "/register",
+      "Request a password reset link for your Trading Research Portal account.",
+    title: "Reset Your Password",
+    url: "/forgot-password",
   },
-  title: "Create Your Account",
+  title: "Reset Your Password",
 };
 
-export const dynamic = "force-dynamic";
-
-async function getCurrentUser() {
-  try {
-    const supabase = await createSupabaseServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    return user;
-  } catch {
-    return null;
-  }
-}
-
-export default async function RegisterPage() {
-  const user = await getCurrentUser();
-
-  if (user) {
-    redirect("/dashboard");
-  }
-
+export default function ForgotPasswordPage() {
   return (
     <main className="flex-1">
       <section className="border-b border-border">
         <Container className="grid gap-10 py-16 sm:py-20 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <PageHero
             className="py-0"
-            description="Create an account for future access to the private research dashboard. Premium billing is not active yet."
-            eyebrow="Account access"
-            title="Create Your Account"
+            description="Enter your email and we will send reset instructions if an account exists."
+            eyebrow="Account recovery"
+            title="Reset Your Password"
           />
 
-          <CardShell className="relative overflow-hidden" padding="lg" tone="elevated">
+          <CardShell
+            className="relative overflow-hidden"
+            padding="lg"
+            tone="elevated"
+          >
             <div className="absolute inset-x-0 top-0 h-px bg-market-line" />
             <div className="flex flex-col gap-7">
               <div className="flex items-start gap-4">
                 <div className="flex size-11 items-center justify-center rounded-lg border border-border bg-secondary text-primary">
-                  <UserPlus aria-hidden />
+                  <KeyRound aria-hidden />
                 </div>
                 <div>
-                  <Badge tone="muted">Free account</Badge>
+                  <Badge tone="muted">Private access</Badge>
                   <h2 className="mt-3 text-2xl font-semibold text-foreground">
-                    Start with a standard account
+                    Request a reset link
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    All new users remain on free access unless subscription
-                    logic updates the account in a later phase.
+                    For privacy, the response is the same whether an email is
+                    registered or not.
                   </p>
                 </div>
               </div>
 
-              <RegisterForm />
+              <ForgotPasswordForm />
 
               <div className="rounded-lg border border-border bg-secondary/35 p-4">
                 <div className="flex items-start gap-3">
@@ -86,8 +67,8 @@ export default async function RegisterPage() {
                     className="mt-0.5 size-4 text-primary"
                   />
                   <p className="text-sm leading-6 text-muted-foreground">
-                    Premium billing is not active yet. Research content is
-                    educational, and no trading results are guaranteed.
+                    Password reset links are handled through Supabase Auth and
+                    return through the secure auth callback route.
                   </p>
                 </div>
               </div>
