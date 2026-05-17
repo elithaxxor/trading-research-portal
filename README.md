@@ -12,7 +12,7 @@ The public site is live as a marketing experience. Supabase schema, RLS, seed da
 - Phase 2.5: Complete. Supabase schema/RLS verification passed, including anonymous read/write smoke tests and authenticated RLS validation for free, premium, pro, and admin access.
 - Phase 3: Complete. Supabase Auth, SSR cookie sessions, protected routes, auth callback, password reset, and account/dashboard shells are implemented and verified.
 - Phase 4: Complete. Supabase-backed free, premium, and pro content previews, detail pages, access-aware rendering, dashboard content widgets, and deploy-preview access-control QA are in place.
-- Phase 5: In progress. Admin dashboard routes, admin-only authorization, trading idea management, research post management, updates, chart metadata, tags, and tag assignment are implemented. Deploy-preview public and anonymous admin-protection QA passed; live admin-session mutation QA remains before merge.
+- Phase 5: Complete. Admin dashboard routes, admin-only authorization, trading idea management, research post management, updates, chart metadata, tags, and tag assignment are implemented and verified. Live admin-session CRUD QA, public regression QA, premium/pro leak checks, post-rotation smoke testing, and cleanup passed.
 
 ## Phase 1 Public Site
 
@@ -327,8 +327,8 @@ Security model:
 
 Content management note:
 
-- Content is currently seed/database-driven.
-- Admin publishing and editing workflows are implemented in Phase 5. Continue to test admin-created content on public pages before merging or promoting deploys.
+- Content can be managed through the Phase 5 admin dashboard.
+- Admin-created content should continue to be tested on public pages before production promotion, especially after publish/unpublish/delete actions.
 
 Phase 4 deploy-preview QA:
 
@@ -388,9 +388,16 @@ Phase 5 deploy-preview QA:
 - Public routes: passing.
 - Anonymous protected redirects for `/dashboard`, `/account`, and `/admin`: passing.
 - Anonymous locked-content public regression: passing.
+- Non-admin admin-route protection and RLS mutation blocking: passing.
+- Admin route access: passing.
+- Admin CRUD for ideas, posts, idea updates, chart metadata, tags, and tag assignment: passing.
+- Admin-created content public regression: passing.
+- Premium/pro locked-content leak checks: passing.
+- Supabase server key was rotated after exposure; post-rotation deploy/admin smoke testing passed.
+- Temporary QA records and users were removed after testing.
 - CSS assets: passing.
 - Local `npm run build`, `npm run lint`, and `npx tsc --noEmit`: passing.
-- Remaining gap: live admin-session mutation QA needs an authenticated admin account on the deploy preview before Phase 5 is merge-ready.
+- Phase 5 is merge-ready.
 
 ## Security Notes
 
@@ -404,7 +411,7 @@ Phase 5 deploy-preview QA:
 
 ## Next Phase
 
-Recommended next phase after Phase 5 admin mutation QA passes: Phase 6 - TradingView Chart Integration.
+Recommended next phase: Phase 6 - TradingView Chart Integration.
 
 Phase 6 should focus on rendering chart experiences from the existing chart metadata model without weakening content access control. Continue to avoid Stripe payments, billing portal behavior, and email notification backend work until their planned phases.
 
