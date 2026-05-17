@@ -228,7 +228,9 @@ Supabase dashboard checklist:
 2. Add the local auth redirect URL: `http://localhost:3000/auth/callback`.
 3. Add the current Netlify deploy-preview callback URL when testing hosted auth, for example `https://deploy-preview-4--trading-research-portal.netlify.app/auth/callback`.
 4. Add a Netlify deploy-preview redirect pattern if supported by the Supabase project settings: `https://*.netlify.app/auth/callback`.
-5. Add the production redirect URL once a custom domain is available: `https://YOUR_DOMAIN.com/auth/callback`.
+5. Add the Phase 4 deploy-preview redirect URL while PR #5 is under review: `https://deploy-preview-5--trading-research-portal.netlify.app/auth/callback`.
+6. Add the production Netlify redirect URL before merging to production: `https://trading-research-portal.netlify.app/auth/callback`.
+7. Add the custom-domain production redirect URL once a custom domain is available: `https://YOUR_DOMAIN.com/auth/callback`.
 
 Netlify environment variable checklist:
 
@@ -238,6 +240,22 @@ NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 SUPABASE_SECRET_KEY
 ```
+
+Production Netlify environment checklist before merging protected or
+Supabase-backed features:
+
+```bash
+NEXT_PUBLIC_SITE_URL=https://trading-research-portal.netlify.app
+NEXT_PUBLIC_SUPABASE_URL=<your-production-or-approved-prelaunch-project-url>
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<your-production-or-approved-prelaunch-publishable-key>
+SUPABASE_SECRET_KEY=<server-only-production-or-approved-prelaunch-secret-key>
+```
+
+Use `https://trading-research-portal.netlify.app` as the production site URL
+until a custom domain is active. If the development Supabase project is reused
+temporarily for production testing, treat that as pre-launch only and create a
+separate production Supabase project before collecting real users, payments, or
+production research data.
 
 Public `NEXT_PUBLIC_*` values may be used by browser clients. Secret and
 service-role keys must only be used server-side, must never be imported into
