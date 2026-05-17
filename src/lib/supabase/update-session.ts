@@ -6,7 +6,7 @@ import type { Database } from "@/types/database.types";
 
 import { getSupabaseServerConfig } from "./env";
 
-const protectedRoutePrefixes = ["/dashboard", "/account"];
+const protectedRoutePrefixes = ["/dashboard", "/account", "/admin"];
 const authRoutes = ["/login", "/register"];
 
 function matchesRoutePrefix(pathname: string, prefix: string) {

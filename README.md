@@ -2,7 +2,7 @@
 
 A professional trading research portal built with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Netlify, and Supabase.
 
-The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, and Phase 3 authentication are in place for development. Stripe, paid-tier upgrades, admin CRUD, TradingView charts, and email notification backend work are intentionally out of scope for the current build.
+The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, and Phase 6 TradingView chart display are in place for development. Stripe, paid-tier upgrades, broker integrations, order execution, and email notification backend work are intentionally out of scope for the current build.
 
 ## Phase Status
 
@@ -12,6 +12,8 @@ The public site is live as a marketing experience. Supabase schema, RLS, seed da
 - Phase 2.5: Complete. Supabase schema/RLS verification passed, including anonymous read/write smoke tests and authenticated RLS validation for free, premium, pro, and admin access.
 - Phase 3: Complete. Supabase Auth, SSR cookie sessions, protected routes, auth callback, password reset, and account/dashboard shells are implemented and verified.
 - Phase 4: Complete. Supabase-backed free, premium, and pro content previews, detail pages, access-aware rendering, dashboard content widgets, and deploy-preview access-control QA are in place.
+- Phase 5: Complete. Admin dashboard routes, admin-only authorization, trading idea management, research post management, updates, chart metadata, tags, and tag assignment are implemented and verified. Live admin-session CRUD QA, public regression QA, premium/pro leak checks, post-rotation smoke testing, and cleanup passed.
+- Phase 6: Complete. TradingView chart widgets render from safe `idea_charts` metadata on full-access idea pages, locked premium/pro chart details remain protected, admin chart previews and validation are in place, and deploy-preview chart QA has passed.
 
 ## Phase 1 Public Site
 
@@ -132,8 +134,9 @@ Auth UI, protected routes, SSR session refresh, and account/dashboard shells are
 
 ## Supabase Local Development
 
-Phase 2 uses Supabase CLI project files and migrations for local schema work.
-The application does not connect public routes to Supabase yet.
+Phase 2 introduced Supabase CLI project files and migrations for schema work.
+Phase 4 and Phase 5 now use Supabase-backed content and admin routes, so local
+content/auth testing requires a real development `.env.local`.
 
 Useful commands:
 
@@ -226,11 +229,16 @@ Supabase dashboard checklist:
 
 1. Set the local development Site URL to `http://localhost:3000`.
 2. Add the local auth redirect URL: `http://localhost:3000/auth/callback`.
-3. Add the current Netlify deploy-preview callback URL when testing hosted auth, for example `https://deploy-preview-4--trading-research-portal.netlify.app/auth/callback`.
+3. Add the current Netlify deploy-preview callback URL when testing hosted auth: `https://deploy-preview-7--trading-research-portal.netlify.app/auth/callback`.
 4. Add a Netlify deploy-preview redirect pattern if supported by the Supabase project settings: `https://*.netlify.app/auth/callback`.
-5. Add the Phase 4 deploy-preview redirect URL while PR #5 is under review: `https://deploy-preview-5--trading-research-portal.netlify.app/auth/callback`.
-6. Add the production Netlify redirect URL before merging to production: `https://trading-research-portal.netlify.app/auth/callback`.
-7. Add the custom-domain production redirect URL once a custom domain is available: `https://YOUR_DOMAIN.com/auth/callback`.
+5. Add the production Netlify redirect URL before merging to production: `https://trading-research-portal.netlify.app/auth/callback`.
+6. Add the custom-domain production redirect URL once a custom domain is available: `https://YOUR_DOMAIN.com/auth/callback`.
+
+Auth email redirects are built from the current request origin when available.
+This lets deploy previews generate callback URLs for their own preview domain
+instead of falling back to `NEXT_PUBLIC_SITE_URL`. `NEXT_PUBLIC_SITE_URL` remains
+the fallback for static metadata and non-request contexts, and localhost is used
+only as a local-development fallback.
 
 Netlify environment variable checklist:
 
@@ -240,6 +248,10 @@ NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 SUPABASE_SECRET_KEY
 ```
+
+For deploy previews, `NEXT_PUBLIC_SITE_URL` must not be set to localhost. It can
+be the production Netlify URL while auth server actions use the current preview
+request origin for email confirmation and password reset callbacks.
 
 Production Netlify environment checklist before merging protected or
 Supabase-backed features:
@@ -312,7 +324,7 @@ Access model:
 - Free users can read full free content, see locked premium/pro previews, and access the dashboard.
 - Premium users can read full free and premium content, with pro content locked.
 - Pro users can read full free, premium, and pro content.
-- Admin users can read all content. Admin CRUD is intentionally not implemented yet.
+- Admin users can read all content and access the Phase 5 admin dashboard for content management.
 
 Security model:
 
@@ -324,8 +336,8 @@ Security model:
 
 Content management note:
 
-- Content is currently seed/database-driven.
-- Admin publishing, editing, review, and archive workflows come in a later phase.
+- Content can be managed through the Phase 5 admin dashboard.
+- Admin-created content should continue to be tested on public pages before production promotion, especially after publish/unpublish/delete actions.
 
 Phase 4 deploy-preview QA:
 
@@ -336,24 +348,132 @@ Phase 4 deploy-preview QA:
 - Authenticated free/premium/pro access checks: passing.
 - Local `npm run build`, `npm run lint`, and `npx tsc --noEmit`: passing.
 
+## Phase 5 Admin Dashboard
+
+Phase 5 adds a protected admin dashboard for content management. It does not add Stripe, payments, broker integrations, order execution, or email notification backend logic.
+
+Admin routes:
+
+- `/admin`: admin overview with content stats, quick actions, recent content, and operational notes.
+- `/admin/ideas`: browse, search, filter, publish, unpublish, and delete trading ideas.
+- `/admin/ideas/new`: create a trading idea.
+- `/admin/ideas/[id]/edit`: edit trading idea content, safe preview copy, publishing state, and tags.
+- `/admin/ideas/[id]/updates`: manage idea update-log entries.
+- `/admin/ideas/[id]/charts`: manage chart metadata with Phase 6 TradingView preview support.
+- `/admin/posts`: browse, search, filter, publish, unpublish, and delete research posts.
+- `/admin/posts/new`: create a research post.
+- `/admin/posts/[id]/edit`: edit research post content, safe excerpt copy, and publishing state.
+- `/admin/tags`: create, edit, and delete tags when safe.
+
+Admin capabilities:
+
+- Create, edit, publish, unpublish, and delete trading ideas.
+- Manage idea updates.
+- Manage chart metadata for future chart integration.
+- Create, edit, publish, unpublish, and delete research posts.
+- Create, edit, and delete tags.
+- Assign tags to trading ideas.
+
+Phase 5 security model:
+
+- `/admin` routes require an authenticated user with `profiles.role = 'admin'`.
+- Admin layouts and pages call `requireAdmin()`.
+- Admin server actions call `requireAdmin()` before mutations.
+- Routine admin CRUD uses the normal server Supabase client so admin RLS policies are exercised.
+- RLS continues to protect database writes.
+- The service-role/admin Supabase client must remain server-only and should not be used for routine admin CRUD.
+- Hidden form fields must never be trusted for role, tier, or user authorization.
+
+Phase 5 content safety:
+
+- Premium/pro public previews must not leak full thesis, body, exact entries, invalidation, targets, or proprietary setup details.
+- Locked content must remain protected by RLS and server-side access checks.
+- Admin-created content should be tested on the public `/ideas`, `/ideas/[slug]`, `/research`, and `/research/[slug]` pages after publish/unpublish/delete actions.
+
+Phase 5 deploy-preview QA:
+
+- Preview URL: `https://deploy-preview-6--trading-research-portal.netlify.app`
+- Netlify deploy state: ready.
+- Public routes: passing.
+- Anonymous protected redirects for `/dashboard`, `/account`, and `/admin`: passing.
+- Anonymous locked-content public regression: passing.
+- Non-admin admin-route protection and RLS mutation blocking: passing.
+- Admin route access: passing.
+- Admin CRUD for ideas, posts, idea updates, chart metadata, tags, and tag assignment: passing.
+- Admin-created content public regression: passing.
+- Premium/pro locked-content leak checks: passing.
+- Supabase server key was rotated after exposure; post-rotation deploy/admin smoke testing passed.
+- Temporary QA records and users were removed after testing.
+- CSS assets: passing.
+- Local `npm run build`, `npm run lint`, and `npx tsc --noEmit`: passing.
+- Phase 5 is merge-ready.
+
+## Phase 6 — Chart Integration
+
+Phase 6 integrates chart display from the existing `idea_charts` metadata model.
+It does not add broker connections, order execution, copy trading, payments,
+email notifications, or live market data licensing features.
+
+Chart integration rules:
+
+- TradingView widgets are used for visual chart display only.
+- Chart metadata is stored in the `idea_charts` table.
+- Full chart widgets should only render on full-access idea pages.
+- Locked premium/pro ideas should not expose private chart metadata when that
+  metadata is treated as part of the premium research.
+- Arbitrary embed HTML from the database is never rendered; chart URLs and
+  symbols must pass server-side validation before display.
+- No broker connection exists.
+- No order execution exists.
+- No copy trading exists.
+- No guarantee is made about real-time exchange data.
+- Real-time data licensing is not handled by this app.
+- TradingView widget availability depends on TradingView-supported symbols and
+  markets.
+
+Accepted chart types:
+
+- `tradingview_embed`
+- `image`
+- `lightweight_chart`
+
+Phase 6 implementation focus:
+
+- Implement `tradingview_embed` rendering from approved chart metadata.
+- Keep `image` and `lightweight_chart` as fallback or placeholder modes unless
+  they are explicitly implemented in a later prompt.
+- Lightweight Charts may be considered later for custom static chart snapshots.
+- Real market data licensing and any curated data pipeline must be handled
+  separately before custom chart rendering is implemented.
+- Preserve existing RLS and locked-content behavior when adding chart rendering.
+
+Phase 6 QA status:
+
+- Anonymous deploy-preview chart access passed.
+- Authenticated free, premium, pro, and admin chart access passed.
+- Locked premium/pro pages did not expose private chart metadata, thesis, body, or levels.
+- Admin chart metadata create, edit, validation, delete, and cleanup passed.
+- Mobile chart layout, duplicate iframe checks, and console checks passed.
+- Supabase deploy-preview email/magic-link redirect settings should still be verified before production auth email QA.
+
 ## Security Notes
 
 - Never commit `.env`, `.env.local`, `.env.development`, or `.env.production`.
 - Never commit Supabase secret keys, service-role keys, database passwords, or access tokens.
 - `SUPABASE_SECRET_KEY` and legacy `SUPABASE_SERVICE_ROLE_KEY` are server-only and must never be imported into client components.
 - The admin Supabase client bypasses RLS and is only for secure server-side repair/bootstrap tasks.
-- No Stripe, payment, billing portal, premium upgrade, admin CRUD, TradingView chart, or email notification backend logic exists yet.
+- Routine admin CRUD should use the normal server Supabase client and database RLS.
+- No Stripe, payment, billing portal, premium upgrade, broker integration, order execution, or email notification backend logic exists yet.
 - New users remain free unless later subscription logic updates them.
 
 ## Next Phase
 
-Recommended next phase: Phase 5 - Admin Dashboard for Content Management.
+Recommended next phase: Phase 7 - Idea Lifecycle and Update Refinement.
 
-Phase 5 should focus on secure admin-only content management for ideas, research posts, updates, tags, and publishing workflow. Continue to avoid Stripe payments, billing portal behavior, TradingView integration, and email notification backend work until their planned phases.
+Phase 7 should refine idea status transitions, update history workflows, and member-facing lifecycle clarity without adding payments, broker integrations, order execution, or email notification backend work.
 
 Future planned phases:
 
-- Phase 6: TradingView chart integration.
 - Phase 7: Idea update lifecycle refinement.
 - Phase 8: Advanced member dashboard.
 - Phase 9: Stripe subscriptions.

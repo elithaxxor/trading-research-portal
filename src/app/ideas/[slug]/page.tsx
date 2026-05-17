@@ -10,10 +10,11 @@ import {
 } from "lucide-react";
 
 import { CardShell } from "@/components/card-shell";
+import { ChartCard } from "@/components/charts/ChartCard";
+import { ChartFallback } from "@/components/charts/ChartFallback";
 import { Container } from "@/components/container";
 import { AssetClassBadge } from "@/components/content/asset-class-badge";
 import { BiasBadge } from "@/components/content/bias-badge";
-import { ChartMetadataPanel } from "@/components/content/chart-metadata-panel";
 import { IdeaStatusBadge } from "@/components/content/idea-status-badge";
 import { LockedContentPanel } from "@/components/content/locked-content-panel";
 import { RiskBadge } from "@/components/content/risk-badge";
@@ -342,26 +343,36 @@ function FullIdeaPage({
 
             <UpdateTimeline updates={updates} />
 
-            <div className="grid gap-6">
-              {charts.length > 0 ? (
-                charts.map((chart) => (
-                  <ChartMetadataPanel
-                    caption={chart.caption}
-                    interval={chart.interval}
-                    key={chart.id}
-                    symbol={chart.symbol}
-                    tradingview_symbol={chart.tradingview_symbol}
+            <section className="grid gap-4" aria-labelledby="idea-charts">
+              <div className="flex flex-col gap-2">
+                <p className="font-mono text-xs uppercase tracking-[0.18em] text-primary">
+                  Chart review
+                </p>
+                <h2
+                  className="text-2xl font-semibold text-foreground"
+                  id="idea-charts"
+                >
+                  Charts
+                </h2>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  Charts are for educational market research only and are not
+                  trade instructions.
+                </p>
+              </div>
+
+              <div className="grid gap-6">
+                {charts.length > 0 ? (
+                  charts.map((chart) => (
+                    <ChartCard chart={chart} key={chart.id} />
+                  ))
+                ) : (
+                  <ChartFallback
+                    description="No chart has been attached to this idea yet."
+                    title="No chart attached"
                   />
-                ))
-              ) : (
-                <ChartMetadataPanel
-                  caption="No chart metadata has been attached to this idea yet."
-                  interval={null}
-                  symbol={idea.ticker}
-                  tradingview_symbol={null}
-                />
-              )}
-            </div>
+                )}
+              </div>
+            </section>
           </div>
 
           <aside className="flex flex-col gap-6">

@@ -38,8 +38,17 @@ export function LockedContentPanel({
   ...props
 }: LockedContentPanelProps) {
   return (
-    <aside className={className} {...props}>
-      <CardShell className="overflow-hidden" padding="lg" tone="elevated">
+    <aside
+      aria-label={`${formatVisibilityLabel(visibility)} locked research`}
+      className={className}
+      role="region"
+      {...props}
+    >
+      <CardShell
+        className="overflow-hidden focus-within:ring-2 focus-within:ring-primary/40"
+        padding="lg"
+        tone="elevated"
+      >
         <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-start gap-4">
             <div className="flex size-11 shrink-0 items-center justify-center rounded-lg border border-primary/30 bg-primary/10 text-primary">
