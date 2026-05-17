@@ -10,7 +10,8 @@ The public site is live as a marketing experience. Supabase schema, RLS, seed da
 - Phase 1: Complete. Public marketing routes, early-access copy, legal/support pages, metadata, and responsive polish are in place.
 - Phase 2: Complete. Supabase packages, CLI structure, migrations, RLS policies, seed data, environment structure, client utility scaffolding, remote migration verification, and generated database types are in place.
 - Phase 2.5: Complete. Supabase schema/RLS verification passed, including anonymous read/write smoke tests and authenticated RLS validation for free, premium, pro, and admin access.
-- Phase 3: Auth implementation complete locally. Supabase Auth, SSR cookie sessions, protected routes, auth callback, password reset, and account/dashboard shells are implemented and locally verified. Netlify deploy-preview route QA passes, but full hosted auth testing still requires deploy-preview Supabase environment variables.
+- Phase 3: Complete. Supabase Auth, SSR cookie sessions, protected routes, auth callback, password reset, and account/dashboard shells are implemented and verified.
+- Phase 4: Complete. Supabase-backed free, premium, and pro content previews, detail pages, access-aware rendering, dashboard content widgets, and deploy-preview access-control QA are in place.
 
 ## Phase 1 Public Site
 
@@ -267,13 +268,55 @@ Auth-specific checks:
 5. Deploy-preview registration/login/logout/password reset after Netlify Supabase env vars are configured.
 6. Development-only authenticated RLS tests with `npm run test:rls:auth`.
 
-Latest known deploy-preview result:
+Latest known Phase 3+4 deploy-preview result:
 
-- Preview URL: `https://deploy-preview-4--trading-research-portal.netlify.app`
+- Preview URL: `https://deploy-preview-5--trading-research-portal.netlify.app`
 - Public routes: passing.
 - Protected redirects: passing.
 - CSS/JS assets: passing.
-- Full hosted auth flows: blocked until the Netlify deploy-preview context has `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, and `SUPABASE_SECRET_KEY`.
+- Authenticated deploy-preview content access was verified for development free, premium, and pro users with temporary QA accounts that were removed after testing.
+
+## Phase 4 Content System
+
+Phase 4 adds Supabase-backed public and member content surfaces while keeping payments, admin CRUD, TradingView embeds, and email notifications out of scope.
+
+Content routes:
+
+- `/ideas`: searchable/filterable trading idea previews.
+- `/ideas/[slug]`: full trading idea details when RLS allows access; locked preview otherwise.
+- `/research`: searchable/filterable research post previews.
+- `/research/[slug]`: full research post details when RLS allows access; locked preview otherwise.
+- `/dashboard`: authenticated dashboard shell with latest trading ideas, recently updated ideas, latest research, and account tier summary widgets.
+
+Access model:
+
+- Anonymous visitors can read full free content and see locked premium/pro previews.
+- Free users can read full free content, see locked premium/pro previews, and access the dashboard.
+- Premium users can read full free and premium content, with pro content locked.
+- Pro users can read full free, premium, and pro content.
+- Admin users can read all content. Admin CRUD is intentionally not implemented yet.
+
+Security model:
+
+- Full content is fetched with the normal server Supabase client and enforced by database RLS.
+- Preview RPC functions return safe preview fields only.
+- The admin client must not be used to display premium/pro content to unauthorized users.
+- Full premium/pro thesis, body content, entry zones, invalidation levels, targets, updates, and chart details must not be exposed in metadata, page HTML, or serialized client props for unauthorized users.
+- Locked pages show only safe preview fields and member-access copy.
+
+Content management note:
+
+- Content is currently seed/database-driven.
+- Admin publishing, editing, review, and archive workflows come in a later phase.
+
+Phase 4 deploy-preview QA:
+
+- Preview URL: `https://deploy-preview-5--trading-research-portal.netlify.app`
+- Public routes: passing.
+- Content list/detail routes: passing.
+- Anonymous locked-content checks: passing.
+- Authenticated free/premium/pro access checks: passing.
+- Local `npm run build`, `npm run lint`, and `npx tsc --noEmit`: passing.
 
 ## Security Notes
 
@@ -286,6 +329,14 @@ Latest known deploy-preview result:
 
 ## Next Phase
 
-Recommended next phase: Phase 4 - Free and Premium Content System.
+Recommended next phase: Phase 5 - Admin Dashboard for Content Management.
 
-Phase 4 should focus on content fetching and access-aware display using the existing Supabase schema and RLS model. Do not add Stripe payments, billing portal behavior, admin CRUD, or TradingView integration until their planned phases.
+Phase 5 should focus on secure admin-only content management for ideas, research posts, updates, tags, and publishing workflow. Continue to avoid Stripe payments, billing portal behavior, TradingView integration, and email notification backend work until their planned phases.
+
+Future planned phases:
+
+- Phase 6: TradingView chart integration.
+- Phase 7: Idea update lifecycle refinement.
+- Phase 8: Advanced member dashboard.
+- Phase 9: Stripe subscriptions.
+- Phase 10: Email notifications.
