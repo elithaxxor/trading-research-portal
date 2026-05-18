@@ -53,6 +53,33 @@ export type Database = {
         }
         Relationships: []
       }
+      followed_tickers: {
+        Row: {
+          created_at: string
+          id: string
+          note: string | null
+          ticker: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          ticker: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note?: string | null
+          ticker?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       idea_charts: {
         Row: {
           caption: string | null
@@ -193,6 +220,86 @@ export type Database = {
           },
         ]
       }
+      member_dashboard_preferences: {
+        Row: {
+          created_at: string
+          default_sort: Database["public"]["Enums"]["member_sort_preference"]
+          default_view: Database["public"]["Enums"]["member_dashboard_view"]
+          preferred_asset_classes: Database["public"]["Enums"]["asset_class"][]
+          preferred_statuses: Database["public"]["Enums"]["idea_status"][]
+          preferred_visibility: Database["public"]["Enums"]["content_visibility"][]
+          show_charts_on_dashboard: boolean
+          show_closed_reviews: boolean
+          show_locked_previews: boolean
+          show_software_section: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          default_sort?: Database["public"]["Enums"]["member_sort_preference"]
+          default_view?: Database["public"]["Enums"]["member_dashboard_view"]
+          preferred_asset_classes?: Database["public"]["Enums"]["asset_class"][]
+          preferred_statuses?: Database["public"]["Enums"]["idea_status"][]
+          preferred_visibility?: Database["public"]["Enums"]["content_visibility"][]
+          show_charts_on_dashboard?: boolean
+          show_closed_reviews?: boolean
+          show_locked_previews?: boolean
+          show_software_section?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          default_sort?: Database["public"]["Enums"]["member_sort_preference"]
+          default_view?: Database["public"]["Enums"]["member_dashboard_view"]
+          preferred_asset_classes?: Database["public"]["Enums"]["asset_class"][]
+          preferred_statuses?: Database["public"]["Enums"]["idea_status"][]
+          preferred_visibility?: Database["public"]["Enums"]["content_visibility"][]
+          show_charts_on_dashboard?: boolean
+          show_closed_reviews?: boolean
+          show_locked_previews?: boolean
+          show_software_section?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      member_idea_notes: {
+        Row: {
+          created_at: string
+          id: string
+          idea_id: string
+          note: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          idea_id: string
+          note: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          idea_id?: string
+          note?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_idea_notes_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "trading_ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       posts: {
         Row: {
           body: string | null
@@ -262,6 +369,169 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
+        }
+        Relationships: []
+      }
+      saved_ideas: {
+        Row: {
+          created_at: string
+          id: string
+          idea_id: string
+          note: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          idea_id: string
+          note?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          idea_id?: string
+          note?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_ideas_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "trading_ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      software_access_requests: {
+        Row: {
+          admin_note: string | null
+          created_at: string
+          id: string
+          requested_at: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          software_product_id: string
+          status: Database["public"]["Enums"]["software_access_request_status"]
+          tradingview_username: string | null
+          updated_at: string
+          user_id: string
+          user_note: string | null
+        }
+        Insert: {
+          admin_note?: string | null
+          created_at?: string
+          id?: string
+          requested_at?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          software_product_id: string
+          status?: Database["public"]["Enums"]["software_access_request_status"]
+          tradingview_username?: string | null
+          updated_at?: string
+          user_id: string
+          user_note?: string | null
+        }
+        Update: {
+          admin_note?: string | null
+          created_at?: string
+          id?: string
+          requested_at?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          software_product_id?: string
+          status?: Database["public"]["Enums"]["software_access_request_status"]
+          tradingview_username?: string | null
+          updated_at?: string
+          user_id?: string
+          user_note?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "software_access_requests_software_product_id_fkey"
+            columns: ["software_product_id"]
+            isOneToOne: false
+            referencedRelation: "software_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      software_products: {
+        Row: {
+          access_tier: Database["public"]["Enums"]["software_access_tier"]
+          created_at: string
+          created_by: string | null
+          delivery_type: Database["public"]["Enums"]["software_delivery_type"]
+          documentation: string | null
+          download_url: string | null
+          external_url: string | null
+          full_description: string | null
+          id: string
+          published: boolean
+          published_at: string | null
+          release_notes: string | null
+          risk_disclosure: string | null
+          setup_instructions: string | null
+          short_description: string | null
+          slug: string
+          software_type: Database["public"]["Enums"]["software_type"]
+          title: string
+          tradingview_script_name: string | null
+          tradingview_script_url: string | null
+          updated_at: string
+          version: string | null
+        }
+        Insert: {
+          access_tier: Database["public"]["Enums"]["software_access_tier"]
+          created_at?: string
+          created_by?: string | null
+          delivery_type?: Database["public"]["Enums"]["software_delivery_type"]
+          documentation?: string | null
+          download_url?: string | null
+          external_url?: string | null
+          full_description?: string | null
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          release_notes?: string | null
+          risk_disclosure?: string | null
+          setup_instructions?: string | null
+          short_description?: string | null
+          slug: string
+          software_type?: Database["public"]["Enums"]["software_type"]
+          title: string
+          tradingview_script_name?: string | null
+          tradingview_script_url?: string | null
+          updated_at?: string
+          version?: string | null
+        }
+        Update: {
+          access_tier?: Database["public"]["Enums"]["software_access_tier"]
+          created_at?: string
+          created_by?: string | null
+          delivery_type?: Database["public"]["Enums"]["software_delivery_type"]
+          documentation?: string | null
+          download_url?: string | null
+          external_url?: string | null
+          full_description?: string | null
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          release_notes?: string | null
+          risk_disclosure?: string | null
+          setup_instructions?: string | null
+          short_description?: string | null
+          slug?: string
+          software_type?: Database["public"]["Enums"]["software_type"]
+          title?: string
+          tradingview_script_name?: string | null
+          tradingview_script_url?: string | null
+          updated_at?: string
+          version?: string | null
         }
         Relationships: []
       }
@@ -539,6 +809,12 @@ export type Database = {
         }
         Returns: boolean
       }
+      can_access_software: {
+        Args: {
+          required_tier: Database["public"]["Enums"]["software_access_tier"]
+        }
+        Returns: boolean
+      }
       get_post_preview_by_slug: {
         Args: { p_slug: string }
         Returns: {
@@ -677,6 +953,20 @@ export type Database = {
         | "invalidated"
         | "target_hit"
         | "closed"
+      member_dashboard_view:
+        | "overview"
+        | "watchlist"
+        | "saved"
+        | "following"
+        | "recent"
+        | "closed"
+        | "software"
+      member_sort_preference:
+        | "recently_updated"
+        | "newest_published"
+        | "lifecycle_recent"
+        | "status"
+        | "ticker"
       notification_status: "pending" | "sent" | "failed"
       notification_type:
         | "new_idea"
@@ -684,6 +974,28 @@ export type Database = {
         | "new_post"
         | "weekly_digest"
       risk_level: "low" | "medium" | "high"
+      software_access_request_status:
+        | "requested"
+        | "approved"
+        | "rejected"
+        | "granted"
+        | "revoked"
+        | "needs_info"
+      software_access_tier: "premium_lite" | "pro"
+      software_delivery_type:
+        | "tradingview_invite_only"
+        | "protected_download"
+        | "documentation_only"
+        | "external_link"
+        | "manual_access"
+      software_type:
+        | "pinescript"
+        | "indicator"
+        | "strategy"
+        | "template"
+        | "tool"
+        | "guide"
+        | "other"
       subscription_status:
         | "none"
         | "trialing"
@@ -868,6 +1180,22 @@ export const Constants = {
         "target_hit",
         "closed",
       ],
+      member_dashboard_view: [
+        "overview",
+        "watchlist",
+        "saved",
+        "following",
+        "recent",
+        "closed",
+        "software",
+      ],
+      member_sort_preference: [
+        "recently_updated",
+        "newest_published",
+        "lifecycle_recent",
+        "status",
+        "ticker",
+      ],
       notification_status: ["pending", "sent", "failed"],
       notification_type: [
         "new_idea",
@@ -876,6 +1204,31 @@ export const Constants = {
         "weekly_digest",
       ],
       risk_level: ["low", "medium", "high"],
+      software_access_request_status: [
+        "requested",
+        "approved",
+        "rejected",
+        "granted",
+        "revoked",
+        "needs_info",
+      ],
+      software_access_tier: ["premium_lite", "pro"],
+      software_delivery_type: [
+        "tradingview_invite_only",
+        "protected_download",
+        "documentation_only",
+        "external_link",
+        "manual_access",
+      ],
+      software_type: [
+        "pinescript",
+        "indicator",
+        "strategy",
+        "template",
+        "tool",
+        "guide",
+        "other",
+      ],
       subscription_status: [
         "none",
         "trialing",

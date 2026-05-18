@@ -15,13 +15,16 @@ import { ChartFallback } from "@/components/charts/ChartFallback";
 import { Container } from "@/components/container";
 import { AssetClassBadge } from "@/components/content/asset-class-badge";
 import { BiasBadge } from "@/components/content/bias-badge";
+import { FollowTickerPanel } from "@/components/content/follow-ticker-panel";
 import { IdeaLifecycleSummary } from "@/components/content/IdeaLifecycleSummary";
 import { IdeaOutcomeReview } from "@/components/content/IdeaOutcomeReview";
 import { IdeaStatusBadge } from "@/components/content/idea-status-badge";
 import { IdeaTimeline } from "@/components/content/IdeaTimeline";
 import { LockedContentPanel } from "@/components/content/locked-content-panel";
 import { RiskBadge } from "@/components/content/risk-badge";
+import { SaveIdeaPanel } from "@/components/content/save-idea-panel";
 import { VisibilityBadge } from "@/components/content/visibility-badge";
+import { MemberActionNotice } from "@/components/member-action-notice";
 import { PageHero } from "@/components/page-hero";
 import { buttonVariants } from "@/components/ui/button";
 import { getIdeaPageData } from "@/lib/content/ideas";
@@ -38,11 +41,15 @@ import type {
   IdeaPreview,
 } from "@/lib/content/types";
 import { getPublicMetadataUrl, getSafeMetadataDescription } from "@/lib/seo";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
 type IdeaDetailPageProps = {
   params: Promise<{
     slug: string;
+  }>;
+  searchParams?: Promise<{
+    notice?: string | string[];
   }>;
 };
 
@@ -56,6 +63,18 @@ const getCachedIdeaPageData = cache(async (slug: string) => {
 
 const genericDescription =
   "Risk-aware trading research preview from Trading Research Portal.";
+
+type IdeaSaveState = {
+  isAuthenticated: boolean;
+  isSaved: boolean;
+  note: string | null;
+};
+
+type TickerFollowState = {
+  isAuthenticated: boolean;
+  isFollowed: boolean;
+  note: string | null;
+};
 
 function getMetadataDescription(
   data: Awaited<ReturnType<typeof getCachedIdeaPageData>>
@@ -116,8 +135,12 @@ export async function generateMetadata({
 
 export const dynamic = "force-dynamic";
 
-export default async function IdeaDetailPage({ params }: IdeaDetailPageProps) {
+export default async function IdeaDetailPage({
+  params,
+  searchParams,
+}: IdeaDetailPageProps) {
   const { slug } = await params;
+  const search = await searchParams;
   const data = await getCachedIdeaPageData(slug);
 
   if (!data) {
@@ -129,13 +152,139 @@ export default async function IdeaDetailPage({ params }: IdeaDetailPageProps) {
   }
 
   if (data.kind === "locked") {
-    return <LockedIdeaPage preview={data.preview} />;
+    const [saveState, tickerFollowState] = await Promise.all([
+      getIdeaSaveState(data.preview.id),
+      getTickerFollowState(data.preview.ticker),
+    ]);
+
+    return (
+      <LockedIdeaPage
+        notice={search?.notice}
+        preview={data.preview}
+        saveState={saveState}
+        tickerFollowState={tickerFollowState}
+      />
+    );
   }
 
-  return <FullIdeaPage {...data} />;
+  const [saveState, tickerFollowState] = await Promise.all([
+    getIdeaSaveState(data.idea.id),
+    getTickerFollowState(data.idea.ticker),
+  ]);
+
+  return (
+    <FullIdeaPage
+      {...data}
+      notice={search?.notice}
+      saveState={saveState}
+      tickerFollowState={tickerFollowState}
+    />
+  );
 }
 
-function LockedIdeaPage({ preview }: { preview: IdeaPreview }) {
+async function getIdeaSaveState(ideaId: string): Promise<IdeaSaveState> {
+  const supabase = await createSupabaseServerClient().catch(() => null);
+
+  if (!supabase) {
+    return {
+      isAuthenticated: false,
+      isSaved: false,
+      note: null,
+    };
+  }
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return {
+      isAuthenticated: false,
+      isSaved: false,
+      note: null,
+    };
+  }
+
+  const { data, error } = await supabase
+    .from("saved_ideas")
+    .select("note")
+    .eq("user_id", user.id)
+    .eq("idea_id", ideaId)
+    .maybeSingle();
+
+  if (error) {
+    return {
+      isAuthenticated: true,
+      isSaved: false,
+      note: null,
+    };
+  }
+
+  return {
+    isAuthenticated: true,
+    isSaved: Boolean(data),
+    note: data?.note ?? null,
+  };
+}
+
+async function getTickerFollowState(ticker: string): Promise<TickerFollowState> {
+  const supabase = await createSupabaseServerClient().catch(() => null);
+
+  if (!supabase) {
+    return {
+      isAuthenticated: false,
+      isFollowed: false,
+      note: null,
+    };
+  }
+
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    return {
+      isAuthenticated: false,
+      isFollowed: false,
+      note: null,
+    };
+  }
+
+  const { data, error } = await supabase
+    .from("followed_tickers")
+    .select("note")
+    .eq("user_id", user.id)
+    .eq("ticker", ticker.toUpperCase())
+    .maybeSingle();
+
+  if (error) {
+    return {
+      isAuthenticated: true,
+      isFollowed: false,
+      note: null,
+    };
+  }
+
+  return {
+    isAuthenticated: true,
+    isFollowed: Boolean(data),
+    note: data?.note ?? null,
+  };
+}
+
+function LockedIdeaPage({
+  notice,
+  preview,
+  saveState,
+  tickerFollowState,
+}: {
+  notice?: string | string[];
+  preview: IdeaPreview;
+  saveState: IdeaSaveState;
+  tickerFollowState: TickerFollowState;
+}) {
   return (
     <main className="flex-1">
       <section className="border-b border-border">
@@ -157,6 +306,9 @@ function LockedIdeaPage({ preview }: { preview: IdeaPreview }) {
 
       <section className="py-12 sm:py-16">
         <Container className="grid gap-6 lg:grid-cols-[1fr_0.86fr]">
+          <div className="lg:col-span-2">
+            <MemberActionNotice notice={notice} />
+          </div>
           <CardShell padding="lg" tone="elevated">
             <div className="flex flex-col gap-6">
               <div className="flex flex-wrap gap-2">
@@ -200,17 +352,34 @@ function LockedIdeaPage({ preview }: { preview: IdeaPreview }) {
             </div>
           </CardShell>
 
-          <LockedContentPanel
-            ctaHref="/pricing"
-            ctaLabel="View access options"
-            description={
-              preview.visibility === "pro"
-                ? "This research is available to Pro members."
-                : "This research is available to Premium members."
-            }
-            title="Full research is protected"
-            visibility={preview.visibility}
-          />
+          <aside className="flex flex-col gap-6">
+            <SaveIdeaPanel
+              ideaId={preview.id}
+              isAuthenticated={saveState.isAuthenticated}
+              isLocked
+              isSaved={saveState.isSaved}
+              savedNote={saveState.note}
+              slug={preview.slug}
+            />
+            <FollowTickerPanel
+              isAuthenticated={tickerFollowState.isAuthenticated}
+              isFollowed={tickerFollowState.isFollowed}
+              note={tickerFollowState.note}
+              slug={preview.slug}
+              ticker={preview.ticker}
+            />
+            <LockedContentPanel
+              ctaHref="/pricing"
+              ctaLabel="View access options"
+              description={
+                preview.visibility === "pro"
+                  ? "This research is available to Pro members."
+                  : "This research is available to Premium members."
+              }
+              title="Full research is protected"
+              visibility={preview.visibility}
+            />
+          </aside>
         </Container>
       </section>
     </main>
@@ -220,8 +389,15 @@ function LockedIdeaPage({ preview }: { preview: IdeaPreview }) {
 function FullIdeaPage({
   charts,
   idea,
+  notice,
+  saveState,
+  tickerFollowState,
   updates,
-}: IdeaFullContent) {
+}: IdeaFullContent & {
+  notice?: string | string[];
+  saveState: IdeaSaveState;
+  tickerFollowState: TickerFollowState;
+}) {
   return (
     <main className="flex-1">
       <section className="border-b border-border">
@@ -249,6 +425,9 @@ function FullIdeaPage({
 
       <section className="py-12 sm:py-16">
         <Container className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
+          <div className="lg:col-span-2">
+            <MemberActionNotice notice={notice} />
+          </div>
           <div className="flex flex-col gap-6">
             <CardShell padding="lg" tone="elevated">
               <div className="flex flex-col gap-6">
@@ -380,6 +559,20 @@ function FullIdeaPage({
           </div>
 
           <aside className="flex flex-col gap-6">
+            <SaveIdeaPanel
+              ideaId={idea.id}
+              isAuthenticated={saveState.isAuthenticated}
+              isSaved={saveState.isSaved}
+              savedNote={saveState.note}
+              slug={idea.slug}
+            />
+            <FollowTickerPanel
+              isAuthenticated={tickerFollowState.isAuthenticated}
+              isFollowed={tickerFollowState.isFollowed}
+              note={tickerFollowState.note}
+              slug={idea.slug}
+              ticker={idea.ticker}
+            />
             <RiskDisclosureCard idea={idea} />
             <CardShell padding="lg">
               <div className="flex flex-col gap-4">
