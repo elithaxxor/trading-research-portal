@@ -2,7 +2,7 @@
 
 A professional trading research portal built with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Netlify, and Supabase.
 
-The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, and Phase 6 TradingView chart display are in place for development. Stripe, paid-tier upgrades, broker integrations, order execution, and email notification backend work are intentionally out of scope for the current build.
+The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, and Phase 7 idea lifecycle refinement are in place for development. Stripe, paid-tier upgrades, broker integrations, order execution, copy trading, and email notification backend work are intentionally out of scope for the current build.
 
 ## Phase Status
 
@@ -14,6 +14,7 @@ The public site is live as a marketing experience. Supabase schema, RLS, seed da
 - Phase 4: Complete. Supabase-backed free, premium, and pro content previews, detail pages, access-aware rendering, dashboard content widgets, and deploy-preview access-control QA are in place.
 - Phase 5: Complete. Admin dashboard routes, admin-only authorization, trading idea management, research post management, updates, chart metadata, tags, and tag assignment are implemented and verified. Live admin-session CRUD QA, public regression QA, premium/pro leak checks, post-rotation smoke testing, and cleanup passed.
 - Phase 6: Complete. TradingView chart widgets render from safe `idea_charts` metadata on full-access idea pages, locked premium/pro chart details remain protected, admin chart previews and validation are in place, and deploy-preview chart QA has passed.
+- Phase 7: Complete. Structured idea lifecycle states, outcome tracking, closed idea reviews, lifecycle-aware public timelines, admin lifecycle controls, member new-since-last-visit foundation, and dashboard lifecycle widgets are implemented and deploy-preview QA has passed.
 
 ## Phase 1 Public Site
 
@@ -456,6 +457,57 @@ Phase 6 QA status:
 - Mobile chart layout, duplicate iframe checks, and console checks passed.
 - Supabase deploy-preview email/magic-link redirect settings should still be verified before production auth email QA.
 
+## Phase 7 Idea Lifecycle and Update Refinement
+
+Phase 7 adds structured research lifecycle tracking for trading ideas. It does
+not add broker integrations, order execution, copy trading, payment logic, or
+email notification backend behavior.
+
+Lifecycle model:
+
+- Idea statuses can move through research review states such as watching, active, triggered, target hit, invalidated, and closed.
+- Structured outcome labels support educational review states such as pending, no trade, invalidated, stopped out, target hit, win, loss, breakeven, and manually closed.
+- Lifecycle events are stored on `idea_updates` with event type, previous status, resulting status, optional outcome, event timestamp, and major-update flag.
+- Closed ideas can store `outcome_summary`, `lessons_learned`, `review_published`, and `review_published_at`.
+- `user_activity_state` stores per-user seen timestamps for dashboard/content/lifecycle recency features.
+
+Admin lifecycle features:
+
+- `/admin/ideas/[id]/edit` includes a lifecycle panel with status, outcome, lifecycle timestamps, and review publication state.
+- Admins can activate ideas, mark ideas triggered, mark target 1/2/3 hit, invalidate, close with review, reopen, and publish or unpublish reviews.
+- `/admin/ideas/[id]/updates` shows lifecycle event metadata, status before/after, outcome after, event timestamp, major-update state, and manual note creation.
+- Admin lifecycle actions call `requireAdmin()` and use the normal server Supabase client so admin RLS policies remain exercised.
+
+Public and member behavior:
+
+- Full-access `/ideas/[slug]` pages show a lifecycle summary, research timeline, event badges, major update indicators, and published outcome review when available.
+- Locked premium/pro idea pages expose only safe preview fields and do not show private update bodies, outcome summaries, lessons learned, chart details, thesis, entries, invalidation, or targets.
+- `/ideas` supports lifecycle-aware filtering and sorting by status, outcome, recently updated, closed reviews, recently updated ideas, last lifecycle event, and closed recently.
+- `/dashboard` includes lifecycle-aware widgets for new since last visit, recently updated ideas, active/triggered ideas, closed reviews, and invalidated ideas.
+- Authenticated users can mark lifecycle dashboard recency as seen without tracking broker/order behavior.
+
+Security and compliance:
+
+- Lifecycle updates are educational research notes and are not trade instructions.
+- Outcome labels are educational review categories and are not performance guarantees.
+- No broker connection exists.
+- No order execution exists.
+- No copy trading exists.
+- No email notification backend is active yet.
+- Premium/pro lifecycle details remain protected by Supabase RLS and server-side access checks.
+
+Phase 7 deploy-preview QA:
+
+- Preview URL: `https://deploy-preview-8--trading-research-portal.netlify.app`
+- Public routes and protected redirects: passing.
+- Anonymous free lifecycle timeline and locked premium/pro lifecycle checks: passing.
+- Authenticated free, premium, pro, and admin lifecycle access checks: passing.
+- Admin lifecycle transition QA, close-with-review, reopen, and cleanup: passing.
+- Dashboard lifecycle widget and mark-seen UI checks: passing.
+- Locked-content leak checks for update bodies, outcome reviews, thesis, levels, and private chart metadata: passing.
+- TradingView regression, CSS asset, duplicate iframe, console, and narrow-viewport checks: passing.
+- Local `npm run build`, `npm run lint`, and `npx tsc --noEmit`: passing.
+
 ## Security Notes
 
 - Never commit `.env`, `.env.local`, `.env.development`, or `.env.production`.
@@ -463,18 +515,17 @@ Phase 6 QA status:
 - `SUPABASE_SECRET_KEY` and legacy `SUPABASE_SERVICE_ROLE_KEY` are server-only and must never be imported into client components.
 - The admin Supabase client bypasses RLS and is only for secure server-side repair/bootstrap tasks.
 - Routine admin CRUD should use the normal server Supabase client and database RLS.
-- No Stripe, payment, billing portal, premium upgrade, broker integration, order execution, or email notification backend logic exists yet.
+- No Stripe, payment, billing portal, premium upgrade, broker integration, order execution, copy trading, or email notification backend logic exists yet.
 - New users remain free unless later subscription logic updates them.
 
 ## Next Phase
 
-Recommended next phase: Phase 7 - Idea Lifecycle and Update Refinement.
+Recommended next phase: Phase 8 - Advanced Member Dashboard.
 
-Phase 7 should refine idea status transitions, update history workflows, and member-facing lifecycle clarity without adding payments, broker integrations, order execution, or email notification backend work.
+Phase 8 should expand the authenticated member dashboard experience using the existing RLS-aware content, chart, lifecycle, and activity foundations. It should not add payments, broker integrations, order execution, copy trading, or email notification backend work.
 
 Future planned phases:
 
-- Phase 7: Idea update lifecycle refinement.
 - Phase 8: Advanced member dashboard.
 - Phase 9: Stripe subscriptions.
 - Phase 10: Email notifications.
