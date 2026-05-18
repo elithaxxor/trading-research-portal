@@ -44,6 +44,18 @@ function buildIdeaPreviewArgs(params: ContentListParams = {}) {
     args.p_sort = params.sort;
   }
 
+  if (params.outcome) {
+    args.p_outcome = params.outcome;
+  }
+
+  if (params.updatedRecently !== undefined) {
+    args.p_updated_recently = params.updatedRecently;
+  }
+
+  if (params.withClosedReviews !== undefined) {
+    args.p_closed_reviews = params.withClosedReviews;
+  }
+
   return args;
 }
 
@@ -125,6 +137,7 @@ export async function getFullIdeaBySlug(
       .from("idea_updates")
       .select("*")
       .eq("idea_id", idea.id)
+      .order("event_at", { ascending: false })
       .order("created_at", { ascending: false }),
     supabase
       .from("idea_charts")

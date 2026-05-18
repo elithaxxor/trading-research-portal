@@ -9,7 +9,9 @@ export type AppRole = Database["public"]["Enums"]["app_role"];
 export type AssetClass = Database["public"]["Enums"]["asset_class"];
 export type IdeaBias = Database["public"]["Enums"]["idea_bias"];
 export type IdeaStatus = Database["public"]["Enums"]["idea_status"];
+export type IdeaOutcome = Database["public"]["Enums"]["idea_outcome"];
 export type RiskLevel = Database["public"]["Enums"]["risk_level"];
+export type IdeaPreviewSort = "closed" | "lifecycle" | "published" | "updated";
 
 export type IdeaPreview =
   Database["public"]["Functions"]["get_trading_idea_previews"]["Returns"][number];
@@ -32,10 +34,13 @@ export type ContentListParams = {
   assetClass?: AssetClass;
   limit?: number;
   offset?: number;
+  outcome?: IdeaOutcome;
   search?: string;
-  sort?: "published" | "updated";
+  sort?: IdeaPreviewSort;
   status?: IdeaStatus;
+  updatedRecently?: boolean;
   visibility?: ContentVisibility;
+  withClosedReviews?: boolean;
 };
 
 export type IdeaFullContent = {

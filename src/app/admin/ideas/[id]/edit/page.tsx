@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 
 import { EditIdeaForm } from "./edit-idea-form";
 import { IdeaTagSelector } from "./idea-tag-selector";
+import { LifecyclePanel } from "./lifecycle-panel";
 
 export const metadata: Metadata = {
   alternates: {
@@ -78,6 +79,7 @@ export default async function AdminEditIdeaPage({
         </Badge>
       </div>
 
+      <LifecyclePanel idea={idea} />
       <EditIdeaForm idea={idea} />
       <IdeaTagSelector
         ideaId={idea.id}

@@ -15,10 +15,12 @@ import { ChartFallback } from "@/components/charts/ChartFallback";
 import { Container } from "@/components/container";
 import { AssetClassBadge } from "@/components/content/asset-class-badge";
 import { BiasBadge } from "@/components/content/bias-badge";
+import { IdeaLifecycleSummary } from "@/components/content/IdeaLifecycleSummary";
+import { IdeaOutcomeReview } from "@/components/content/IdeaOutcomeReview";
 import { IdeaStatusBadge } from "@/components/content/idea-status-badge";
+import { IdeaTimeline } from "@/components/content/IdeaTimeline";
 import { LockedContentPanel } from "@/components/content/locked-content-panel";
 import { RiskBadge } from "@/components/content/risk-badge";
-import { UpdateTimeline } from "@/components/content/update-timeline";
 import { VisibilityBadge } from "@/components/content/visibility-badge";
 import { PageHero } from "@/components/page-hero";
 import { buttonVariants } from "@/components/ui/button";
@@ -341,7 +343,9 @@ function FullIdeaPage({
               </div>
             </CardShell>
 
-            <UpdateTimeline updates={updates} />
+            <IdeaLifecycleSummary idea={idea} />
+            <IdeaOutcomeReview idea={idea} />
+            <IdeaTimeline updates={updates} />
 
             <section className="grid gap-4" aria-labelledby="idea-charts">
               <div className="flex flex-col gap-2">

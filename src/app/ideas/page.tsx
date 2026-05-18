@@ -16,7 +16,10 @@ import {
   contentVisibilityValues,
   DEFAULT_CONTENT_PAGE_SIZE,
   getContentPageSize,
+  ideaOutcomeValues,
+  ideaPreviewSortValues,
   ideaStatusValues,
+  parseBooleanSearchParam,
   parseEnumSearchParam,
   parsePageSearchParam,
   parseSearchQuery,
@@ -46,9 +49,13 @@ export const dynamic = "force-dynamic";
 
 type IdeasSearchParams = {
   asset_class?: string | string[];
+  closed_reviews?: string | string[];
+  outcome?: string | string[];
   page?: string | string[];
   q?: string | string[];
+  sort?: string | string[];
   status?: string | string[];
+  updated_recently?: string | string[];
   visibility?: string | string[];
 };
 
@@ -60,7 +67,12 @@ export default async function IdeasPage({ searchParams }: IdeasPageProps) {
   const params = (await searchParams) ?? {};
   const query = parseSearchQuery(params.q);
   const assetClass = parseEnumSearchParam(params.asset_class, assetClassValues);
+  const outcome = parseEnumSearchParam(params.outcome, ideaOutcomeValues);
+  const sort =
+    parseEnumSearchParam(params.sort, ideaPreviewSortValues) ?? "published";
   const status = parseEnumSearchParam(params.status, ideaStatusValues);
+  const updatedRecently = parseBooleanSearchParam(params.updated_recently);
+  const closedReviews = parseBooleanSearchParam(params.closed_reviews);
   const visibility = parseEnumSearchParam(
     params.visibility,
     contentVisibilityValues
@@ -76,9 +88,13 @@ export default async function IdeasPage({ searchParams }: IdeasPageProps) {
       assetClass,
       limit: pageSize + 1,
       offset,
+      outcome,
       search: query,
+      sort,
       status,
+      updatedRecently,
       visibility,
+      withClosedReviews: closedReviews,
     });
   } catch {
     loadError = true;
@@ -130,8 +146,12 @@ export default async function IdeasPage({ searchParams }: IdeasPageProps) {
           <ContentFilterBar
             action="/ideas"
             asset_class={assetClass}
+            closed_reviews={closedReviews}
+            outcome={outcome}
             search={query}
+            sort={sort}
             status={status}
+            updated_recently={updatedRecently}
             visibility={visibility}
           />
 
@@ -180,9 +200,13 @@ export default async function IdeasPage({ searchParams }: IdeasPageProps) {
                     href={buildContentPageHref({
                       assetClass,
                       basePath: "/ideas",
+                      closedReviews,
+                      outcome,
                       page: page - 1,
                       query,
+                      sort,
                       status,
+                      updatedRecently,
                       visibility,
                     })}
                   >
@@ -196,9 +220,13 @@ export default async function IdeasPage({ searchParams }: IdeasPageProps) {
                     href={buildContentPageHref({
                       assetClass,
                       basePath: "/ideas",
+                      closedReviews,
+                      outcome,
                       page: page + 1,
                       query,
+                      sort,
                       status,
+                      updatedRecently,
                       visibility,
                     })}
                   >

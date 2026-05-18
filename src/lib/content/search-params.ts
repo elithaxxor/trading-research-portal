@@ -1,6 +1,8 @@
 import type {
   AssetClass,
   ContentVisibility,
+  IdeaOutcome,
+  IdeaPreviewSort,
   IdeaStatus,
 } from "@/lib/content/types";
 
@@ -36,6 +38,28 @@ export const contentVisibilityValues = [
   "pro",
 ] as const satisfies readonly ContentVisibility[];
 
+export const ideaOutcomeValues = [
+  "pending",
+  "no_trade",
+  "invalidated",
+  "stopped_out",
+  "target_1_hit",
+  "target_2_hit",
+  "target_3_hit",
+  "partial_win",
+  "win",
+  "loss",
+  "breakeven",
+  "closed_manual",
+] as const satisfies readonly IdeaOutcome[];
+
+export const ideaPreviewSortValues = [
+  "published",
+  "updated",
+  "lifecycle",
+  "closed",
+] as const satisfies readonly IdeaPreviewSort[];
+
 export function getFirstSearchParam(value: SearchParamValue) {
   return Array.isArray(value) ? value[0] : value;
 }
@@ -69,6 +93,17 @@ export function parsePageSearchParam(value: SearchParamValue) {
   return Number.isInteger(page) && page > 0 ? page : 1;
 }
 
+export function parseBooleanSearchParam(value: SearchParamValue) {
+  const firstValue = getFirstSearchParam(value)?.toLowerCase();
+
+  return (
+    firstValue === "1" ||
+    firstValue === "true" ||
+    firstValue === "on" ||
+    firstValue === "yes"
+  );
+}
+
 export function getContentPageSize(size = DEFAULT_CONTENT_PAGE_SIZE) {
   if (!Number.isFinite(size)) {
     return DEFAULT_CONTENT_PAGE_SIZE;
@@ -80,16 +115,24 @@ export function getContentPageSize(size = DEFAULT_CONTENT_PAGE_SIZE) {
 export function buildContentPageHref({
   assetClass,
   basePath,
+  closedReviews,
+  outcome,
   page,
   query,
+  sort,
   status,
+  updatedRecently,
   visibility,
 }: {
   assetClass?: AssetClass;
   basePath: string;
+  closedReviews?: boolean;
+  outcome?: IdeaOutcome;
   page: number;
   query?: string;
+  sort?: IdeaPreviewSort;
   status?: IdeaStatus;
+  updatedRecently?: boolean;
   visibility?: ContentVisibility;
 }) {
   const searchParams = new URLSearchParams();
@@ -106,8 +149,24 @@ export function buildContentPageHref({
     searchParams.set("status", status);
   }
 
+  if (outcome) {
+    searchParams.set("outcome", outcome);
+  }
+
   if (visibility) {
     searchParams.set("visibility", visibility);
+  }
+
+  if (sort && sort !== "published") {
+    searchParams.set("sort", sort);
+  }
+
+  if (updatedRecently) {
+    searchParams.set("updated_recently", "1");
+  }
+
+  if (closedReviews) {
+    searchParams.set("closed_reviews", "1");
   }
 
   if (page > 1) {
