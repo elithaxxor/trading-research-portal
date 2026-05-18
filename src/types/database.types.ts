@@ -1,4 +1,4 @@
-export type Json =
+﻿export type Json =
   | string
   | number
   | boolean
@@ -141,31 +141,46 @@ export type Database = {
           body: string | null
           created_at: string
           created_by: string | null
+          event_at: string
+          event_type: Database["public"]["Enums"]["idea_lifecycle_event_type"]
           id: string
           idea_id: string
+          is_major: boolean
+          outcome_after: Database["public"]["Enums"]["idea_outcome"] | null
           status_after_update: Database["public"]["Enums"]["idea_status"] | null
+          status_before: Database["public"]["Enums"]["idea_status"] | null
           title: string
         }
         Insert: {
           body?: string | null
           created_at?: string
           created_by?: string | null
+          event_at?: string
+          event_type?: Database["public"]["Enums"]["idea_lifecycle_event_type"]
           id?: string
           idea_id: string
+          is_major?: boolean
+          outcome_after?: Database["public"]["Enums"]["idea_outcome"] | null
           status_after_update?:
             | Database["public"]["Enums"]["idea_status"]
             | null
+          status_before?: Database["public"]["Enums"]["idea_status"] | null
           title: string
         }
         Update: {
           body?: string | null
           created_at?: string
           created_by?: string | null
+          event_at?: string
+          event_type?: Database["public"]["Enums"]["idea_lifecycle_event_type"]
           id?: string
           idea_id?: string
+          is_major?: boolean
+          outcome_after?: Database["public"]["Enums"]["idea_outcome"] | null
           status_after_update?:
             | Database["public"]["Enums"]["idea_status"]
             | null
+          status_before?: Database["public"]["Enums"]["idea_status"] | null
           title?: string
         }
         Relationships: [
@@ -320,16 +335,24 @@ export type Database = {
         Row: {
           asset_class: Database["public"]["Enums"]["asset_class"]
           bias: Database["public"]["Enums"]["idea_bias"]
+          closed_at: string | null
           created_at: string
           created_by: string | null
           educational_purpose_only: boolean
           entry_zone: string | null
           id: string
+          invalidated_at: string | null
           invalidation_level: string | null
+          last_lifecycle_event_at: string | null
+          lessons_learned: string | null
+          outcome: Database["public"]["Enums"]["idea_outcome"]
+          outcome_summary: string | null
           position_disclosure: string | null
           public_preview: string | null
           published: boolean
           published_at: string | null
+          review_published: boolean
+          review_published_at: string | null
           risk_disclosure: string | null
           risk_level: Database["public"]["Enums"]["risk_level"]
           setup_type: string | null
@@ -337,28 +360,41 @@ export type Database = {
           status: Database["public"]["Enums"]["idea_status"]
           summary: string | null
           target_1: string | null
+          target_1_hit_at: string | null
           target_2: string | null
+          target_2_hit_at: string | null
           target_3: string | null
+          target_3_hit_at: string | null
           thesis: string | null
           ticker: string
           timeframe: string | null
           title: string
+          trigger_level: string | null
+          triggered_at: string | null
           updated_at: string
           visibility: Database["public"]["Enums"]["content_visibility"]
         }
         Insert: {
           asset_class?: Database["public"]["Enums"]["asset_class"]
           bias?: Database["public"]["Enums"]["idea_bias"]
+          closed_at?: string | null
           created_at?: string
           created_by?: string | null
           educational_purpose_only?: boolean
           entry_zone?: string | null
           id?: string
+          invalidated_at?: string | null
           invalidation_level?: string | null
+          last_lifecycle_event_at?: string | null
+          lessons_learned?: string | null
+          outcome?: Database["public"]["Enums"]["idea_outcome"]
+          outcome_summary?: string | null
           position_disclosure?: string | null
           public_preview?: string | null
           published?: boolean
           published_at?: string | null
+          review_published?: boolean
+          review_published_at?: string | null
           risk_disclosure?: string | null
           risk_level?: Database["public"]["Enums"]["risk_level"]
           setup_type?: string | null
@@ -366,28 +402,41 @@ export type Database = {
           status?: Database["public"]["Enums"]["idea_status"]
           summary?: string | null
           target_1?: string | null
+          target_1_hit_at?: string | null
           target_2?: string | null
+          target_2_hit_at?: string | null
           target_3?: string | null
+          target_3_hit_at?: string | null
           thesis?: string | null
           ticker: string
           timeframe?: string | null
           title: string
+          trigger_level?: string | null
+          triggered_at?: string | null
           updated_at?: string
           visibility?: Database["public"]["Enums"]["content_visibility"]
         }
         Update: {
           asset_class?: Database["public"]["Enums"]["asset_class"]
           bias?: Database["public"]["Enums"]["idea_bias"]
+          closed_at?: string | null
           created_at?: string
           created_by?: string | null
           educational_purpose_only?: boolean
           entry_zone?: string | null
           id?: string
+          invalidated_at?: string | null
           invalidation_level?: string | null
+          last_lifecycle_event_at?: string | null
+          lessons_learned?: string | null
+          outcome?: Database["public"]["Enums"]["idea_outcome"]
+          outcome_summary?: string | null
           position_disclosure?: string | null
           public_preview?: string | null
           published?: boolean
           published_at?: string | null
+          review_published?: boolean
+          review_published_at?: string | null
           risk_disclosure?: string | null
           risk_level?: Database["public"]["Enums"]["risk_level"]
           setup_type?: string | null
@@ -395,14 +444,49 @@ export type Database = {
           status?: Database["public"]["Enums"]["idea_status"]
           summary?: string | null
           target_1?: string | null
+          target_1_hit_at?: string | null
           target_2?: string | null
+          target_2_hit_at?: string | null
           target_3?: string | null
+          target_3_hit_at?: string | null
           thesis?: string | null
           ticker?: string
           timeframe?: string | null
           title?: string
+          trigger_level?: string | null
+          triggered_at?: string | null
           updated_at?: string
           visibility?: Database["public"]["Enums"]["content_visibility"]
+        }
+        Relationships: []
+      }
+      user_activity_state: {
+        Row: {
+          created_at: string
+          last_dashboard_seen_at: string | null
+          last_ideas_seen_at: string | null
+          last_lifecycle_seen_at: string | null
+          last_research_seen_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          last_dashboard_seen_at?: string | null
+          last_ideas_seen_at?: string | null
+          last_lifecycle_seen_at?: string | null
+          last_research_seen_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          last_dashboard_seen_at?: string | null
+          last_ideas_seen_at?: string | null
+          last_lifecycle_seen_at?: string | null
+          last_research_seen_at?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -491,8 +575,11 @@ export type Database = {
         Returns: {
           asset_class: Database["public"]["Enums"]["asset_class"]
           bias: Database["public"]["Enums"]["idea_bias"]
+          has_major_update: boolean
           id: string
           is_locked: boolean
+          last_lifecycle_event_at: string
+          outcome: Database["public"]["Enums"]["idea_outcome"]
           public_preview: string
           published_at: string
           risk_level: Database["public"]["Enums"]["risk_level"]
@@ -509,18 +596,24 @@ export type Database = {
       get_trading_idea_previews: {
         Args: {
           p_asset_class?: Database["public"]["Enums"]["asset_class"]
+          p_closed_reviews?: boolean
           p_limit?: number
           p_offset?: number
+          p_outcome?: Database["public"]["Enums"]["idea_outcome"]
           p_search?: string
           p_sort?: string
           p_status?: Database["public"]["Enums"]["idea_status"]
+          p_updated_recently?: boolean
           p_visibility?: Database["public"]["Enums"]["content_visibility"]
         }
         Returns: {
           asset_class: Database["public"]["Enums"]["asset_class"]
           bias: Database["public"]["Enums"]["idea_bias"]
+          has_major_update: boolean
           id: string
           is_locked: boolean
+          last_lifecycle_event_at: string
+          outcome: Database["public"]["Enums"]["idea_outcome"]
           public_preview: string
           published_at: string
           risk_level: Database["public"]["Enums"]["risk_level"]
@@ -555,6 +648,28 @@ export type Database = {
       chart_type: "tradingview_embed" | "image" | "lightweight_chart"
       content_visibility: "free" | "premium" | "pro"
       idea_bias: "long" | "short" | "neutral" | "watch"
+      idea_lifecycle_event_type:
+        | "note"
+        | "status_change"
+        | "activated"
+        | "triggered"
+        | "target_hit"
+        | "invalidated"
+        | "closed"
+        | "review_posted"
+      idea_outcome:
+        | "pending"
+        | "no_trade"
+        | "invalidated"
+        | "stopped_out"
+        | "target_1_hit"
+        | "target_2_hit"
+        | "target_3_hit"
+        | "partial_win"
+        | "win"
+        | "loss"
+        | "breakeven"
+        | "closed_manual"
       idea_status:
         | "watching"
         | "active"
@@ -721,6 +836,30 @@ export const Constants = {
       chart_type: ["tradingview_embed", "image", "lightweight_chart"],
       content_visibility: ["free", "premium", "pro"],
       idea_bias: ["long", "short", "neutral", "watch"],
+      idea_lifecycle_event_type: [
+        "note",
+        "status_change",
+        "activated",
+        "triggered",
+        "target_hit",
+        "invalidated",
+        "closed",
+        "review_posted",
+      ],
+      idea_outcome: [
+        "pending",
+        "no_trade",
+        "invalidated",
+        "stopped_out",
+        "target_1_hit",
+        "target_2_hit",
+        "target_3_hit",
+        "partial_win",
+        "win",
+        "loss",
+        "breakeven",
+        "closed_manual",
+      ],
       idea_status: [
         "watching",
         "active",

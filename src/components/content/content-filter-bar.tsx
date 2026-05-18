@@ -7,17 +7,24 @@ import { formatIdeaStatus, formatVisibilityLabel } from "@/lib/content/format";
 import type {
   AssetClass,
   ContentVisibility,
+  IdeaOutcome,
+  IdeaPreviewSort,
   IdeaStatus,
 } from "@/lib/content/types";
+import { formatIdeaOutcome } from "@/lib/lifecycle/format";
 import { cn } from "@/lib/utils";
 
 type ContentFilterBarProps = ComponentPropsWithoutRef<"form"> & {
   action?: string;
   asset_class?: AssetClass | null;
+  closed_reviews?: boolean;
+  outcome?: IdeaOutcome | null;
   search?: string | null;
   searchPlaceholder?: string;
   showIdeaFilters?: boolean;
+  sort?: IdeaPreviewSort | null;
   status?: IdeaStatus | null;
+  updated_recently?: boolean;
   visibility?: ContentVisibility | null;
 };
 
@@ -44,14 +51,40 @@ const statusOptions: IdeaStatus[] = [
 
 const visibilityOptions: ContentVisibility[] = ["free", "premium", "pro"];
 
+const outcomeOptions: IdeaOutcome[] = [
+  "pending",
+  "no_trade",
+  "invalidated",
+  "stopped_out",
+  "target_1_hit",
+  "target_2_hit",
+  "target_3_hit",
+  "partial_win",
+  "win",
+  "loss",
+  "breakeven",
+  "closed_manual",
+];
+
+const sortOptions: { label: string; value: IdeaPreviewSort }[] = [
+  { label: "Newest published", value: "published" },
+  { label: "Recently updated", value: "updated" },
+  { label: "Last lifecycle event", value: "lifecycle" },
+  { label: "Closed recently", value: "closed" },
+];
+
 export function ContentFilterBar({
   action,
   asset_class,
   className,
+  closed_reviews = false,
+  outcome,
   search,
   searchPlaceholder = "Search research, ticker, or setup",
   showIdeaFilters = true,
+  sort = "published",
   status,
+  updated_recently = false,
   visibility,
   ...props
 }: ContentFilterBarProps) {
@@ -61,7 +94,7 @@ export function ContentFilterBar({
       className={cn(
         "grid gap-3 rounded-lg border border-border bg-card/72 p-4 backdrop-blur",
         showIdeaFilters
-          ? "lg:grid-cols-[minmax(0,1fr)_repeat(3,minmax(9rem,0.35fr))_auto]"
+          ? "xl:grid-cols-[minmax(0,1fr)_repeat(5,minmax(8.5rem,0.32fr))_auto]"
           : "lg:grid-cols-[minmax(0,1fr)_minmax(9rem,0.35fr)_auto]",
         className
       )}
@@ -106,6 +139,19 @@ export function ContentFilterBar({
               </option>
             ))}
           </SelectField>
+
+          <SelectField
+            defaultValue={outcome ?? ""}
+            label="Outcome"
+            name="outcome"
+          >
+            <option value="">All outcomes</option>
+            {outcomeOptions.map((option) => (
+              <option key={option} value={option}>
+                {formatIdeaOutcome(option)}
+              </option>
+            ))}
+          </SelectField>
         </>
       ) : null}
 
@@ -122,7 +168,32 @@ export function ContentFilterBar({
         ))}
       </SelectField>
 
-      <div className="flex flex-col gap-2 sm:flex-row lg:justify-end">
+      {showIdeaFilters ? (
+        <SelectField defaultValue={sort ?? "published"} label="Sort" name="sort">
+          {sortOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </SelectField>
+      ) : null}
+
+      {showIdeaFilters ? (
+        <div className="flex flex-col gap-2 rounded-lg border border-border bg-secondary/24 px-3 py-2 text-sm text-muted-foreground sm:flex-row sm:items-center xl:col-span-full">
+          <CheckboxField
+            defaultChecked={updated_recently}
+            label="Updated recently"
+            name="updated_recently"
+          />
+          <CheckboxField
+            defaultChecked={closed_reviews}
+            label="Closed reviews"
+            name="closed_reviews"
+          />
+        </div>
+      ) : null}
+
+      <div className="flex flex-col gap-2 sm:flex-row xl:justify-end">
         <Button className="w-full sm:w-auto" size="lg" type="submit">
           Apply
         </Button>
@@ -139,6 +210,30 @@ export function ContentFilterBar({
         ) : null}
       </div>
     </form>
+  );
+}
+
+type CheckboxFieldProps = ComponentPropsWithoutRef<"input"> & {
+  label: string;
+};
+
+function CheckboxField({
+  className,
+  label,
+  ...props
+}: CheckboxFieldProps) {
+  return (
+    <label className="inline-flex items-center gap-2">
+      <input
+        className={cn(
+          "size-4 rounded border-input bg-background text-primary focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/30",
+          className
+        )}
+        type="checkbox"
+        {...props}
+      />
+      <span>{label}</span>
+    </label>
   );
 }
 

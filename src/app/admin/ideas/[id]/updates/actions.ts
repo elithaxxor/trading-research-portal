@@ -13,8 +13,8 @@ import type {
   CreateIdeaUpdateInput,
   UpdateIdeaUpdateInput,
 } from "@/lib/admin/types";
-import { normalizeEmptyString, validateIdeaStatus } from "@/lib/admin/validation";
 import { requireAdmin } from "@/lib/auth/admin";
+import { validateLifecycleUpdateInput } from "@/lib/lifecycle/validation";
 
 export type IdeaUpdateActionState = {
   fieldErrors?: Record<string, string>;
@@ -82,53 +82,50 @@ function revalidateUpdatePaths(ideaId: string, slug: string) {
 }
 
 function buildIdeaUpdateInput(
-  formData: FormData
+  formData: FormData,
+  currentStatus: AdminIdeaStatus
 ): {
   fieldErrors: Record<string, string>;
   input: CreateIdeaUpdateInput | UpdateIdeaUpdateInput | null;
+  eventAt: string | null;
   statusAfterUpdate: AdminIdeaStatus | null;
 } {
   const fieldErrors: Record<string, string> = {};
-  const title = getFormValue(formData, "title");
-  const body = normalizeEmptyString(getFormValue(formData, "body"));
-  const statusValue = getFormValue(formData, "status_after_update");
+  const parsedUpdate = validateLifecycleUpdateInput({
+    body: getFormValue(formData, "body"),
+    event_at: getFormValue(formData, "event_at"),
+    event_type: getFormValue(formData, "event_type") || "note",
+    is_major: formData.get("is_major"),
+    outcome_after: getFormValue(formData, "outcome_after"),
+    status_after_update: getFormValue(formData, "status_after_update"),
+    status_before: getFormValue(formData, "status_before") || currentStatus,
+    title: getFormValue(formData, "title"),
+  });
 
-  if (!title) {
-    addFieldError(fieldErrors, "title", "Update title is required.");
-  }
-
-  let statusAfterUpdate: AdminIdeaStatus | null = null;
-
-  if (statusValue) {
-    const parsedStatus = validateIdeaStatus(statusValue);
-
-    if (!parsedStatus.ok) {
-      addFieldError(
-        fieldErrors,
-        "status_after_update",
-        parsedStatus.error
-      );
-    } else {
-      statusAfterUpdate = parsedStatus.value;
-    }
-  }
-
-  if (Object.keys(fieldErrors).length > 0) {
+  if (!parsedUpdate.ok) {
+    addFieldError(fieldErrors, "title", parsedUpdate.error);
     return {
+      eventAt: null,
       fieldErrors,
       input: null,
-      statusAfterUpdate,
+      statusAfterUpdate: null,
     };
   }
 
   return {
     fieldErrors,
     input: {
-      body,
-      status_after_update: statusAfterUpdate,
-      title,
+      body: parsedUpdate.value.body,
+      event_at: parsedUpdate.value.event_at,
+      event_type: parsedUpdate.value.event_type,
+      is_major: parsedUpdate.value.is_major,
+      outcome_after: parsedUpdate.value.outcome_after,
+      status_after_update: parsedUpdate.value.status_after_update,
+      status_before: parsedUpdate.value.status_before,
+      title: parsedUpdate.value.title,
     },
-    statusAfterUpdate,
+    eventAt: parsedUpdate.value.event_at,
+    statusAfterUpdate: parsedUpdate.value.status_after_update,
   };
 }
 
@@ -140,9 +137,8 @@ export async function createIdeaUpdateAction(
 
   const ideaId = getRequiredId(formData, "idea_id");
   const idea = await getParentIdea(ideaId);
-  const { fieldErrors, input, statusAfterUpdate } = buildIdeaUpdateInput(
-    formData
-  );
+  const { eventAt, fieldErrors, input, statusAfterUpdate } =
+    buildIdeaUpdateInput(formData, idea.status);
 
   if (!input || Object.keys(fieldErrors).length > 0) {
     return errorState("Review the update fields and try again.", fieldErrors);
@@ -153,7 +149,12 @@ export async function createIdeaUpdateAction(
 
     if (statusAfterUpdate) {
       await updateAdminIdea(ideaId, {
+        last_lifecycle_event_at: eventAt,
         status: statusAfterUpdate,
+      });
+    } else if (eventAt) {
+      await updateAdminIdea(ideaId, {
+        last_lifecycle_event_at: eventAt,
       });
     }
   } catch {
@@ -177,9 +178,8 @@ export async function updateIdeaUpdateAction(
   const ideaId = getRequiredId(formData, "idea_id");
   const updateId = getRequiredId(formData, "update_id");
   const idea = await getParentIdea(ideaId);
-  const { fieldErrors, input, statusAfterUpdate } = buildIdeaUpdateInput(
-    formData
-  );
+  const { eventAt, fieldErrors, input, statusAfterUpdate } =
+    buildIdeaUpdateInput(formData, idea.status);
 
   if (!input || Object.keys(fieldErrors).length > 0) {
     return errorState("Review the update fields and try again.", fieldErrors);
@@ -190,7 +190,12 @@ export async function updateIdeaUpdateAction(
 
     if (statusAfterUpdate) {
       await updateAdminIdea(ideaId, {
+        last_lifecycle_event_at: eventAt,
         status: statusAfterUpdate,
+      });
+    } else if (eventAt) {
+      await updateAdminIdea(ideaId, {
+        last_lifecycle_event_at: eventAt,
       });
     }
   } catch {

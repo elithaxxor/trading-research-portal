@@ -7,6 +7,7 @@ import { Trash2 } from "lucide-react";
 
 import { AuthNotice } from "@/components/auth-notice";
 import { AdminEmptyState } from "@/components/admin/AdminEmptyState";
+import { AdminCheckbox } from "@/components/admin/forms/AdminCheckbox";
 import { AdminFormSection } from "@/components/admin/forms/AdminFormSection";
 import { AdminSelect } from "@/components/admin/forms/AdminSelect";
 import { AdminTextInput } from "@/components/admin/forms/AdminTextInput";
@@ -16,7 +17,17 @@ import { CardShell } from "@/components/card-shell";
 import { buttonVariants } from "@/components/ui/button";
 import type { AdminIdea, AdminIdeaUpdateRecord } from "@/lib/admin/types";
 import { ideaStatusValues } from "@/lib/admin/validation";
-import { formatDate, formatIdeaStatus } from "@/lib/content/format";
+import { formatDate } from "@/lib/content/format";
+import {
+  allowedIdeaOutcomes,
+  allowedLifecycleEventTypes,
+} from "@/lib/lifecycle/constants";
+import {
+  formatIdeaOutcome,
+  formatIdeaStatus,
+  formatLifecycleDate,
+  formatLifecycleEventType,
+} from "@/lib/lifecycle/format";
 import { cn } from "@/lib/utils";
 
 import {
@@ -75,11 +86,37 @@ export function IdeaUpdatesManager({
             name="body"
             placeholder="Describe what changed, what remains valid, and what should be reviewed."
           />
+          <EventTypeSelect
+            defaultValue="note"
+            error={fieldError("event_type")}
+            id="new-update-event-type"
+            label="Event type"
+            name="event_type"
+          />
+          <AdminTextInput
+            error={fieldError("event_at")}
+            id="new-update-event-at"
+            label="Event at"
+            name="event_at"
+            type="datetime-local"
+          />
           <StatusSelect
             error={fieldError("status_after_update")}
             id="new-update-status"
             label="Status after update"
             name="status_after_update"
+          />
+          <OutcomeSelect
+            error={fieldError("outcome_after")}
+            id="new-update-outcome"
+            label="Outcome after update"
+            name="outcome_after"
+          />
+          <AdminCheckbox
+            error={fieldError("is_major")}
+            id="new-update-major"
+            label="Major update"
+            name="is_major"
           />
           <CreateUpdateButton />
         </form>
@@ -152,8 +189,11 @@ function UpdateEditor({
             ) : (
               <Badge tone="default">No status change</Badge>
             )}
+            <Badge tone={update.is_major ? "gold" : "muted"}>
+              {update.is_major ? "Major" : "Standard"}
+            </Badge>
             <span className="text-xs text-muted-foreground">
-              {formatDate(update.created_at)}
+              Event: {formatLifecycleDate(update.event_at)}
             </span>
           </div>
           <form action={deleteFormAction}>
@@ -173,6 +213,11 @@ function UpdateEditor({
         <form action={updateFormAction} className="flex flex-col gap-4">
           <input name="idea_id" type="hidden" value={idea.id} />
           <input name="update_id" type="hidden" value={update.id} />
+          <input
+            name="status_before"
+            type="hidden"
+            value={update.status_before ?? idea.status}
+          />
           {updateState.status === "error" && updateState.message ? (
             <AuthNotice message={updateState.message} tone="error" />
           ) : null}
@@ -193,6 +238,23 @@ function UpdateEditor({
             label="Body"
             name="body"
           />
+          <div className="grid gap-4 md:grid-cols-2">
+            <EventTypeSelect
+              defaultValue={update.event_type}
+              error={fieldError("event_type")}
+              id={`update-event-type-${update.id}`}
+              label="Event type"
+              name="event_type"
+            />
+            <AdminTextInput
+              defaultValue={toDateTimeLocalValue(update.event_at)}
+              error={fieldError("event_at")}
+              id={`update-event-at-${update.id}`}
+              label="Event at"
+              name="event_at"
+              type="datetime-local"
+            />
+          </div>
           <StatusSelect
             defaultValue={update.status_after_update ?? ""}
             error={fieldError("status_after_update")}
@@ -200,6 +262,58 @@ function UpdateEditor({
             label="Status after update"
             name="status_after_update"
           />
+          <OutcomeSelect
+            defaultValue={update.outcome_after ?? ""}
+            error={fieldError("outcome_after")}
+            id={`update-outcome-${update.id}`}
+            label="Outcome after update"
+            name="outcome_after"
+          />
+          <AdminCheckbox
+            defaultChecked={update.is_major}
+            error={fieldError("is_major")}
+            id={`update-major-${update.id}`}
+            label="Major update"
+            name="is_major"
+          />
+          <dl className="grid gap-3 rounded-lg border border-border bg-background/50 p-3 text-sm md:grid-cols-2">
+            <TimelineMeta
+              label="Event type"
+              value={formatLifecycleEventType(update.event_type)}
+            />
+            <TimelineMeta
+              label="Status before"
+              value={
+                update.status_before
+                  ? formatIdeaStatus(update.status_before)
+                  : "Not recorded"
+              }
+            />
+            <TimelineMeta
+              label="Status after"
+              value={
+                update.status_after_update
+                  ? formatIdeaStatus(update.status_after_update)
+                  : "No status change"
+              }
+            />
+            <TimelineMeta
+              label="Outcome after"
+              value={
+                update.outcome_after
+                  ? formatIdeaOutcome(update.outcome_after)
+                  : "No outcome change"
+              }
+            />
+            <TimelineMeta
+              label="Created"
+              value={formatDate(update.created_at)}
+            />
+            <TimelineMeta
+              label="Major"
+              value={update.is_major ? "Yes" : "No"}
+            />
+          </dl>
           <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
             <Link
               className={cn(
@@ -215,6 +329,20 @@ function UpdateEditor({
       </div>
     </CardShell>
   );
+}
+
+function toDateTimeLocalValue(value: string | null) {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return date.toISOString().slice(0, 16);
 }
 
 function StatusSelect({
@@ -245,6 +373,78 @@ function StatusSelect({
         </option>
       ))}
     </AdminSelect>
+  );
+}
+
+function EventTypeSelect({
+  defaultValue = "note",
+  error,
+  id,
+  label,
+  name,
+}: {
+  defaultValue?: string;
+  error?: string;
+  id: string;
+  label: string;
+  name: string;
+}) {
+  return (
+    <AdminSelect
+      defaultValue={defaultValue}
+      error={error}
+      id={id}
+      label={label}
+      name={name}
+    >
+      {allowedLifecycleEventTypes.map((eventType) => (
+        <option key={eventType} value={eventType}>
+          {formatLifecycleEventType(eventType)}
+        </option>
+      ))}
+    </AdminSelect>
+  );
+}
+
+function OutcomeSelect({
+  defaultValue = "",
+  error,
+  id,
+  label,
+  name,
+}: {
+  defaultValue?: string;
+  error?: string;
+  id: string;
+  label: string;
+  name: string;
+}) {
+  return (
+    <AdminSelect
+      defaultValue={defaultValue}
+      error={error}
+      id={id}
+      label={label}
+      name={name}
+      placeholder="No outcome change"
+    >
+      {allowedIdeaOutcomes.map((outcome) => (
+        <option key={outcome} value={outcome}>
+          {formatIdeaOutcome(outcome)}
+        </option>
+      ))}
+    </AdminSelect>
+  );
+}
+
+function TimelineMeta({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+        {label}
+      </dt>
+      <dd className="mt-1 text-foreground">{value}</dd>
+    </div>
   );
 }
 

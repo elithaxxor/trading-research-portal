@@ -2,6 +2,7 @@ import type { ComponentPropsWithoutRef } from "react";
 import Link from "next/link";
 import { ArrowUpRight, LockKeyhole } from "lucide-react";
 
+import { Badge } from "@/components/badge";
 import { CardShell } from "@/components/card-shell";
 import { buttonVariants } from "@/components/ui/button";
 import { formatDate } from "@/lib/content/format";
@@ -9,14 +10,17 @@ import type {
   AssetClass,
   ContentVisibility,
   IdeaBias,
+  IdeaOutcome,
   IdeaStatus,
   RiskLevel,
 } from "@/lib/content/types";
+import { formatLifecycleDate } from "@/lib/lifecycle/format";
 import { cn } from "@/lib/utils";
 
 import { AssetClassBadge } from "./asset-class-badge";
 import { BiasBadge } from "./bias-badge";
 import { IdeaStatusBadge } from "./idea-status-badge";
+import { OutcomeBadge } from "./OutcomeBadge";
 import { RiskBadge } from "./risk-badge";
 import { VisibilityBadge } from "./visibility-badge";
 
@@ -24,8 +28,11 @@ type IdeaCardProps = ComponentPropsWithoutRef<"article"> & {
   asset_class: AssetClass;
   bias: IdeaBias;
   is_locked: boolean;
+  has_major_update?: boolean | null;
+  last_lifecycle_event_at?: string | null;
   lockedCtaHref?: string;
   lockedCtaLabel?: string;
+  outcome?: IdeaOutcome | null;
   public_preview: string | null;
   published_at: string | null;
   risk_level: RiskLevel;
@@ -42,9 +49,12 @@ export function IdeaCard({
   asset_class,
   bias,
   className,
+  has_major_update,
   is_locked,
+  last_lifecycle_event_at,
   lockedCtaHref,
   lockedCtaLabel = "View access options",
+  outcome,
   public_preview,
   published_at,
   risk_level,
@@ -60,6 +70,11 @@ export function IdeaCard({
   const href = `/ideas/${slug}`;
   const ctaHref = is_locked ? lockedCtaHref ?? href : href;
   const ctaLabel = is_locked ? lockedCtaLabel : "Read research";
+  const displayOutcome =
+    !is_locked && outcome && outcome !== "pending" ? outcome : null;
+  const lifecycleDate =
+    !is_locked && last_lifecycle_event_at ? last_lifecycle_event_at : null;
+  const showMajorUpdate = !is_locked && has_major_update;
 
   return (
     <article className={className} {...props}>
@@ -104,13 +119,33 @@ export function IdeaCard({
           <div className="flex flex-wrap gap-2 sm:justify-end">
             <BiasBadge bias={bias} />
             <IdeaStatusBadge status={status} />
+            {displayOutcome ? <OutcomeBadge outcome={displayOutcome} /> : null}
+            {showMajorUpdate ? (
+              <Badge
+                className="border-accent/35 bg-accent/10 text-accent"
+                tone="muted"
+              >
+                Major update
+              </Badge>
+            ) : null}
           </div>
         </div>
 
-        <dl className="grid gap-3 sm:grid-cols-3">
+        <dl
+          className={cn(
+            "grid gap-3 sm:grid-cols-3",
+            lifecycleDate && "lg:grid-cols-4"
+          )}
+        >
           <Metric label="Timeframe" value={timeframe ?? "Review"} />
           <Metric label="Setup" value={setup_type ?? "Research note"} />
           <Metric label="Published" value={formatDate(published_at)} />
+          {lifecycleDate ? (
+            <Metric
+              label="Lifecycle"
+              value={formatLifecycleDate(lifecycleDate)}
+            />
+          ) : null}
         </dl>
 
         <div className="flex flex-col gap-3">
