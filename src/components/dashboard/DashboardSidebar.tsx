@@ -1,59 +1,76 @@
 import Link from "next/link";
 import {
-  FilePlus2,
-  FileText,
-  FolderKanban,
+  Bell,
+  Bookmark,
+  CheckCircle2,
+  Clock3,
+  Eye,
   LayoutDashboard,
-  Newspaper,
-  Package,
-  Tag,
+  Settings,
+  Star,
+  UserCircle,
+  Wrench,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-const adminLinks = [
+const dashboardLinks = [
   {
-    href: "/admin",
+    href: "/dashboard",
     icon: LayoutDashboard,
     label: "Overview",
   },
   {
-    href: "/admin/ideas",
-    icon: FolderKanban,
-    label: "Trading Ideas",
+    href: "/dashboard/watchlist",
+    icon: Star,
+    label: "Watchlist",
   },
   {
-    href: "/admin/ideas/new",
-    icon: FilePlus2,
-    label: "New Idea",
+    href: "/dashboard/saved",
+    icon: Bookmark,
+    label: "Saved Ideas",
   },
   {
-    href: "/admin/posts",
-    icon: Newspaper,
-    label: "Research Posts",
+    href: "/dashboard/following",
+    icon: Eye,
+    label: "Following",
   },
   {
-    href: "/admin/posts/new",
-    icon: FileText,
-    label: "New Post",
+    href: "/dashboard/recent",
+    icon: Clock3,
+    label: "Recent Updates",
   },
   {
-    href: "/admin/tags",
-    icon: Tag,
-    label: "Tags",
+    href: "/dashboard/closed",
+    icon: CheckCircle2,
+    label: "Closed Reviews",
   },
   {
-    href: "/admin/software",
-    icon: Package,
-    label: "Software",
+    href: "/dashboard/software",
+    icon: Wrench,
+    label: "Software Library",
+  },
+  {
+    href: "/dashboard/preferences",
+    icon: Settings,
+    label: "Preferences",
+  },
+  {
+    href: "/account",
+    icon: UserCircle,
+    label: "Account",
   },
 ];
 
-type AdminSidebarProps = {
+type DashboardSidebarProps = {
   className?: string;
+  tierLabel: string;
 };
 
-export function AdminSidebar({ className }: AdminSidebarProps) {
+export function DashboardSidebar({
+  className,
+  tierLabel,
+}: DashboardSidebarProps) {
   return (
     <aside
       className={cn(
@@ -64,19 +81,19 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
       <div className="flex flex-col gap-5 p-4 sm:p-6 lg:sticky lg:top-0">
         <div className="space-y-1">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-300">
-            Admin Console
+            Member Dashboard
           </p>
           <h2 className="text-lg font-semibold text-foreground">
-            Content Ops
+            {tierLabel} workspace
           </h2>
         </div>
 
         <nav
-          aria-label="Admin navigation"
+          aria-label="Dashboard navigation"
           className="-mx-4 overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:overflow-visible lg:px-0"
         >
           <div className="flex min-w-max gap-2 lg:grid lg:min-w-0 lg:grid-cols-1">
-            {adminLinks.map((link) => {
+            {dashboardLinks.map((link) => {
               const Icon = link.icon;
 
               return (
@@ -90,6 +107,12 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
                     className="size-4 text-muted-foreground transition group-hover:text-gold-300"
                   />
                   <span>{link.label}</span>
+                  {link.href === "/dashboard/software" ? (
+                    <Bell
+                      aria-label="Tier gated"
+                      className="ml-auto size-3.5 text-gold-300"
+                    />
+                  ) : null}
                 </Link>
               );
             })}

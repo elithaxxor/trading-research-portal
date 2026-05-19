@@ -2,7 +2,7 @@
 
 A professional trading research portal built with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Netlify, and Supabase.
 
-The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, and Phase 7 idea lifecycle refinement are in place for development. Stripe, paid-tier upgrades, broker integrations, order execution, copy trading, and email notification backend work are intentionally out of scope for the current build.
+The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, Phase 7 idea lifecycle refinement, and Phase 8 advanced member dashboard/software library implementation are in place for development. Stripe, paid-tier upgrades, broker integrations, order execution, copy trading, automatic TradingView invite automation, and email notification backend work are intentionally out of scope for the current build.
 
 ## Phase Status
 
@@ -15,6 +15,7 @@ The public site is live as a marketing experience. Supabase schema, RLS, seed da
 - Phase 5: Complete. Admin dashboard routes, admin-only authorization, trading idea management, research post management, updates, chart metadata, tags, and tag assignment are implemented and verified. Live admin-session CRUD QA, public regression QA, premium/pro leak checks, post-rotation smoke testing, and cleanup passed.
 - Phase 6: Complete. TradingView chart widgets render from safe `idea_charts` metadata on full-access idea pages, locked premium/pro chart details remain protected, admin chart previews and validation are in place, and deploy-preview chart QA has passed.
 - Phase 7: Complete. Structured idea lifecycle states, outcome tracking, closed idea reviews, lifecycle-aware public timelines, admin lifecycle controls, member new-since-last-visit foundation, and dashboard lifecycle widgets are implemented and deploy-preview QA has passed.
+- Phase 8: Complete. Advanced member dashboard routes, saved ideas, followed tickers, watchlist workflows, dashboard preferences, member notes, recent activity, closed reviews, gated software library, software access requests, and admin software management are implemented and verified. Anonymous and authenticated deploy-preview QA, user-owned RLS isolation, software access-control checks, admin software management QA, leak checks, mobile QA, cleanup, and local build/lint/typecheck all passed.
 
 ## Phase 1 Public Site
 
@@ -409,7 +410,7 @@ Phase 5 deploy-preview QA:
 - Local `npm run build`, `npm run lint`, and `npx tsc --noEmit`: passing.
 - Phase 5 is merge-ready.
 
-## Phase 6 — Chart Integration
+## Phase 6 - Chart Integration
 
 Phase 6 integrates chart display from the existing `idea_charts` metadata model.
 It does not add broker connections, order execution, copy trading, payments,
@@ -508,6 +509,90 @@ Phase 7 deploy-preview QA:
 - TradingView regression, CSS asset, duplicate iframe, console, and narrow-viewport checks: passing.
 - Local `npm run build`, `npm run lint`, and `npx tsc --noEmit`: passing.
 
+## Phase 8 Advanced Member Dashboard and Software Library
+
+Phase 8 adds authenticated member personalization and a tier-gated software
+library. It does not add Stripe, payment logic, email notification backend
+logic, broker integrations, order execution, copy trading, live market data
+feeds, performance reporting, or automatic TradingView invite automation.
+
+Member dashboard features:
+
+- Saved ideas with optional member notes.
+- Followed tickers with optional notes and related idea previews.
+- Advanced watchlist workflows using user-owned `watchlist_items`.
+- Dashboard preferences for default view, sort order, locked previews, charts,
+  closed reviews, software visibility, preferred asset classes, statuses, and
+  visibility filters.
+- Recent lifecycle activity feed with mark-seen behavior.
+- Closed reviews dashboard with access-aware review display.
+- Member-owned idea notes foundation.
+- Dashboard widgets for saved ideas, followed tickers, watchlist, new updates,
+  closed reviews, and software availability.
+
+Member routes:
+
+- `/dashboard`
+- `/dashboard/watchlist`
+- `/dashboard/saved`
+- `/dashboard/following`
+- `/dashboard/recent`
+- `/dashboard/closed`
+- `/dashboard/software`
+- `/dashboard/software/[slug]`
+- `/dashboard/preferences`
+
+Software library features:
+
+- Free users have no software access.
+- Premium users can access Lite software through `premium_lite` products.
+- Pro users can access Lite and Pro software.
+- Admin users can manage all software products and requests.
+- TradingView invite-only access is a manual/admin-managed workflow in Phase 8.
+- The portal does not automatically grant TradingView permissions.
+- Private Pine Script source code is not stored by default and must not be
+  exposed to unauthorized users.
+- Software pages render descriptions, documentation, release notes, setup
+  instructions, safe links, and access request status only.
+
+Admin software routes:
+
+- `/admin/software`
+- `/admin/software/new`
+- `/admin/software/[id]/edit`
+- `/admin/software/requests`
+
+Phase 8 security model:
+
+- Dashboard routes require an authenticated user.
+- User-owned member records are protected by RLS and are not visible to other
+  users.
+- Member server actions never accept arbitrary `user_id` values from forms.
+- Software access is tier-gated by RLS and server-side access checks.
+- Free users cannot access Lite or Pro software details.
+- Premium users cannot access Pro software details.
+- Full premium/pro content remains protected on idea, dashboard, and software
+  surfaces.
+- No payments were added in Phase 8.
+- No automatic TradingView invite automation was added.
+- No email notification backend was added.
+- No broker integration, order execution, or copy trading was added.
+- Subscription tiers are still manually managed until the future Stripe phase.
+
+Phase 8 deploy-preview QA:
+
+- Preview URL: `https://deploy-preview-9--trading-research-portal.netlify.app`
+- Anonymous public route checks: passing.
+- Anonymous protected dashboard/admin route redirects: passing.
+- Anonymous content and locked premium/pro leak checks: passing.
+- Free SPY chart regression: passing.
+- Free member dashboard workflows, software lockout, and locked premium/pro content checks: passing.
+- Premium member dashboard workflows, Lite software access, Pro software lockout, and software request flow: passing.
+- Pro member dashboard workflows, Lite + Pro software access, and software request flow: passing.
+- Admin software management, software access request management, and admin-route access checks: passing.
+- User-owned data isolation, premium/pro dashboard leak checks, software leak checks, mobile dashboard/software QA, and temporary QA cleanup: passing.
+- Local `npm run build`, `npm run lint`, and `npx tsc --noEmit`: passing.
+
 ## Security Notes
 
 - Never commit `.env`, `.env.local`, `.env.development`, or `.env.production`.
@@ -515,17 +600,18 @@ Phase 7 deploy-preview QA:
 - `SUPABASE_SECRET_KEY` and legacy `SUPABASE_SERVICE_ROLE_KEY` are server-only and must never be imported into client components.
 - The admin Supabase client bypasses RLS and is only for secure server-side repair/bootstrap tasks.
 - Routine admin CRUD should use the normal server Supabase client and database RLS.
-- No Stripe, payment, billing portal, premium upgrade, broker integration, order execution, copy trading, or email notification backend logic exists yet.
+- Dashboard member data remains user-owned and RLS-protected.
+- Software access remains tier-gated and manual for TradingView invite-only delivery.
+- No Stripe, payment, billing portal, premium upgrade, broker integration, order execution, copy trading, automatic TradingView invite automation, or email notification backend logic exists yet.
 - New users remain free unless later subscription logic updates them.
 
 ## Next Phase
 
-Recommended next phase: Phase 8 - Advanced Member Dashboard.
+Recommended next phase after Phase 8 QA/merge: Phase 9 - Stripe Subscriptions.
 
-Phase 8 should expand the authenticated member dashboard experience using the existing RLS-aware content, chart, lifecycle, and activity foundations. It should not add payments, broker integrations, order execution, copy trading, or email notification backend work.
+Phase 9 should add real subscription purchase and tier-management workflows. Subscription tiers are still manually managed until that dedicated payment phase is implemented and verified.
 
 Future planned phases:
 
-- Phase 8: Advanced member dashboard.
 - Phase 9: Stripe subscriptions.
 - Phase 10: Email notifications.
