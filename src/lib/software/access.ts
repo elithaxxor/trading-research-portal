@@ -1,5 +1,9 @@
 import "server-only";
 
+import {
+  getEffectiveSubscriptionTier,
+  isSubscriptionAccessActive,
+} from "@/lib/billing/tiers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 import type {
@@ -16,29 +20,52 @@ export async function getCurrentSoftwareAccessTier() {
 
   if (userError || !user) {
     return {
+      accountTier: "free" as const,
+      billingStatus: "none" as const,
+      isAccessActive: false,
       isAdmin: false,
       user: null,
       userTier: null,
     };
   }
 
-  const [tierResult, adminResult] = await Promise.all([
-    supabase.rpc("get_user_tier"),
-    supabase.rpc("is_admin"),
+  const [profileResult, subscriptionResult] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle(),
+    supabase
+      .from("subscriptions")
+      .select("tier,status")
+      .eq("user_id", user.id)
+      .maybeSingle(),
   ]);
 
-  if (tierResult.error) {
-    throw new Error("Unable to determine software access tier.");
-  }
-
-  if (adminResult.error) {
+  if (profileResult.error) {
     throw new Error("Unable to determine admin software access.");
   }
 
+  if (subscriptionResult.error) {
+    throw new Error("Unable to determine software access tier.");
+  }
+
+  const isAdmin = profileResult.data?.role === "admin";
+  const accountTier = subscriptionResult.data?.tier ?? "free";
+  const billingStatus = subscriptionResult.data?.status ?? "none";
+
   return {
-    isAdmin: Boolean(adminResult.data),
+    accountTier,
+    billingStatus,
+    isAccessActive:
+      isAdmin || isSubscriptionAccessActive(subscriptionResult.data?.status),
+    isAdmin,
     user,
-    userTier: tierResult.data,
+    userTier: getEffectiveSubscriptionTier(
+      subscriptionResult.data?.tier,
+      subscriptionResult.data?.status,
+      isAdmin
+    ),
   };
 }
 

@@ -16,6 +16,11 @@ import { Container } from "@/components/container";
 import { SignOutSubmitButton } from "@/components/sign-out-submit-button";
 import { buttonVariants } from "@/components/ui/button";
 import { ensureUserRecords } from "@/lib/auth/ensure-user-records";
+import {
+  formatSubscriptionAccessState,
+  formatSubscriptionStatus,
+  formatSubscriptionTier,
+} from "@/lib/billing/format";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 import type { Database } from "@/types/database.types";
@@ -43,6 +48,7 @@ type SubscriptionRow =
 
 type AccountPageProps = {
   searchParams?: Promise<{
+    billing?: string | string[];
     status?: string | string[];
   }>;
 };
@@ -136,11 +142,20 @@ function getRole(profile: Pick<ProfileRow, "role"> | null) {
 }
 
 function getTier(subscription: Pick<SubscriptionRow, "tier"> | null) {
-  return subscription?.tier ? formatEnumValue(subscription.tier) : "Free";
+  return formatSubscriptionTier(subscription?.tier);
 }
 
 function getStatus(subscription: Pick<SubscriptionRow, "status"> | null) {
-  return subscription?.status ? formatEnumValue(subscription.status) : "None";
+  return formatSubscriptionStatus(subscription?.status);
+}
+
+function getActiveAccess(
+  subscription: Pick<SubscriptionRow, "status" | "tier"> | null
+) {
+  return formatSubscriptionAccessState(
+    subscription?.tier,
+    subscription?.status
+  );
 }
 
 function getFirstParam(value?: string | string[]) {
@@ -155,9 +170,23 @@ function getAccountNotice(status?: string | string[]) {
   return null;
 }
 
+function getBillingNotice(billing?: string | string[]) {
+  switch (getFirstParam(billing)) {
+    case "already_active":
+      return "You already have an active membership. Use the billing management flow for plan changes once the customer portal is enabled.";
+    case "success":
+      return "Checkout finished. Access updates after Stripe confirms the subscription through the webhook.";
+    case "portal_return":
+      return "You returned from Stripe billing management.";
+    default:
+      return null;
+  }
+}
+
 export default async function AccountPage({ searchParams }: AccountPageProps) {
   const params = await searchParams;
   const passwordNotice = getAccountNotice(params?.status);
+  const billingNotice = getBillingNotice(params?.billing);
   const { profile, subscription, user, warnings } = await getAccountContext();
   const email = profile?.email ?? user.email ?? "Email unavailable";
 
@@ -190,6 +219,15 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                 <ArrowLeft data-icon="inline-start" />
                 Dashboard
               </Link>
+              <Link
+                className={cn(
+                  buttonVariants({ size: "lg", variant: "outline" }),
+                  "w-full sm:w-auto"
+                )}
+                href="/account/billing"
+              >
+                Billing
+              </Link>
               <form action={signOutAction}>
                 <SignOutSubmitButton className="w-full sm:w-auto" />
               </form>
@@ -205,6 +243,14 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
               className="lg:col-span-2"
               message={passwordNotice}
               tone="success"
+            />
+          ) : null}
+
+          {billingNotice ? (
+            <AuthNotice
+              className="lg:col-span-2"
+              message={billingNotice}
+              tone="info"
             />
           ) : null}
 
@@ -265,22 +311,28 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                   <div>
                     <Badge tone="muted">Subscription</Badge>
                     <h2 className="mt-3 text-2xl font-semibold text-foreground">
-                      Access status
+                      Current tier/status summary
                     </h2>
                     <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                      Billing and paid-tier upgrades are not active yet.
+                      Billing is managed through Stripe-hosted Checkout and the
+                      Customer Portal. This page only displays webhook-synced
+                      access state.
                     </p>
                   </div>
                 </div>
 
                 <dl className="grid gap-4">
                   <DetailItem
-                    label="Subscription tier"
+                    label="Account tier"
                     value={getTier(subscription)}
                   />
                   <DetailItem
-                    label="Subscription status"
+                    label="Billing status"
                     value={getStatus(subscription)}
+                  />
+                  <DetailItem
+                    label="Active access"
+                    value={getActiveAccess(subscription)}
                   />
                   <DetailItem
                     label="Current period end"
@@ -294,6 +346,13 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                     free with status none until subscription logic is added.
                   </p>
                 ) : null}
+
+                <Link
+                  className={cn(buttonVariants({ size: "lg" }), "w-full")}
+                  href="/account/billing"
+                >
+                  Manage Billing
+                </Link>
               </div>
             </CardShell>
 

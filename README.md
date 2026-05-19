@@ -2,7 +2,7 @@
 
 A professional trading research portal built with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Netlify, and Supabase.
 
-The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, Phase 7 idea lifecycle refinement, and Phase 8 advanced member dashboard/software library implementation are in place for development. Stripe, paid-tier upgrades, broker integrations, order execution, copy trading, automatic TradingView invite automation, and email notification backend work are intentionally out of scope for the current build.
+The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, Phase 7 idea lifecycle refinement, and Phase 8 advanced member dashboard/software library implementation are in place for development. Phase 9 Stripe subscription setup has started. Broker integrations, order execution, copy trading, automatic TradingView invite automation, and email notification backend work remain intentionally out of scope for the current build.
 
 ## Phase Status
 
@@ -16,6 +16,7 @@ The public site is live as a marketing experience. Supabase schema, RLS, seed da
 - Phase 6: Complete. TradingView chart widgets render from safe `idea_charts` metadata on full-access idea pages, locked premium/pro chart details remain protected, admin chart previews and validation are in place, and deploy-preview chart QA has passed.
 - Phase 7: Complete. Structured idea lifecycle states, outcome tracking, closed idea reviews, lifecycle-aware public timelines, admin lifecycle controls, member new-since-last-visit foundation, and dashboard lifecycle widgets are implemented and deploy-preview QA has passed.
 - Phase 8: Complete. Advanced member dashboard routes, saved ideas, followed tickers, watchlist workflows, dashboard preferences, member notes, recent activity, closed reviews, gated software library, software access requests, and admin software management are implemented and verified. Anonymous and authenticated deploy-preview QA, user-owned RLS isolation, software access-control checks, admin software management QA, leak checks, mobile QA, cleanup, and local build/lint/typecheck all passed.
+- Phase 9: In progress. Stripe package support and environment placeholders are being added for subscription Checkout, Customer Portal, and webhook-driven tier automation.
 
 ## Phase 1 Public Site
 
@@ -134,6 +135,27 @@ SUPABASE_SERVICE_ROLE_KEY=
 
 Auth UI, protected routes, SSR session refresh, and account/dashboard shells are implemented in Phase 3. Payment and billing features come later.
 
+Phase 9 Stripe placeholders in `.env.example`:
+
+```bash
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+STRIPE_PREMIUM_MONTHLY_PRICE_ID=
+STRIPE_PREMIUM_ANNUAL_PRICE_ID=
+STRIPE_PRO_MONTHLY_PRICE_ID=
+STRIPE_PRO_ANNUAL_PRICE_ID=
+```
+
+Optional public pricing label placeholders may be used for display copy only.
+They are not a source of truth for access control or billing:
+
+```bash
+NEXT_PUBLIC_PREMIUM_MONTHLY_PRICE_LABEL=
+NEXT_PUBLIC_PREMIUM_ANNUAL_PRICE_LABEL=
+NEXT_PUBLIC_PRO_MONTHLY_PRICE_LABEL=
+NEXT_PUBLIC_PRO_ANNUAL_PRICE_LABEL=
+```
+
 ## Supabase Local Development
 
 Phase 2 introduced Supabase CLI project files and migrations for schema work.
@@ -250,6 +272,17 @@ NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 SUPABASE_SECRET_KEY
 ```
+
+Phase 9 Stripe environment checklist:
+
+- `STRIPE_SECRET_KEY` must be stored only in local `.env.local` and Netlify server/runtime environment variables.
+- `STRIPE_WEBHOOK_SECRET` must be stored only in local `.env.local` and Netlify server/runtime environment variables.
+- `STRIPE_PREMIUM_MONTHLY_PRICE_ID`, `STRIPE_PREMIUM_ANNUAL_PRICE_ID`, `STRIPE_PRO_MONTHLY_PRICE_ID`, and `STRIPE_PRO_ANNUAL_PRICE_ID` must be configured per environment.
+- Stripe test mode and live mode keys, webhook secrets, products, and price IDs must not be mixed.
+- Stripe secret keys and webhook secrets must never be exposed to client components.
+- Stripe keys, webhook secrets, and real price IDs must never be committed.
+- Checkout and the Customer Portal are Stripe-hosted flows.
+- Subscription tier changes in Supabase must be driven by verified Stripe webhook events, not by frontend clicks or client-submitted tier values.
 
 For deploy previews, `NEXT_PUBLIC_SITE_URL` must not be set to localhost. It can
 be the production Netlify URL while auth server actions use the current preview

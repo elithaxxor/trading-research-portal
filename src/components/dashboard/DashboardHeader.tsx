@@ -7,14 +7,16 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type DashboardHeaderProps = {
+  accessLabel: string;
+  accountTierLabel: string;
   statusLabel: string;
-  tierLabel: string;
   userEmail: string;
 };
 
 export function DashboardHeader({
+  accessLabel,
+  accountTierLabel,
   statusLabel,
-  tierLabel,
   userEmail,
 }: DashboardHeaderProps) {
   return (
@@ -29,7 +31,8 @@ export function DashboardHeader({
               {userEmail}
             </p>
             <p className="truncate text-sm text-muted-foreground">
-              {tierLabel} / {statusLabel}
+              Account: {accountTierLabel} / Billing: {statusLabel} / Access:{" "}
+              {accessLabel}
             </p>
           </div>
         </div>

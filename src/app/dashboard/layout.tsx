@@ -2,11 +2,13 @@ import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
+import {
+  formatSubscriptionAccessState,
+  formatSubscriptionStatus,
+  formatSubscriptionTier,
+} from "@/lib/billing/format";
+import { getEffectiveSubscriptionTier } from "@/lib/billing/tiers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { Database } from "@/types/database.types";
-
-type SubscriptionRow =
-  Database["public"]["Tables"]["subscriptions"]["Row"];
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -14,25 +16,6 @@ type DashboardLayoutProps = {
 
 function loginRedirect(): never {
   redirect("/login?redirectedFrom=%2Fdashboard");
-}
-
-function formatTier(subscription: Pick<SubscriptionRow, "tier"> | null) {
-  const tier = subscription?.tier ?? "free";
-
-  return tier.charAt(0).toUpperCase() + tier.slice(1);
-}
-
-function formatStatus(
-  subscription: Pick<SubscriptionRow, "status"> | null
-) {
-  if (!subscription) {
-    return "Free access";
-  }
-
-  return subscription.status
-    .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
 }
 
 async function getDashboardLayoutContext() {
@@ -51,30 +34,54 @@ async function getDashboardLayoutContext() {
     loginRedirect();
   }
 
-  const { data: subscription } = await supabase
-    .from("subscriptions")
-    .select("tier,status")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  const [subscriptionResult, profileResult] = await Promise.all([
+    supabase
+      .from("subscriptions")
+      .select("tier,status")
+      .eq("user_id", user.id)
+      .maybeSingle(),
+    supabase.from("profiles").select("role").eq("id", user.id).maybeSingle(),
+  ]);
+
+  const subscription = subscriptionResult.data;
+  const isAdmin = profileResult.data?.role === "admin";
+  const effectiveTier = getEffectiveSubscriptionTier(
+    subscription?.tier,
+    subscription?.status,
+    false
+  );
 
   return {
-    statusLabel: formatStatus(subscription),
-    tierLabel: formatTier(subscription),
+    accessLabel: isAdmin
+      ? "Admin management access"
+      : formatSubscriptionAccessState(subscription?.tier, subscription?.status),
+    accountTierLabel: formatSubscriptionTier(subscription?.tier),
+    statusLabel: formatSubscriptionStatus(subscription?.status),
     userEmail: user.email ?? "Signed-in member",
+    workspaceLabel: isAdmin
+      ? "Admin"
+      : formatSubscriptionTier(effectiveTier),
   };
 }
 
 export default async function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
-  const { statusLabel, tierLabel, userEmail } =
-    await getDashboardLayoutContext();
+  const {
+    accessLabel,
+    accountTierLabel,
+    statusLabel,
+    userEmail,
+    workspaceLabel,
+  } = await getDashboardLayoutContext();
 
   return (
     <DashboardShell
+      accessLabel={accessLabel}
+      accountTierLabel={accountTierLabel}
       statusLabel={statusLabel}
-      tierLabel={tierLabel}
       userEmail={userEmail}
+      workspaceLabel={workspaceLabel}
     >
       {children}
     </DashboardShell>
