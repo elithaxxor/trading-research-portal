@@ -13,8 +13,8 @@ type AdminHeaderProps = {
 
 export function AdminHeader({ adminEmail, adminName }: AdminHeaderProps) {
   return (
-    <header className="border-b border-border bg-background/82 backdrop-blur">
-      <div className="flex flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+    <header className="min-w-0 max-w-full border-b border-border bg-background/82 backdrop-blur">
+      <div className="flex min-w-0 max-w-full flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             Admin access
@@ -31,7 +31,7 @@ export function AdminHeader({ adminEmail, adminName }: AdminHeaderProps) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center">
           <Link
             className={cn(buttonVariants({ size: "sm", variant: "ghost" }))}
             href="/"

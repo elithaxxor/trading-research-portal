@@ -74,12 +74,12 @@ export function DashboardSidebar({
   return (
     <aside
       className={cn(
-        "border-b border-border bg-card/50 lg:border-b-0 lg:border-r",
+        "w-full min-w-0 max-w-full border-b border-border bg-card/50 lg:border-b-0 lg:border-r",
         className
       )}
     >
-      <div className="flex flex-col gap-5 p-4 sm:p-6 lg:sticky lg:top-0">
-        <div className="space-y-1">
+      <div className="flex min-w-0 max-w-full flex-col gap-5 p-4 sm:p-6 lg:sticky lg:top-0">
+        <div className="min-w-0 space-y-1">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gold-300">
             Member Dashboard
           </p>
@@ -90,9 +90,9 @@ export function DashboardSidebar({
 
         <nav
           aria-label="Dashboard navigation"
-          className="-mx-4 overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:overflow-visible lg:px-0"
+          className="-mx-4 max-w-full overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:overflow-visible lg:px-0"
         >
-          <div className="flex min-w-max gap-2 lg:grid lg:min-w-0 lg:grid-cols-1">
+          <div className="flex w-max min-w-full gap-2 lg:grid lg:w-full lg:min-w-0 lg:grid-cols-1">
             {dashboardLinks.map((link) => {
               const Icon = link.icon;
 
