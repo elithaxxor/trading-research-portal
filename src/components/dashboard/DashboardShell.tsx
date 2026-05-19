@@ -18,16 +18,16 @@ export function DashboardShell({
   userEmail,
 }: DashboardShellProps) {
   return (
-    <div className="border-y border-border bg-background">
-      <div className="mx-auto grid w-full max-w-7xl lg:min-h-[calc(100vh-8rem)] lg:grid-cols-[17rem_minmax(0,1fr)]">
+    <div className="w-full min-w-0 max-w-full border-y border-border bg-background">
+      <div className="mx-auto grid w-full min-w-0 max-w-full lg:min-h-[calc(100vh-8rem)] lg:max-w-7xl lg:grid-cols-[17rem_minmax(0,1fr)]">
         <DashboardSidebar tierLabel={tierLabel} />
-        <div className="min-w-0">
+        <div className="min-w-0 max-w-full">
           <DashboardHeader
             statusLabel={statusLabel}
             tierLabel={tierLabel}
             userEmail={userEmail}
           />
-          <main className="min-w-0 px-4 py-6 sm:px-6 lg:px-8">
+          <main className="min-w-0 max-w-full px-4 py-6 sm:px-6 lg:px-8">
             <div className="mb-6 rounded-lg border border-border bg-secondary/30 px-4 py-3 text-sm leading-6 text-muted-foreground">
               <div className="flex items-start gap-3">
                 <Info
