@@ -60,7 +60,7 @@ export default function FreeResearchPage() {
               { href: "/pricing", label: "Compare Access" },
               { href: "/disclaimer", label: "Read Disclaimer", variant: "outline" },
             ]}
-            description="This public section will contain selected market notes, public chart breakdowns, and educational content for readers who want to evaluate the research style before any paid member features go live."
+            description="This public section contains selected market notes, public chart breakdowns, and educational content for readers who want to evaluate the research style before choosing a paid tier."
             eyebrow="Public research"
             title="Free Market Research"
           />
@@ -120,10 +120,10 @@ export default function FreeResearchPage() {
         <Container>
           <CTASection
             className="py-0"
-            description="Free readers get selected public research. Early-access members are planned to receive the full active ideas dashboard, complete watchlists, premium chart breakdowns, and transparent update logs."
+            description="Free readers get selected public research. Premium and Pro members can access deeper dashboard workflows, member watchlists, premium chart breakdowns, and transparent update logs."
             headline="Move from selected public notes to a structured research dashboard."
-            primaryCta={{ href: "/pricing", label: "View Planned Pricing" }}
-            secondaryCta={{ href: "/register", label: "Join Early Access" }}
+            primaryCta={{ href: "/pricing", label: "Compare Access" }}
+            secondaryCta={{ href: "/register", label: "Create Account" }}
           />
         </Container>
       </section>
@@ -131,9 +131,9 @@ export default function FreeResearchPage() {
       <section className="py-16 sm:py-20">
         <Container className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">
           <SectionHeading
-            eyebrow="Early access updates"
-            title="Follow along as early access is prepared."
-            description="Email collection will open with the early-access launch."
+            eyebrow="Research updates"
+            title="Email notifications are planned for a later phase."
+            description="Email collection and notification workflows are intentionally not active yet."
           />
 
           <CardShell className="relative overflow-hidden" padding="lg" tone="elevated">
@@ -145,11 +145,12 @@ export default function FreeResearchPage() {
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold text-foreground">
-                    Early access updates
+                    Email updates not active yet
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    Join interest will open soon for launch updates, public
-                    market notes, and educational research previews.
+                    Email notification backend work is planned for a later
+                    phase. For now, use the public research, dashboard, and
+                    pricing pages directly.
                   </p>
                 </div>
               </div>
@@ -170,13 +171,13 @@ export default function FreeResearchPage() {
                   disabled
                   type="button"
                 >
-                  Opening soon
+                  Not active
                 </button>
               </div>
 
               <p className="text-xs leading-5 text-muted-foreground">
-                This visual preview is disabled while email collection is being
-                prepared for early access.
+                This visual preview is disabled because email notifications are
+                outside the current subscription phase.
               </p>
             </div>
           </CardShell>

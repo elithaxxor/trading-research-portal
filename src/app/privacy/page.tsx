@@ -10,10 +10,10 @@ export const metadata: Metadata = {
     canonical: "/privacy",
   },
   description:
-    "Early-access privacy information for the Trading Research Portal.",
+    "Privacy information for the Trading Research Portal account, subscription, and research experience.",
   openGraph: {
     description:
-      "Early-access privacy information for the Trading Research Portal.",
+      "Privacy information for the Trading Research Portal account, subscription, and research experience.",
     title: "Privacy Policy",
     url: "/privacy",
   },
@@ -22,29 +22,29 @@ export const metadata: Metadata = {
 
 const privacyNotes = [
   {
-    title: "Early-access status",
+    title: "Account and dashboard data",
     description:
-      "The current public site does not open member profiles or collect member dashboard data.",
+      "Authenticated features may store account profile data, subscription tier/status metadata, saved ideas, followed tickers, watchlist items, preferences, member notes, and software access requests.",
   },
   {
-    title: "No production email collection",
+    title: "Email and support communications",
     description:
-      "Production email collection is not active yet. When it opens, the site should clearly explain what is collected and how updates are sent.",
+      "Email notification backend work is not part of the current phase. Account email addresses may still be used for authentication, billing records, and support workflows.",
   },
   {
-    title: "No active payment processing",
+    title: "Stripe payment processing",
     description:
-      "Payment processing is not active yet. No payment details are collected on the current public site.",
+      "Payments are processed by Stripe. The portal stores billing metadata such as customer, subscription, status, and audit references, but it does not store card numbers or raw payment method details.",
   },
   {
-    title: "Future member data",
+    title: "Member access and software requests",
     description:
-      "If member accounts are added, privacy language should describe account data, billing-related data, research preferences, and support communications.",
+      "Software access requests may include a TradingView username and member-provided notes so admins can review manual invite-only access. TradingView permissions are not automated in this phase.",
   },
   {
     title: "Privacy review",
     description:
-      "This is early-access planning language, not legal advice. Privacy language should be reviewed with qualified legal counsel before paid memberships, personalized services, or live trading research are offered.",
+      "This is prelaunch planning language, not legal advice. Privacy language should be reviewed with qualified legal counsel before live subscriptions, personalized services, or live trading research are offered.",
   },
 ];
 
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
       <section className="border-b border-border">
         <Container>
           <PageHero
-            description="Early-access privacy information for a public trading research website. This page is planning language and is not legal advice."
+            description="Privacy information for an educational trading research portal. This page is planning language and is not legal advice."
             eyebrow="Privacy"
             title="Privacy Policy"
           />
@@ -65,8 +65,8 @@ export default function PrivacyPage() {
         <Container className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
           <SectionHeading
             eyebrow="Privacy status"
-            title="Simple public pages now, clearer data policies before memberships open."
-            description="The current site is informational. Future email, account, payment, and membership features should include clear privacy disclosures before they are enabled."
+            title="Account, billing, and member workflow data need clear handling."
+            description="The portal uses Supabase for account/member data and Stripe for payment processing. Final privacy terms should be reviewed before live subscriptions are enabled."
           />
           <div className="grid gap-5">
             {privacyNotes.map((item) => (

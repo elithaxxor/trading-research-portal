@@ -2,12 +2,12 @@
 
 A professional trading research portal built with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Netlify, and Supabase.
 
-The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, Phase 7 idea lifecycle refinement, and Phase 8 advanced member dashboard/software library implementation are in place for development. Stripe, paid-tier upgrades, broker integrations, order execution, copy trading, automatic TradingView invite automation, and email notification backend work are intentionally out of scope for the current build.
+The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, Phase 7 idea lifecycle refinement, Phase 8 advanced member dashboard/software library implementation, and Phase 9 Stripe subscription implementation are in place for development. Phase 9 hosted Stripe test-mode deploy-preview QA has passed for Checkout, Customer Portal, webhook sync, idempotency, cancellation, payment-failure access downgrade, and access automation. Broker integrations, order execution, copy trading, automatic TradingView invite automation, and email notification backend work remain intentionally out of scope for the current build.
 
 ## Phase Status
 
 - Phase 0: Complete. Project foundation, Netlify configuration, dark financial design system, and deployment baseline are in place.
-- Phase 1: Complete. Public marketing routes, early-access copy, legal/support pages, metadata, and responsive polish are in place.
+- Phase 1: Complete. Public marketing routes, legal/support pages, metadata, and responsive polish are in place.
 - Phase 2: Complete. Supabase packages, CLI structure, migrations, RLS policies, seed data, environment structure, client utility scaffolding, remote migration verification, and generated database types are in place.
 - Phase 2.5: Complete. Supabase schema/RLS verification passed, including anonymous read/write smoke tests and authenticated RLS validation for free, premium, pro, and admin access.
 - Phase 3: Complete. Supabase Auth, SSR cookie sessions, protected routes, auth callback, password reset, and account/dashboard shells are implemented and verified.
@@ -16,6 +16,7 @@ The public site is live as a marketing experience. Supabase schema, RLS, seed da
 - Phase 6: Complete. TradingView chart widgets render from safe `idea_charts` metadata on full-access idea pages, locked premium/pro chart details remain protected, admin chart previews and validation are in place, and deploy-preview chart QA has passed.
 - Phase 7: Complete. Structured idea lifecycle states, outcome tracking, closed idea reviews, lifecycle-aware public timelines, admin lifecycle controls, member new-since-last-visit foundation, and dashboard lifecycle widgets are implemented and deploy-preview QA has passed.
 - Phase 8: Complete. Advanced member dashboard routes, saved ideas, followed tickers, watchlist workflows, dashboard preferences, member notes, recent activity, closed reviews, gated software library, software access requests, and admin software management are implemented and verified. Anonymous and authenticated deploy-preview QA, user-owned RLS isolation, software access-control checks, admin software management QA, leak checks, mobile QA, cleanup, and local build/lint/typecheck all passed.
+- Phase 9: Complete. Stripe Checkout, Customer Portal, webhook route, billing schema migration, subscription sync helpers, pricing/account billing UI, and webhook-driven Premium/Pro access automation are implemented. Phase 9 migrations are applied, generated types are updated, hosted Stripe test-mode Checkout and Customer Portal QA passed, webhook sync/idempotency/cancellation/payment-failure downgrade QA passed, and access automation/leak checks passed.
 
 ## Phase 1 Public Site
 
@@ -47,7 +48,7 @@ Completed UI foundation:
 - Page-level metadata and Open Graph placeholders
 - Auth routes now use real Supabase Auth forms in Phase 3
 
-All public content is early-access marketing content for educational market research. Premium features are described as planned future functionality only.
+Public content explains the educational research model, risk limitations, and subscription access paths. Premium and Pro access automation is implemented through Stripe test-mode Checkout and verified webhook sync; live subscriptions still require final live-key setup and business/legal approval.
 
 ## Local Development
 
@@ -133,6 +134,27 @@ SUPABASE_SERVICE_ROLE_KEY=
 ```
 
 Auth UI, protected routes, SSR session refresh, and account/dashboard shells are implemented in Phase 3. Payment and billing features come later.
+
+Phase 9 Stripe placeholders in `.env.example`:
+
+```bash
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+STRIPE_PREMIUM_MONTHLY_PRICE_ID=
+STRIPE_PREMIUM_ANNUAL_PRICE_ID=
+STRIPE_PRO_MONTHLY_PRICE_ID=
+STRIPE_PRO_ANNUAL_PRICE_ID=
+```
+
+Optional public pricing label placeholders may be used for display copy only.
+They are not a source of truth for access control or billing:
+
+```bash
+NEXT_PUBLIC_PREMIUM_MONTHLY_PRICE_LABEL=
+NEXT_PUBLIC_PREMIUM_ANNUAL_PRICE_LABEL=
+NEXT_PUBLIC_PRO_MONTHLY_PRICE_LABEL=
+NEXT_PUBLIC_PRO_ANNUAL_PRICE_LABEL=
+```
 
 ## Supabase Local Development
 
@@ -250,6 +272,17 @@ NEXT_PUBLIC_SUPABASE_URL
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 SUPABASE_SECRET_KEY
 ```
+
+Phase 9 Stripe environment checklist:
+
+- `STRIPE_SECRET_KEY` must be stored only in local `.env.local` and Netlify server/runtime environment variables.
+- `STRIPE_WEBHOOK_SECRET` must be stored only in local `.env.local` and Netlify server/runtime environment variables.
+- `STRIPE_PREMIUM_MONTHLY_PRICE_ID`, `STRIPE_PREMIUM_ANNUAL_PRICE_ID`, `STRIPE_PRO_MONTHLY_PRICE_ID`, and `STRIPE_PRO_ANNUAL_PRICE_ID` must be configured per environment.
+- Stripe test mode and live mode keys, webhook secrets, products, and price IDs must not be mixed.
+- Stripe secret keys and webhook secrets must never be exposed to client components.
+- Stripe keys, webhook secrets, and real price IDs must never be committed.
+- Checkout and the Customer Portal are Stripe-hosted flows.
+- Subscription tier changes in Supabase must be driven by verified Stripe webhook events, not by frontend clicks or client-submitted tier values.
 
 For deploy previews, `NEXT_PUBLIC_SITE_URL` must not be set to localhost. It can
 be the production Netlify URL while auth server actions use the current preview
@@ -577,7 +610,8 @@ Phase 8 security model:
 - No automatic TradingView invite automation was added.
 - No email notification backend was added.
 - No broker integration, order execution, or copy trading was added.
-- Subscription tiers are still manually managed until the future Stripe phase.
+- At Phase 8 completion, subscription tiers were still manually managed until
+  the future Stripe phase.
 
 Phase 8 deploy-preview QA:
 
@@ -593,6 +627,85 @@ Phase 8 deploy-preview QA:
 - User-owned data isolation, premium/pro dashboard leak checks, software leak checks, mobile dashboard/software QA, and temporary QA cleanup: passing.
 - Local `npm run build`, `npm run lint`, and `npx tsc --noEmit`: passing.
 
+## Phase 9 Stripe Subscriptions
+
+Phase 9 adds Stripe-hosted subscription billing and webhook-driven tier
+automation. It does not add email notification backend behavior, broker
+integrations, order execution, copy trading, automatic TradingView invite
+automation, or performance reporting.
+
+Phase 9 billing implementation:
+
+- Stripe Checkout subscription flow from `/pricing`.
+- Stripe Customer Portal access from `/account/billing`.
+- Stripe webhook route at `/api/stripe/webhook`.
+- Server-only Stripe client and billing configuration helpers.
+- Stripe customer mapping, checkout session tracking, webhook event storage,
+  and subscription audit records.
+- Subscription table sync from verified Stripe webhook events.
+- Premium and Pro tier automation based on Stripe price IDs.
+- Account billing page with current tier, billing status, active/inactive
+  access state, current period end, and Customer Portal entry point.
+- Dashboard and software library access messaging tied to effective subscription
+  access.
+
+Phase 9 routes and actions:
+
+- `/pricing` uses `createCheckoutSessionAction` for Premium/Pro monthly and
+  annual checkout.
+- `/account/billing` shows subscription status and uses
+  `createCustomerPortalSessionAction` for Stripe Customer Portal sessions.
+- `/api/stripe/webhook` verifies Stripe webhook signatures, stores events, and
+  syncs subscriptions.
+- `/dashboard` and `/dashboard/software` show billing-aware access widgets and
+  software access messaging.
+
+Phase 9 access model:
+
+- Inactive or missing subscription: effective tier is free.
+- Active or trialing Premium: premium content and Lite software access.
+- Active or trialing Pro: premium/pro content and Lite + Pro software access.
+- Canceled, past due, unpaid, incomplete, and incomplete-expired statuses do
+  not grant paid access unless a future grace policy is explicitly added.
+- Admin management access remains role-based through `profiles.role = 'admin'`
+  and is independent of subscription tier.
+
+Phase 9 security model:
+
+- Frontend actions can start Stripe-hosted Checkout or Customer Portal flows,
+  but cannot update `subscriptions.tier` or `subscriptions.status`.
+- Verified Stripe webhooks are the source of truth for paid access changes.
+- Webhook signatures are verified with `STRIPE_WEBHOOK_SECRET`.
+- Webhook idempotency is implemented with `stripe_webhook_events`.
+- Subscription audit history is recorded in `subscription_events`.
+- Stripe and Supabase secret keys are server-only and must never be imported
+  into client components.
+- Real Stripe keys, webhook secrets, Supabase secrets, and database passwords
+  must never be committed.
+
+Phase 9 deploy-preview QA status:
+
+- PR deploy preview: `https://deploy-preview-11--trading-research-portal.netlify.app`
+- Public hosted routes and anonymous protected redirects: passing.
+- `/api/stripe/webhook` rejects missing or invalid signatures with `400`.
+- Public HTML secret-pattern checks: passing.
+- Local `npm run build`, `npm run lint`, and `npx tsc --noEmit`: passing.
+- Phase 9 migrations are applied in the linked Supabase prelaunch project, and
+  generated database types include the Stripe billing tables/fields.
+- Hosted Premium monthly, Premium annual, Pro monthly, and Pro annual Checkout
+  flows passed in Stripe test mode.
+- Hosted Customer Portal session creation and cancellation downgrade passed.
+- Hosted webhook sync and duplicate replay/idempotency passed.
+- Payment-failure/past-due handling passed through signed hosted webhook QA:
+  `invoice.payment_failed` is stored/processed, and `past_due` subscription
+  status removes paid access.
+- Unknown-price no-grant behavior passed.
+- Access automation passed: active Premium unlocks premium content and Lite
+  software; active Pro unlocks premium/pro content and Lite + Pro software;
+  canceled and past-due states remove paid access.
+- Frontend actions were verified not to grant tier/status directly; access
+  changes only after webhook sync.
+
 ## Security Notes
 
 - Never commit `.env`, `.env.local`, `.env.development`, or `.env.production`.
@@ -602,16 +715,22 @@ Phase 8 deploy-preview QA:
 - Routine admin CRUD should use the normal server Supabase client and database RLS.
 - Dashboard member data remains user-owned and RLS-protected.
 - Software access remains tier-gated and manual for TradingView invite-only delivery.
-- No Stripe, payment, billing portal, premium upgrade, broker integration, order execution, copy trading, automatic TradingView invite automation, or email notification backend logic exists yet.
-- New users remain free unless later subscription logic updates them.
+- Stripe subscription logic is limited to Phase 9 Checkout, Customer Portal, and
+  verified webhook-driven subscription sync. Frontend actions must not directly
+  grant paid access.
+- Broker integration, order execution, copy trading, automatic TradingView
+  invite automation, and email notification backend logic remain out of scope.
+- New users remain free unless verified Stripe webhook sync updates their
+  subscription state.
 
 ## Next Phase
 
-Recommended next phase after Phase 8 QA/merge: Phase 9 - Stripe Subscriptions.
+Recommended next phase after Phase 9 QA/merge: Phase 10 - Email Notifications.
 
-Phase 9 should add real subscription purchase and tier-management workflows. Subscription tiers are still manually managed until that dedicated payment phase is implemented and verified.
+Phase 10 should add opt-in email notification workflows after Stripe billing is
+verified and production-ready. It should not add broker integrations, order
+execution, copy trading, or automatic TradingView invite automation.
 
 Future planned phases:
 
-- Phase 9: Stripe subscriptions.
 - Phase 10: Email notifications.

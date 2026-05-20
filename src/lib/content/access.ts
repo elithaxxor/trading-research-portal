@@ -2,6 +2,7 @@ import "server-only";
 
 import type { User } from "@supabase/supabase-js";
 
+import { getEffectiveSubscriptionTier } from "@/lib/billing/tiers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 import type {
@@ -11,8 +12,6 @@ import type {
   SubscriptionDetail,
   SubscriptionTier,
 } from "./types";
-
-const activeSubscriptionStatuses = new Set(["active", "trialing"]);
 
 export async function getCurrentUser(): Promise<User | null> {
   const supabase = await createSupabaseServerClient();
@@ -86,14 +85,11 @@ export async function getCurrentTier(): Promise<SubscriptionTier> {
     return "pro";
   }
 
-  if (
-    subscription?.tier &&
-    activeSubscriptionStatuses.has(subscription.status)
-  ) {
-    return subscription.tier;
-  }
-
-  return "free";
+  return getEffectiveSubscriptionTier(
+    subscription?.tier,
+    subscription?.status,
+    false
+  );
 }
 
 export function canAccessVisibility(

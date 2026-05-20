@@ -39,7 +39,7 @@ export function SiteHeaderClient({ isAuthenticated }: SiteHeaderClientProps) {
               Trading Research Portal
             </span>
             <span className="mt-1 hidden font-mono text-[0.64rem] uppercase tracking-[0.18em] text-muted-foreground sm:block">
-              Early access research
+              Educational research
             </span>
           </span>
         </Link>
@@ -153,7 +153,7 @@ function DesktopAuthActions({
         )}
         href="/register"
       >
-        Join Early Access
+        Create Account
       </Link>
     </>
   );
@@ -210,7 +210,7 @@ function MobileAuthActions({
         href="/register"
         onClick={closeMenu}
       >
-        Join Early Access
+        Create Account
       </Link>
     </>
   );

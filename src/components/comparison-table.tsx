@@ -33,12 +33,12 @@ const defaultRows: ComparisonRow[] = [
   {
     feature: "Risk-defined idea archive",
     free: false,
-    premium: "Planned",
+    premium: true,
   },
   {
     feature: "Member research dashboard",
     free: false,
-    premium: "Planned",
+    premium: true,
   },
 ];
 

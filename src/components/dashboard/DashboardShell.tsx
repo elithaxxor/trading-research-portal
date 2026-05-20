@@ -5,26 +5,31 @@ import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 
 type DashboardShellProps = {
+  accessLabel: string;
+  accountTierLabel: string;
   children: ReactNode;
   statusLabel: string;
-  tierLabel: string;
+  workspaceLabel: string;
   userEmail: string;
 };
 
 export function DashboardShell({
+  accessLabel,
+  accountTierLabel,
   children,
   statusLabel,
-  tierLabel,
+  workspaceLabel,
   userEmail,
 }: DashboardShellProps) {
   return (
     <div className="w-full min-w-0 max-w-full border-y border-border bg-background">
       <div className="mx-auto grid w-full min-w-0 max-w-full lg:min-h-[calc(100vh-8rem)] lg:max-w-7xl lg:grid-cols-[17rem_minmax(0,1fr)]">
-        <DashboardSidebar tierLabel={tierLabel} />
+        <DashboardSidebar tierLabel={workspaceLabel} />
         <div className="min-w-0 max-w-full">
           <DashboardHeader
+            accessLabel={accessLabel}
+            accountTierLabel={accountTierLabel}
             statusLabel={statusLabel}
-            tierLabel={tierLabel}
             userEmail={userEmail}
           />
           <main className="min-w-0 max-w-full px-4 py-6 sm:px-6 lg:px-8">

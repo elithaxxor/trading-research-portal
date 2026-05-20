@@ -36,6 +36,12 @@ import {
   type RecentlyUpdatedIdea,
 } from "@/lib/activity/user-activity";
 import { ensureUserRecords } from "@/lib/auth/ensure-user-records";
+import {
+  formatSubscriptionAccessState,
+  formatSubscriptionStatus,
+  formatSubscriptionTier,
+} from "@/lib/billing/format";
+import { getEffectiveSubscriptionTier } from "@/lib/billing/tiers";
 import { getIdeaPreviews } from "@/lib/content/ideas";
 import type { IdeaPreview } from "@/lib/content/types";
 import { formatLifecycleDate } from "@/lib/lifecycle/format";
@@ -77,9 +83,6 @@ type DashboardPageProps = {
     notice?: string | string[];
   }>;
 };
-
-type SubscriptionRow =
-  Database["public"]["Tables"]["subscriptions"]["Row"];
 
 type DashboardPreferenceSettings = Pick<
   MemberPreferences,
@@ -135,23 +138,6 @@ const emptyMemberDashboardData: MemberDashboardData = {
 
 function loginRedirect(): never {
   redirect("/login?redirectedFrom=%2Fdashboard");
-}
-
-function formatTier(subscription: Pick<SubscriptionRow, "tier"> | null) {
-  const tier = subscription?.tier ?? "free";
-
-  return tier.charAt(0).toUpperCase() + tier.slice(1);
-}
-
-function formatStatus(subscription: Pick<SubscriptionRow, "status"> | null) {
-  if (!subscription) {
-    return "Free access";
-  }
-
-  return subscription.status
-    .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
 }
 
 function getIdeaPreviewSortForPreferences(
@@ -391,7 +377,11 @@ async function getDashboardContext() {
             isAdmin: false,
             products: [],
             totalCount: 0,
-            userTier: subscription?.tier ?? "free",
+            userTier: getEffectiveSubscriptionTier(
+              subscription?.tier,
+              subscription?.status,
+              false
+            ),
           },
     subscription,
     updatedIdeasSinceLastSeen:
@@ -439,8 +429,22 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
     user,
     warnings,
   } = await getDashboardContext();
-  const tierLabel = formatTier(subscription);
-  const statusLabel = formatStatus(subscription);
+  const accountTierLabel = formatSubscriptionTier(subscription?.tier);
+  const effectiveTier = getEffectiveSubscriptionTier(
+    subscription?.tier,
+    subscription?.status,
+    false
+  );
+  const effectiveTierLabel = softwareSummary.isAdmin
+    ? "Admin"
+    : formatSubscriptionTier(effectiveTier);
+  const statusLabel = formatSubscriptionStatus(subscription?.status);
+  const accessLabel = softwareSummary.isAdmin
+    ? "Admin management access"
+    : formatSubscriptionAccessState(subscription?.tier, subscription?.status);
+  const currentPeriodEndLabel = formatDashboardDate(
+    subscription?.current_period_end
+  );
   const savedIdeaCards = applyDashboardPreferences(
     dashboardData.savedIdeaCards,
     preferences,
@@ -478,9 +482,14 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       ))}
 
       <AccountTierSummary
+        accessLabel={accessLabel}
+        accountTierLabel={accountTierLabel}
+        currentPeriodEndLabel={currentPeriodEndLabel}
         email={user.email ?? "Email unavailable"}
+        effectiveTierLabel={effectiveTierLabel}
+        showPremiumUpgrade={!softwareSummary.isAdmin && effectiveTier === "free"}
+        showProUpgrade={!softwareSummary.isAdmin && effectiveTier !== "pro"}
         statusLabel={statusLabel}
-        tierLabel={tierLabel}
       />
 
       <DashboardStats
@@ -556,34 +565,83 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 }
 
 function AccountTierSummary({
+  accessLabel,
+  accountTierLabel,
+  currentPeriodEndLabel,
   email,
+  effectiveTierLabel,
+  showPremiumUpgrade,
+  showProUpgrade,
   statusLabel,
-  tierLabel,
 }: {
+  accessLabel: string;
+  accountTierLabel: string;
+  currentPeriodEndLabel: string;
   email: string;
+  effectiveTierLabel: string;
+  showPremiumUpgrade: boolean;
+  showProUpgrade: boolean;
   statusLabel: string;
-  tierLabel: string;
 }) {
   return (
     <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
       <CardShell padding="lg" tone="elevated">
         <div className="flex flex-col gap-6">
           <div>
-            <Badge tone="muted">Account / Tier Summary</Badge>
+            <Badge tone="muted">Account Access</Badge>
             <h2 className="mt-3 text-2xl font-semibold text-foreground">
-              {tierLabel} member workspace
+              {effectiveTierLabel} member workspace
             </h2>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Personalized research widgets use your current session and
-              Supabase RLS. Locked member content is not shipped to the page.
+              Supabase RLS. Paid access follows Stripe webhook-synced billing
+              status, and locked member content is not shipped to the page.
             </p>
           </div>
           <dl className="grid gap-4 sm:grid-cols-2">
             <DashboardDetail label="Email" value={email} />
-            <DashboardDetail label="Current tier" value={tierLabel} />
-            <DashboardDetail label="Subscription status" value={statusLabel} />
-            <DashboardDetail label="Access model" value="RLS enforced" />
+            <DashboardDetail label="Account tier" value={accountTierLabel} />
+            <DashboardDetail label="Billing status" value={statusLabel} />
+            <DashboardDetail label="Active access" value={accessLabel} />
+            <DashboardDetail
+              label="Next renewal / period end"
+              value={currentPeriodEndLabel}
+            />
           </dl>
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            {showPremiumUpgrade ? (
+              <Link
+                className={cn(
+                  "w-full sm:w-auto",
+                  buttonVariants({ size: "lg", variant: "default" })
+                )}
+                href="/pricing"
+              >
+                Upgrade to Premium
+              </Link>
+            ) : null}
+            {showProUpgrade ? (
+              <Link
+                className={cn(
+                  "w-full sm:w-auto",
+                  buttonVariants({ size: "lg", variant: "default" })
+                )}
+                href="/pricing"
+              >
+                Upgrade to Pro
+              </Link>
+            ) : null}
+            <Link
+              className={cn(
+                "w-full sm:w-auto",
+                buttonVariants({ size: "lg", variant: "outline" })
+              )}
+              href="/account/billing"
+            >
+              Manage Billing
+              <ArrowUpRight data-icon="inline-end" />
+            </Link>
+          </div>
         </div>
       </CardShell>
 

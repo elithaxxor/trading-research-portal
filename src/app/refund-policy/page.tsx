@@ -10,10 +10,10 @@ export const metadata: Metadata = {
     canonical: "/refund-policy",
   },
   description:
-    "Early-access refund policy information for the Trading Research Portal.",
+    "Refund and cancellation policy information for Trading Research Portal subscriptions.",
   openGraph: {
     description:
-      "Early-access refund policy information for the Trading Research Portal.",
+      "Refund and cancellation policy information for Trading Research Portal subscriptions.",
     title: "Refund Policy",
     url: "/refund-policy",
   },
@@ -22,19 +22,19 @@ export const metadata: Metadata = {
 
 const refundNotes = [
   {
-    title: "Memberships are not open",
+    title: "Stripe-hosted subscription billing",
     description:
-      "Paid memberships are not active yet. There are no active checkout flows, subscriptions, or charges on the current public site.",
+      "Paid memberships are processed through Stripe-hosted Checkout and Customer Portal flows. Subscription access updates after Stripe confirms payment and webhook processing.",
   },
   {
-    title: "Terms before payments",
+    title: "Renewal and cancellation",
     description:
-      "Refund and cancellation terms will be published before payments are collected. Those terms should clearly explain cancellation timing, billing periods, eligibility, and support procedures.",
+      "Subscriptions renew until canceled. Members should manage billing through the Stripe Customer Portal, and cancellation timing may depend on the active billing period and final plan terms.",
   },
   {
-    title: "No payment details collected",
+    title: "Payment details",
     description:
-      "No payment details are collected on the current site.",
+      "The portal does not store card details. Stripe handles payment collection, card storage, receipts, and hosted billing management.",
   },
   {
     title: "No performance refunds",
@@ -42,9 +42,9 @@ const refundNotes = [
       "Educational research subscriptions should not be framed around trading outcomes. No plan guarantees trading results.",
   },
   {
-    title: "Policy review",
+    title: "Legal and business review required",
     description:
-      "Refund language should be reviewed with qualified legal counsel before paid memberships, personalized services, or live trading research are offered.",
+      "This refund and cancellation language is a prelaunch placeholder. Final refund eligibility, cancellation timing, support procedure, and jurisdiction-specific terms must be reviewed before live subscriptions are enabled.",
   },
 ];
 
@@ -54,7 +54,7 @@ export default function RefundPolicyPage() {
       <section className="border-b border-border">
         <Container>
           <PageHero
-            description="Refund policy information for the early-access public site."
+            description="Refund and cancellation policy information for subscription access."
             eyebrow="Refund policy"
             title="Refund Policy"
           />
@@ -65,8 +65,8 @@ export default function RefundPolicyPage() {
         <Container className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
           <SectionHeading
             eyebrow="Refund status"
-            title="No paid memberships are active yet."
-            description="This page sets expectations before any paid access exists. Final billing, refund, and cancellation terms should be completed before memberships open."
+            title="Subscription billing is Stripe-hosted; final policy review is still required."
+            description="This page sets expectations for subscription billing, cancellation, refund review, and educational-access limitations before live subscriptions are enabled."
           />
           <div className="grid gap-5">
             {refundNotes.map((item) => (

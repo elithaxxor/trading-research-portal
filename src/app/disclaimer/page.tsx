@@ -70,8 +70,14 @@ const disclaimerSections = [
   {
     title: "Subscription disclaimer",
     description:
-      "Premium membership, if offered, provides access to research content only. A subscription does not guarantee profitable outcomes or remove trading risk.",
+      "Premium and Pro memberships provide access to educational research content and tiered software-library workflows only. A subscription does not guarantee profitable outcomes or remove trading risk.",
     icon: BadgeDollarSign,
+  },
+  {
+    title: "No broker connection",
+    description:
+      "The portal does not connect to brokerage accounts, execute orders, provide copy-trading automation, or supply live market data feeds.",
+    icon: ShieldAlert,
   },
 ];
 
@@ -112,8 +118,9 @@ export default function DisclaimerPage() {
                     Legal review recommended
                   </h2>
                   <p className="mt-3 text-sm leading-7 text-muted-foreground sm:text-base">
-                    Review with qualified legal counsel before paid memberships,
-                    personalized services, or live trading research are offered.
+                    Review with qualified legal counsel before live
+                    subscriptions, personalized services, or live trading
+                    research are offered.
                   </p>
                 </div>
               </div>
@@ -127,7 +134,7 @@ export default function DisclaimerPage() {
         <Container className="flex flex-col gap-10">
           <SectionHeading
             eyebrow="Disclaimer sections"
-            title="Core risk language for public and future member content."
+            title="Core risk language for public and member content."
             description="These sections cover educational purpose, advice limitations, trading risk, guarantees, user responsibility, disclosures, and subscription expectations."
           />
 
@@ -157,7 +164,7 @@ export default function DisclaimerPage() {
             <div className="flex flex-col gap-4">
               <Badge tone="muted">Attorney review notice</Badge>
               <p className="text-sm leading-7 text-muted-foreground sm:text-base">
-                Review with qualified legal counsel before paid memberships,
+                Review with qualified legal counsel before live subscriptions,
                 personalized services, or live trading research are offered.
               </p>
             </div>

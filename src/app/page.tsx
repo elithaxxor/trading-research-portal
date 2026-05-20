@@ -80,7 +80,7 @@ const memberFeatures = [
   {
     title: "Active ideas dashboard",
     description:
-      "A future member workspace for tracking thesis, status, timeframe, risk, and updates in one place.",
+      "A member workspace for tracking thesis, status, timeframe, risk, and updates in one place.",
     icon: Layers3,
   },
   {
@@ -178,27 +178,27 @@ const comparisonRows = [
   {
     feature: "Active trading ideas",
     free: false,
-    premium: "Planned",
+    premium: true,
   },
   {
     feature: "Full watchlist",
     free: "Limited",
-    premium: "Planned",
+    premium: true,
   },
   {
     feature: "Premium updates",
     free: false,
-    premium: "Planned",
+    premium: true,
   },
   {
     feature: "Idea archive",
     free: false,
-    premium: "Planned",
+    premium: true,
   },
   {
     feature: "Closed idea reviews",
     free: false,
-    premium: "Planned",
+    premium: true,
   },
 ];
 
@@ -227,10 +227,10 @@ export default async function Home({ searchParams }: HomePageProps) {
       <Container>
         <DisclaimerBanner />
         <CTASection
-          description="Explore the free research surface today, or join early access for updates as the private research dashboard is prepared."
+          description="Explore the free research surface, create an account, or compare Premium and Pro access for the private research dashboard."
           headline="A cleaner home for trading research is taking shape."
           primaryCta={{ href: "/free", label: "View Free Research" }}
-          secondaryCta={{ href: "/register", label: "Join Early Access" }}
+          secondaryCta={{ href: "/pricing", label: "Compare Access" }}
         />
       </Container>
     </main>
@@ -244,7 +244,7 @@ function HeroSection() {
         <PageHero
           actions={[
             { href: "/free", label: "View Free Research" },
-            { href: "/register", label: "Join Early Access", variant: "outline" },
+            { href: "/pricing", label: "Compare Access", variant: "outline" },
           ]}
           className="py-0"
           description="Market commentary, watchlists, trading ideas, chart breakdowns, and update logs designed for organized research rather than noisy alerts."
@@ -335,8 +335,8 @@ function MembersSection() {
       <Container className="flex flex-col gap-10">
         <SectionHeading
           eyebrow="What members get"
-          title="A planned research workspace for ideas, watchlists, updates, and reviews."
-          description="Premium memberships are not open yet. This section previews the organized research experience being prepared for early access."
+          title="A research workspace for ideas, watchlists, updates, and reviews."
+          description="Premium and Pro memberships unlock deeper research workflows while keeping the experience educational and independent from broker execution."
         />
         <FeatureGrid items={memberFeatures} />
       </Container>
@@ -350,8 +350,8 @@ function ComparisonSection() {
       <Container className="flex flex-col gap-10">
         <SectionHeading
           eyebrow="Free vs Premium"
-          title="Public research now, a deeper organized workspace later."
-          description="Free content can introduce the research style. Premium content is planned around active ideas, watchlists, updates, archives, and closed reviews."
+          title="Public research and deeper member workflows."
+          description="Free content introduces the research style. Premium content adds active ideas, watchlists, updates, archives, and closed reviews."
         />
         <ComparisonTable rows={comparisonRows} />
       </Container>
@@ -437,7 +437,7 @@ function ChartPreview() {
               Thesis, levels, and risk in view
             </h2>
           </div>
-          <Badge tone="gold">Early access</Badge>
+          <Badge tone="gold">Research preview</Badge>
         </div>
 
         <div className="relative min-h-80 overflow-hidden rounded-lg border border-border bg-background/42 p-5">
@@ -506,7 +506,7 @@ function DashboardPreview() {
               Research command center
             </h2>
           </div>
-          <Badge tone="muted">Planned workspace</Badge>
+          <Badge tone="muted">Member workspace</Badge>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
