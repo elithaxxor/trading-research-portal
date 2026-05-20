@@ -203,7 +203,7 @@ export function NewIdeaForm() {
       </AdminFormSection>
 
       <AdminFormSection
-        description="Publishing makes the idea visible according to its free, premium, or pro access level. Paid subscription automation is not active yet."
+        description="Publishing makes the idea visible according to its free, premium, or pro access level. Paid access is controlled by the user's verified subscription state."
         title="Publishing"
       >
         <AdminCheckbox

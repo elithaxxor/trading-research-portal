@@ -535,46 +535,247 @@ export type Database = {
         }
         Relationships: []
       }
+      stripe_checkout_sessions: {
+        Row: {
+          cancel_url: string | null
+          created_at: string
+          id: string
+          mode: string
+          payment_status: string | null
+          requested_price_id: string
+          requested_tier: Database["public"]["Enums"]["subscription_tier"]
+          status: string | null
+          stripe_customer_id: string | null
+          stripe_session_id: string
+          stripe_subscription_id: string | null
+          success_url: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancel_url?: string | null
+          created_at?: string
+          id?: string
+          mode?: string
+          payment_status?: string | null
+          requested_price_id: string
+          requested_tier: Database["public"]["Enums"]["subscription_tier"]
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_session_id: string
+          stripe_subscription_id?: string | null
+          success_url?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancel_url?: string | null
+          created_at?: string
+          id?: string
+          mode?: string
+          payment_status?: string | null
+          requested_price_id?: string
+          requested_tier?: Database["public"]["Enums"]["subscription_tier"]
+          status?: string | null
+          stripe_customer_id?: string | null
+          stripe_session_id?: string
+          stripe_subscription_id?: string | null
+          success_url?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      stripe_customers: {
+        Row: {
+          created_at: string
+          email: string | null
+          stripe_customer_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          stripe_customer_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          stripe_customer_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      stripe_webhook_events: {
+        Row: {
+          api_version: string | null
+          error: string | null
+          event_type: string
+          payload: Json | null
+          processed_at: string | null
+          processing_status: string
+          received_at: string
+          stripe_event_id: string
+        }
+        Insert: {
+          api_version?: string | null
+          error?: string | null
+          event_type: string
+          payload?: Json | null
+          processed_at?: string | null
+          processing_status?: string
+          received_at?: string
+          stripe_event_id: string
+        }
+        Update: {
+          api_version?: string | null
+          error?: string | null
+          event_type?: string
+          payload?: Json | null
+          processed_at?: string | null
+          processing_status?: string
+          received_at?: string
+          stripe_event_id?: string
+        }
+        Relationships: []
+      }
+      subscription_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          new_status: Database["public"]["Enums"]["subscription_status"] | null
+          new_tier: Database["public"]["Enums"]["subscription_tier"] | null
+          note: string | null
+          previous_status:
+            | Database["public"]["Enums"]["subscription_status"]
+            | null
+          previous_tier: Database["public"]["Enums"]["subscription_tier"] | null
+          price_id: string | null
+          stripe_customer_id: string | null
+          stripe_event_id: string | null
+          stripe_subscription_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          new_status?: Database["public"]["Enums"]["subscription_status"] | null
+          new_tier?: Database["public"]["Enums"]["subscription_tier"] | null
+          note?: string | null
+          previous_status?:
+            | Database["public"]["Enums"]["subscription_status"]
+            | null
+          previous_tier?:
+            | Database["public"]["Enums"]["subscription_tier"]
+            | null
+          price_id?: string | null
+          stripe_customer_id?: string | null
+          stripe_event_id?: string | null
+          stripe_subscription_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          new_status?: Database["public"]["Enums"]["subscription_status"] | null
+          new_tier?: Database["public"]["Enums"]["subscription_tier"] | null
+          note?: string | null
+          previous_status?:
+            | Database["public"]["Enums"]["subscription_status"]
+            | null
+          previous_tier?:
+            | Database["public"]["Enums"]["subscription_tier"]
+            | null
+          price_id?: string | null
+          stripe_customer_id?: string | null
+          stripe_event_id?: string | null
+          stripe_subscription_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_events_stripe_event_id_fkey"
+            columns: ["stripe_event_id"]
+            isOneToOne: false
+            referencedRelation: "stripe_webhook_events"
+            referencedColumns: ["stripe_event_id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           cancel_at_period_end: boolean
+          canceled_at: string | null
           created_at: string
           current_period_end: string | null
           current_period_start: string | null
+          ended_at: string | null
           id: string
+          last_synced_at: string | null
+          last_webhook_event_id: string | null
           price_id: string | null
           status: Database["public"]["Enums"]["subscription_status"]
           stripe_customer_id: string | null
+          stripe_latest_invoice_id: string | null
+          stripe_payment_intent_id: string | null
+          stripe_product_id: string | null
           stripe_subscription_id: string | null
           tier: Database["public"]["Enums"]["subscription_tier"]
+          trial_end: string | null
+          trial_start: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           cancel_at_period_end?: boolean
+          canceled_at?: string | null
           created_at?: string
           current_period_end?: string | null
           current_period_start?: string | null
+          ended_at?: string | null
           id?: string
+          last_synced_at?: string | null
+          last_webhook_event_id?: string | null
           price_id?: string | null
           status?: Database["public"]["Enums"]["subscription_status"]
           stripe_customer_id?: string | null
+          stripe_latest_invoice_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_product_id?: string | null
           stripe_subscription_id?: string | null
           tier?: Database["public"]["Enums"]["subscription_tier"]
+          trial_end?: string | null
+          trial_start?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           cancel_at_period_end?: boolean
+          canceled_at?: string | null
           created_at?: string
           current_period_end?: string | null
           current_period_start?: string | null
+          ended_at?: string | null
           id?: string
+          last_synced_at?: string | null
+          last_webhook_event_id?: string | null
           price_id?: string | null
           status?: Database["public"]["Enums"]["subscription_status"]
           stripe_customer_id?: string | null
+          stripe_latest_invoice_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_product_id?: string | null
           stripe_subscription_id?: string | null
           tier?: Database["public"]["Enums"]["subscription_tier"]
+          trial_end?: string | null
+          trial_start?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -813,6 +1014,10 @@ export type Database = {
         Args: {
           required_tier: Database["public"]["Enums"]["software_access_tier"]
         }
+        Returns: boolean
+      }
+      can_reference_published_idea: {
+        Args: { p_idea_id: string }
         Returns: boolean
       }
       get_post_preview_by_slug: {

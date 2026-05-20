@@ -10,10 +10,10 @@ export const metadata: Metadata = {
     canonical: "/terms",
   },
   description:
-    "Early-access terms information for the Trading Research Portal.",
+    "Terms information for the Trading Research Portal subscription and research access experience.",
   openGraph: {
     description:
-      "Early-access terms information for the Trading Research Portal.",
+      "Terms information for the Trading Research Portal subscription and research access experience.",
     title: "Terms of Use",
     url: "/terms",
   },
@@ -29,22 +29,27 @@ const terms = [
   {
     title: "No guaranteed results",
     description:
-      "Trading and investing involve risk. Research examples, commentary, watchlists, or future member content do not guarantee any trading or investing outcome.",
+      "Trading and investing involve risk. Research examples, commentary, watchlists, software tools, member content, or closed reviews do not guarantee any trading or investing outcome.",
   },
   {
-    title: "Early access status",
+    title: "Subscriptions and member access",
     description:
-      "The private dashboard and premium memberships are being prepared. Access details, plan terms, and member features may change before memberships open.",
+      "Premium and Pro subscriptions may unlock member content, dashboard workflows, and tiered software-library access. Subscriptions renew until canceled and access changes are driven by Stripe webhook-confirmed billing status.",
   },
   {
     title: "User responsibility",
     description:
-      "Visitors and future members are responsible for their own research, risk management, and trading decisions.",
+      "Visitors and members are responsible for their own research, risk management, and trading decisions.",
+  },
+  {
+    title: "No broker or order execution",
+    description:
+      "The portal does not connect to brokers, execute orders, provide copy-trading automation, or manage TradingView invite-only access automatically.",
   },
   {
     title: "Legal review",
     description:
-      "The site owner should review these terms with qualified legal counsel before paid memberships, personalized services, or live trading research are offered.",
+      "The site owner should review these terms with qualified legal counsel before live subscriptions, personalized services, or live trading research are offered.",
   },
 ];
 
@@ -54,7 +59,7 @@ export default function TermsPage() {
       <section className="border-b border-border">
         <Container>
           <PageHero
-            description="Early-access website terms for an educational trading research portal. This page is plain-English planning language and is not legal advice."
+            description="Website terms for an educational trading research portal. This page is plain-English planning language and is not legal advice."
             eyebrow="Site terms"
             title="Terms of Use"
           />
@@ -64,9 +69,9 @@ export default function TermsPage() {
       <section className="py-16 sm:py-20">
         <Container className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
           <SectionHeading
-            eyebrow="Early access terms"
-            title="Clear expectations before memberships open."
-            description="These notes explain the current public research experience, educational purpose, user responsibility, and legal-review items that should be finalized before paid access is offered."
+            eyebrow="Subscription terms"
+            title="Clear expectations for educational research access."
+            description="These notes explain the research purpose, subscription access model, user responsibility, billing-source-of-truth model, and legal-review items to finalize before live subscriptions."
           />
           <div className="grid gap-5">
             {terms.map((item) => (
