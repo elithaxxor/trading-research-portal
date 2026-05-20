@@ -37,6 +37,16 @@ function getStripeObjectId(value: string | { id: string } | null) {
   return typeof value === "string" ? value : value.id;
 }
 
+function getCheckoutErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Unknown checkout error.";
+}
+
+function logCheckoutFailure(stage: string, error: unknown) {
+  console.error(
+    `[billing] Checkout failed at ${stage}: ${getCheckoutErrorMessage(error)}`
+  );
+}
+
 export async function createCheckoutSessionAction(formData: FormData) {
   const tier = validateCheckoutPlan(getFormString(formData, "tier"));
   const interval = validateBillingInterval(getFormString(formData, "interval"));
@@ -62,40 +72,72 @@ export async function createCheckoutSessionAction(formData: FormData) {
     redirect("/account?billing=already_active");
   }
 
-  const priceId = getPriceIdForPlan(tier, interval);
-  const stripeCustomerId = await getOrCreateStripeCustomerForUser(user);
+  let priceId: string;
+  try {
+    priceId = getPriceIdForPlan(tier, interval);
+  } catch (error) {
+    logCheckoutFailure("price_mapping", error);
+    redirect("/pricing?billing=checkout_unavailable");
+  }
+
+  let stripeCustomerId: string;
+  try {
+    stripeCustomerId = await getOrCreateStripeCustomerForUser(user);
+  } catch (error) {
+    logCheckoutFailure("customer_create", error);
+    redirect("/pricing?billing=checkout_unavailable");
+  }
+
   const successUrl = await getCheckoutSuccessUrl(returnPath);
   const cancelUrl = await getCheckoutCancelUrl("/pricing");
-  const stripe = getStripeClient();
+  let stripe = null;
 
-  const checkoutSession = await stripe.checkout.sessions.create({
-    cancel_url: cancelUrl,
-    client_reference_id: user.id,
-    customer: stripeCustomerId,
-    line_items: [
-      {
-        price: priceId,
-        quantity: 1,
-      },
-    ],
-    metadata: {
-      billing_interval: interval,
-      requested_tier: tier,
-      supabase_user_id: user.id,
-    },
-    mode: "subscription",
-    subscription_data: {
+  try {
+    stripe = getStripeClient();
+  } catch (error) {
+    logCheckoutFailure("stripe_client", error);
+    redirect("/pricing?billing=checkout_unavailable");
+  }
+
+  let checkoutSession;
+
+  try {
+    checkoutSession = await stripe.checkout.sessions.create({
+      cancel_url: cancelUrl,
+      client_reference_id: user.id,
+      customer: stripeCustomerId,
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
       metadata: {
         billing_interval: interval,
         requested_tier: tier,
         supabase_user_id: user.id,
       },
-    },
-    success_url: successUrl,
-  });
+      mode: "subscription",
+      subscription_data: {
+        metadata: {
+          billing_interval: interval,
+          requested_tier: tier,
+          supabase_user_id: user.id,
+        },
+      },
+      success_url: successUrl,
+    });
+  } catch (error) {
+    logCheckoutFailure("checkout_session_create", error);
+    redirect("/pricing?billing=checkout_unavailable");
+  }
 
   if (!checkoutSession.url) {
-    throw new Error("Stripe Checkout did not return a redirect URL.");
+    logCheckoutFailure(
+      "checkout_session_create",
+      new Error("Stripe Checkout did not return a redirect URL.")
+    );
+    redirect("/pricing?billing=checkout_unavailable");
   }
 
   const billingDb = asBillingClient(createSupabaseAdminClient());
@@ -116,7 +158,8 @@ export async function createCheckoutSessionAction(formData: FormData) {
     });
 
   if (auditError) {
-    throw new Error("Unable to record Stripe Checkout session.");
+    logCheckoutFailure("checkout_session_audit", auditError);
+    redirect("/pricing?billing=checkout_unavailable");
   }
 
   redirect(checkoutSession.url);
