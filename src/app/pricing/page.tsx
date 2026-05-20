@@ -166,7 +166,7 @@ const faqs = [
   {
     question: "Can I cancel?",
     answer:
-      "Billing is managed through Stripe-hosted Checkout and Customer Portal flows. Access changes apply after Stripe confirms subscription state through webhooks.",
+      "Subscriptions renew until canceled. Billing is managed through Stripe-hosted Checkout and Customer Portal flows. Access changes apply after Stripe confirms subscription state through webhooks.",
   },
   {
     question: "What is included in Premium?",
@@ -183,6 +183,11 @@ const faqs = [
     answer:
       "Payments are processed by Stripe. The portal does not store card details or run custom payment forms.",
   },
+  {
+    question: "How does software access work?",
+    answer:
+      "Premium unlocks Lite software, and Pro unlocks Lite + Pro software. Software is educational research tooling, and TradingView invite-only access may require manual admin approval.",
+  },
 ];
 
 function getFirstParam(value?: string | string[]) {
@@ -195,6 +200,10 @@ function getBillingNotice(billing?: string | string[]) {
       return "Checkout was cancelled. No subscription change was made.";
     case "no_customer":
       return "No billing account exists yet. Choose a Premium or Pro plan to start checkout.";
+    case "invalid_checkout_selection":
+      return "Choose a valid Premium or Pro billing option to continue.";
+    case "checkout_unavailable":
+      return "Checkout is temporarily unavailable. Stripe billing configuration is being verified.";
     default:
       return null;
   }
@@ -543,6 +552,7 @@ export default async function PricingPage({ searchParams }: PricingPageProps) {
               <p className="max-w-md text-sm leading-6 text-muted-foreground">
                 Payments are processed by Stripe. Subscription changes update
                 access after successful payment and webhook processing.
+                Subscriptions renew until canceled.
               </p>
             </div>
           </CardShell>

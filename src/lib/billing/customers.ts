@@ -11,6 +11,27 @@ import type {
   StripeCustomerMapping,
 } from "./types";
 
+export type StripeCustomerSetupStage =
+  | "stripe_customer_lookup"
+  | "stripe_customer_create"
+  | "stripe_customer_mapping_insert";
+
+export class StripeCustomerSetupError extends Error {
+  cause?: unknown;
+  stage: StripeCustomerSetupStage;
+
+  constructor(
+    stage: StripeCustomerSetupStage,
+    message: string,
+    cause?: unknown
+  ) {
+    super(message);
+    this.cause = cause;
+    this.name = "StripeCustomerSetupError";
+    this.stage = stage;
+  }
+}
+
 function asBillingClient(client: unknown): BillingSupabaseClient {
   return client as BillingSupabaseClient;
 }
@@ -25,7 +46,11 @@ export async function getStripeCustomerIdForUser(userId: string) {
     .maybeSingle();
 
   if (error) {
-    throw new Error("Unable to load Stripe customer mapping.");
+    throw new StripeCustomerSetupError(
+      "stripe_customer_lookup",
+      "Unable to load Stripe customer mapping.",
+      error
+    );
   }
 
   return data?.stripe_customer_id ?? null;
@@ -54,7 +79,11 @@ export async function upsertStripeCustomerMapping(
     .single();
 
   if (error) {
-    throw new Error("Unable to save Stripe customer mapping.");
+    throw new StripeCustomerSetupError(
+      "stripe_customer_mapping_insert",
+      "Unable to save Stripe customer mapping.",
+      error
+    );
   }
 
   return data;
@@ -68,12 +97,22 @@ export async function getOrCreateStripeCustomerForUser(user: User) {
   }
 
   const stripe = getStripeClient();
-  const customer = await stripe.customers.create({
-    email: user.email ?? undefined,
-    metadata: {
-      supabase_user_id: user.id,
-    },
-  });
+  let customer;
+
+  try {
+    customer = await stripe.customers.create({
+      email: user.email ?? undefined,
+      metadata: {
+        supabase_user_id: user.id,
+      },
+    });
+  } catch (error) {
+    throw new StripeCustomerSetupError(
+      "stripe_customer_create",
+      "Unable to create Stripe customer.",
+      error
+    );
+  }
 
   await upsertStripeCustomerMapping(user.id, customer.id, user.email ?? null);
 
