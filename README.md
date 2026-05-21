@@ -2,7 +2,7 @@
 
 A professional trading research portal built with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Netlify, and Supabase.
 
-The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, Phase 7 idea lifecycle refinement, Phase 8 advanced member dashboard/software library implementation, Phase 9 Stripe subscription implementation, and Phase 10 email notification infrastructure are in place for development. Phase 9 hosted Stripe test-mode deploy-preview QA has passed for Checkout, Customer Portal, webhook sync, idempotency, cancellation, payment-failure access downgrade, and access automation. Phase 10 local QA has passed, Postmark is the active email provider for deploy-preview QA, and hosted Postmark provider-send QA is pending after a fresh deploy-preview rebuild. Broker integrations, order execution, copy trading, automatic TradingView invite automation, SMS, and push notifications remain intentionally out of scope for the current build.
+The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, Phase 7 idea lifecycle refinement, Phase 8 advanced member dashboard/software library implementation, Phase 9 Stripe subscription implementation, and Phase 10 email notification infrastructure are in place for development. Phase 9 hosted Stripe test-mode deploy-preview QA has passed for Checkout, Customer Portal, webhook sync, idempotency, cancellation, payment-failure access downgrade, and access automation. Phase 10 deploy-preview QA is complete with Postmark as the active provider: local queue-only QA, deploy-preview route smoke, authenticated preferences/unsubscribe/admin notification UI checks, hosted queue-only infrastructure checks, provider-send QA to `EMAIL_TEST_RECIPIENT`, Postmark webhook checks, admin content notification publish QA, mobile checks, leak checks, cleanup, build, lint, and typecheck all passed. Production email sending remains disabled until sender/domain deliverability, legal/business review, and explicit send approval are complete. Broker integrations, order execution, copy trading, automatic TradingView invite automation, SMS, and push notifications remain intentionally out of scope for the current build.
 
 ## Phase Status
 
@@ -17,7 +17,7 @@ The public site is live as a marketing experience. Supabase schema, RLS, seed da
 - Phase 7: Complete. Structured idea lifecycle states, outcome tracking, closed idea reviews, lifecycle-aware public timelines, admin lifecycle controls, member new-since-last-visit foundation, and dashboard lifecycle widgets are implemented and deploy-preview QA has passed.
 - Phase 8: Complete. Advanced member dashboard routes, saved ideas, followed tickers, watchlist workflows, dashboard preferences, member notes, recent activity, closed reviews, gated software library, software access requests, and admin software management are implemented and verified. Anonymous and authenticated deploy-preview QA, user-owned RLS isolation, software access-control checks, admin software management QA, leak checks, mobile QA, cleanup, and local build/lint/typecheck all passed.
 - Phase 9: Complete. Stripe Checkout, Customer Portal, webhook route, billing schema migration, subscription sync helpers, pricing/account billing UI, and webhook-driven Premium/Pro access automation are implemented. Phase 9 migrations are applied, generated types are updated, hosted Stripe test-mode Checkout and Customer Portal QA passed, webhook sync/idempotency/cancellation/payment-failure downgrade QA passed, and access automation/leak checks passed.
-- Phase 10: In progress. Postmark-backed email provider support, a Resend-compatible provider abstraction, notification preferences, unsubscribe flow, content/lifecycle notification queueing, weekly digest generation, software access request emails, billing/access status emails, provider webhook event handling, and admin notification center are implemented. Local queue-only, preferences, unsubscribe, suppression, leak-check, build, lint, and typecheck QA passed. Postmark deploy-preview environment variables and webhook Basic Auth are configured; hosted Postmark provider-send QA is pending after a fresh deploy-preview rebuild.
+- Phase 10: Complete for deploy-preview QA. Postmark-backed email provider support, a Resend-compatible provider abstraction, notification preferences, unsubscribe flow, content/lifecycle notification queueing, weekly digest generation, software access request emails, billing/access status emails, provider webhook event handling, and admin notification center are implemented. Local queue-only, deploy-preview route smoke, authenticated preferences/unsubscribe/admin UI, hosted queue-only direct queue processing, controlled Postmark provider-send, hosted Postmark webhook, admin content notification publish, mobile, suppression, leak-check, cleanup, build, lint, and typecheck QA passed. Production sending remains disabled and still requires Postmark sender/domain deliverability, SPF/DKIM/DMARC review, legal/business review, and explicit send approval.
 
 ## Phase 1 Public Site
 
@@ -847,8 +847,25 @@ Phase 10 QA status:
 - Deploy preview PR #12 is available at
   `https://deploy-preview-12--trading-research-portal.netlify.app`.
 - Public/protected route smoke checks passed on deploy preview.
-- Deploy-preview provider-send QA is Yellow/pending until the Postmark env
-  changes are rebuilt and hosted provider-send QA is rerun.
+- Hosted queue-only direct queue processing passed with `EMAIL_SEND_ENABLED=false`;
+  processed notifications were skipped without sending and temporary rows were
+  cleaned up.
+- Authenticated `/account/notifications`, `/admin/notifications`, and
+  `/admin/notifications/digests` UI checks passed, including mobile checks at
+  390px width.
+- Hosted Postmark webhook QA passed for Basic Auth rejection, delivery, bounce,
+  spam complaint, open, click, linked status updates, local suppression, and
+  duplicate replay idempotency.
+- Hosted Postmark provider-send QA passed after temporarily setting
+  deploy-preview `EMAIL_SEND_ENABLED=true`, rebuilding, sending one safe test
+  notification to `EMAIL_TEST_RECIPIENT`, storing the Postmark MessageID, and
+  confirming Postmark reported `Sent` with a `Delivered` event.
+- Admin content workflow QA passed: publishing a new temporary idea with
+  "Notify eligible members by email" selected created the idea, queued
+  notifications, avoided 5xx responses, and cleanup verified zero temporary
+  idea/notification rows remained.
+- Deploy-preview gate is Green: all Phase 10 hosted QA, leak checks, cleanup,
+  build, lint, and typecheck passed.
 - Production readiness is Yellow: production sending is safely disabled, but
   production sender-domain verification, SPF/DKIM/DMARC review, legal/business
   review, and explicit send approval are still required.
@@ -874,11 +891,11 @@ Phase 10 QA status:
 
 ## Next Phase
 
-Recommended next work before any future Phase 11: complete Phase 10 hosted
-email QA after deploy-preview email env vars and provider-domain setup are
-configured.
+Recommended next work before enabling production email: complete Postmark
+sender/domain deliverability review, SPF/DKIM/DMARC review, legal/business
+approval, and a production readiness pass. Keep production sending disabled
+until explicit approval.
 
 Future planned phases:
 
-- Phase 11: To be defined after Phase 10 hosted email QA and production
-  readiness are Green.
+- Phase 11: To be defined after production email readiness and business review.

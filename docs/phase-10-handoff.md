@@ -2,16 +2,19 @@
 
 ## Status
 
-Phase 10 is implemented but remains in progress until hosted Postmark provider
-QA passes.
+Phase 10 is complete for deploy-preview QA with Postmark as the active email
+provider.
 
 The email notification system is present on branch
 `feature/phase-10-email-notifications`. Local queue-only QA, preference updates,
 unsubscribe handling, suppression behavior, leak checks, build, lint, and
 typecheck passed. Deploy-preview route smoke checks passed. Postmark is now the
 active deploy-preview provider, the Postmark server and outbound webhook are
-configured, and provider-send QA is pending after a fresh deploy-preview
-rebuild.
+configured, hosted queue-only direct queue processing passed, authenticated
+preference/admin notification UI checks passed, mobile checks passed, and hosted
+Postmark webhook QA passed. Hosted Postmark provider-send QA passed after a
+controlled deploy-preview run to `EMAIL_TEST_RECIPIENT`, and the admin content
+notification publish path passed after the hosted `502` fix.
 
 Production sending is intentionally disabled. Production email is not ready to
 enable until sender-domain verification, SPF/DKIM/DMARC review, legal/business
@@ -141,7 +144,8 @@ Generated database types include the Phase 10 tables, fields, and enums.
 - `EMAIL_SEND_ENABLED=false` keeps the system in queue/log-only mode.
 - `/api/email/process-queue` processes a limited batch only when protected by
   `EMAIL_CRON_SECRET`.
-- Sending uses the provider abstraction and Resend implementation.
+- Sending uses the provider abstraction and the active Postmark implementation;
+  Resend remains optional/legacy only if configured later.
 - `EMAIL_TEST_RECIPIENT` can redirect deploy-preview non-transactional test
   email to a safe inbox.
 - Suppressed, bounced, complained, and unsubscribed recipients are skipped.
@@ -215,18 +219,39 @@ Verified:
 - `/admin/notifications` redirects anonymous users to login.
 - `/api/email/process-queue` rejects missing secret with `401`.
 - `/api/email/digest/weekly` rejects missing secret with `401`.
-- `/api/email/webhook` rejects invalid or missing signature with `400`.
+- `/api/email/webhook` rejects missing or invalid Postmark Basic Auth with
+  `401`.
 - Public HTML/client JS secret-pattern checks passed.
+- Authenticated `/account/notifications` preferences update QA passed.
+- Token unsubscribe flow passed.
+- Admin notification center list/detail, retry, cancel, and digest dry-run QA
+  passed.
+- Mobile checks passed at 390px width for `/account/notifications`,
+  `/admin/notifications`, and `/admin/notifications/digests`.
+- Hosted queue-only direct queue processing passed with `EMAIL_SEND_ENABLED=false`:
+  temporary rows were processed as skipped, no provider IDs were required, no
+  actual sends happened, and cleanup verified zero temporary rows.
+- Hosted Postmark webhook QA passed for delivery, bounce, spam complaint, open,
+  click, linked notification updates, local suppression, and duplicate replay
+  idempotency.
 
-Blocked:
+Final hosted QA:
 
-- Deploy-preview email provider variables are not configured.
-- Provider-send QA did not run in deploy preview.
-- `provider_message_id` storage from a hosted send is not yet verified.
-- Resend delivery webhook update behavior is not yet verified in deploy preview.
-- Authenticated hosted user/admin email UI QA remains incomplete.
+- Hosted Postmark provider-send QA passed after temporarily enabling
+  deploy-preview sending, rebuilding, sending one safe test notification to
+  `EMAIL_TEST_RECIPIENT`, storing a Postmark MessageID, and confirming Postmark
+  reported `Sent` with a `Delivered` event.
+- Deploy-preview sending was restored to `EMAIL_SEND_ENABLED=false` after the
+  controlled provider-send test and the temporary notification row was cleaned
+  up.
+- Admin content notification workflow passed: submitting `/admin/ideas/new` with
+  "Notify eligible members by email" selected created a temporary published
+  idea, queued notification rows, returned no 5xx response, did not leak private
+  markers, and cleanup verified zero temporary idea/notification rows remained.
+- Resend delivery webhook update behavior remains untested in deploy preview
+  because Postmark is the active provider and Resend is legacy/optional only.
 
-Deploy-preview gate: Yellow.
+Deploy-preview gate: Green.
 
 ## Production Readiness Result
 
@@ -252,8 +277,6 @@ Before enabling production sends:
 
 ## Remaining Risks
 
-- Hosted Postmark provider-send QA is still pending until the deploy-preview
-  rebuild picks up the configured env vars.
 - Postmark production sender, SPF/DKIM, and DMARC readiness are not confirmed.
 - Production sending is intentionally disabled and should remain disabled until
   explicit approval.
@@ -265,13 +288,6 @@ Before enabling production sends:
 
 ## Recommended Next Step
 
-Push the Postmark provider support so Netlify rebuilds deploy preview with
-`EMAIL_PROVIDER=postmark`, `POSTMARK_SERVER_TOKEN`, `POSTMARK_MESSAGE_STREAM`,
-and webhook Basic Auth credentials that match `POSTMARK_WEBHOOK_USERNAME` and
-`POSTMARK_WEBHOOK_PASSWORD`. Keep `EMAIL_SEND_ENABLED=false` until queue-only
-hosted QA is complete, then enable deploy-preview test sending with
-`EMAIL_TEST_RECIPIENT` and rerun the full hosted email QA.
-
-After deploy-preview email QA is Green, update this handoff and README to mark
-Phase 10 complete. Only after that should production email domain and
-deliverability review proceed toward live sending.
+Prepare the Phase 10 PR for merge. Keep production sending disabled. Before
+live email sending, complete Postmark sender/domain deliverability review,
+SPF/DKIM/DMARC review, legal/business approval, and a production readiness pass.
