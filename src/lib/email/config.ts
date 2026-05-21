@@ -4,7 +4,11 @@ import type { EmailProviderName } from "./types";
 
 export type EmailConfig = {
   cronSecret: string;
+  postmarkMessageStream: string;
   from: string;
+  postmarkServerToken: string;
+  postmarkWebhookPassword: string;
+  postmarkWebhookUsername: string;
   provider: EmailProviderName;
   replyTo: string;
   resendApiKey: string;
@@ -30,15 +34,19 @@ function requireEmailEnv(value: string, name: string, purpose: string) {
 }
 
 export function getEmailConfig(): EmailConfig {
-  const provider = getOptionalEnv("EMAIL_PROVIDER") || "resend";
+  const provider = getOptionalEnv("EMAIL_PROVIDER") || "postmark";
 
-  if (provider !== "resend") {
+  if (provider !== "postmark" && provider !== "resend") {
     throw new Error(`Unsupported EMAIL_PROVIDER "${provider}".`);
   }
 
   return {
     cronSecret: getOptionalEnv("EMAIL_CRON_SECRET"),
     from: getOptionalEnv("EMAIL_FROM"),
+    postmarkMessageStream: getOptionalEnv("POSTMARK_MESSAGE_STREAM") || "outbound",
+    postmarkServerToken: getOptionalEnv("POSTMARK_SERVER_TOKEN"),
+    postmarkWebhookPassword: getOptionalEnv("POSTMARK_WEBHOOK_PASSWORD"),
+    postmarkWebhookUsername: getOptionalEnv("POSTMARK_WEBHOOK_USERNAME"),
     provider,
     replyTo: getOptionalEnv("EMAIL_REPLY_TO"),
     resendApiKey: getOptionalEnv("RESEND_API_KEY"),
@@ -69,6 +77,14 @@ export function requireEmailSendConfig() {
     requireEmailEnv(config.resendApiKey, "RESEND_API_KEY", "sending email");
   }
 
+  if (config.provider === "postmark") {
+    requireEmailEnv(
+      config.postmarkServerToken,
+      "POSTMARK_SERVER_TOKEN",
+      "sending email"
+    );
+  }
+
   return config;
 }
 
@@ -78,6 +94,23 @@ export function requireResendWebhookSecret() {
     "RESEND_WEBHOOK_SECRET",
     "processing Resend webhooks"
   );
+}
+
+export function requirePostmarkWebhookCredentials() {
+  const config = getEmailConfig();
+
+  return {
+    password: requireEmailEnv(
+      config.postmarkWebhookPassword,
+      "POSTMARK_WEBHOOK_PASSWORD",
+      "processing Postmark webhooks"
+    ),
+    username: requireEmailEnv(
+      config.postmarkWebhookUsername,
+      "POSTMARK_WEBHOOK_USERNAME",
+      "processing Postmark webhooks"
+    ),
+  };
 }
 
 export function requireEmailCronSecret() {

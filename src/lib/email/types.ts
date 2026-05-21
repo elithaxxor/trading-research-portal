@@ -1,6 +1,6 @@
 import type { Database, Json } from "@/types/database.types";
 
-export type EmailProviderName = "resend";
+export type EmailProviderName = "postmark" | "resend";
 
 export type NotificationCategory =
   Database["public"]["Enums"]["notification_category"];

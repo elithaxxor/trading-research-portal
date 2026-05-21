@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getEmailProviderName } from "./config";
+import { getPostmarkEmailProvider } from "./postmark";
 import { getResendEmailProvider } from "./resend";
 import type { EmailProvider, EmailSendInput } from "./types";
 
@@ -11,6 +12,10 @@ export function getEmailProvider(): EmailProvider {
 
   if (provider === "resend") {
     return getResendEmailProvider();
+  }
+
+  if (provider === "postmark") {
+    return getPostmarkEmailProvider();
   }
 
   throw new Error(`Unsupported email provider "${provider}".`);

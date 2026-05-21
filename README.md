@@ -2,7 +2,7 @@
 
 A professional trading research portal built with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Netlify, and Supabase.
 
-The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, Phase 7 idea lifecycle refinement, Phase 8 advanced member dashboard/software library implementation, and Phase 9 Stripe subscription implementation are in place for development. Phase 9 hosted Stripe test-mode deploy-preview QA has passed for Checkout, Customer Portal, webhook sync, idempotency, cancellation, payment-failure access downgrade, and access automation. Broker integrations, order execution, copy trading, automatic TradingView invite automation, and email notification backend work remain intentionally out of scope for the current build.
+The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, Phase 7 idea lifecycle refinement, Phase 8 advanced member dashboard/software library implementation, Phase 9 Stripe subscription implementation, and Phase 10 email notification infrastructure are in place for development. Phase 9 hosted Stripe test-mode deploy-preview QA has passed for Checkout, Customer Portal, webhook sync, idempotency, cancellation, payment-failure access downgrade, and access automation. Phase 10 local QA has passed, Postmark is the active email provider for deploy-preview QA, and hosted Postmark provider-send QA is pending after a fresh deploy-preview rebuild. Broker integrations, order execution, copy trading, automatic TradingView invite automation, SMS, and push notifications remain intentionally out of scope for the current build.
 
 ## Phase Status
 
@@ -17,6 +17,7 @@ The public site is live as a marketing experience. Supabase schema, RLS, seed da
 - Phase 7: Complete. Structured idea lifecycle states, outcome tracking, closed idea reviews, lifecycle-aware public timelines, admin lifecycle controls, member new-since-last-visit foundation, and dashboard lifecycle widgets are implemented and deploy-preview QA has passed.
 - Phase 8: Complete. Advanced member dashboard routes, saved ideas, followed tickers, watchlist workflows, dashboard preferences, member notes, recent activity, closed reviews, gated software library, software access requests, and admin software management are implemented and verified. Anonymous and authenticated deploy-preview QA, user-owned RLS isolation, software access-control checks, admin software management QA, leak checks, mobile QA, cleanup, and local build/lint/typecheck all passed.
 - Phase 9: Complete. Stripe Checkout, Customer Portal, webhook route, billing schema migration, subscription sync helpers, pricing/account billing UI, and webhook-driven Premium/Pro access automation are implemented. Phase 9 migrations are applied, generated types are updated, hosted Stripe test-mode Checkout and Customer Portal QA passed, webhook sync/idempotency/cancellation/payment-failure downgrade QA passed, and access automation/leak checks passed.
+- Phase 10: In progress. Postmark-backed email provider support, a Resend-compatible provider abstraction, notification preferences, unsubscribe flow, content/lifecycle notification queueing, weekly digest generation, software access request emails, billing/access status emails, provider webhook event handling, and admin notification center are implemented. Local queue-only, preferences, unsubscribe, suppression, leak-check, build, lint, and typecheck QA passed. Postmark deploy-preview environment variables and webhook Basic Auth are configured; hosted Postmark provider-send QA is pending after a fresh deploy-preview rebuild.
 
 ## Phase 1 Public Site
 
@@ -133,7 +134,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 ```
 
-Auth UI, protected routes, SSR session refresh, and account/dashboard shells are implemented in Phase 3. Payment and billing features come later.
+Auth UI, protected routes, SSR session refresh, and account/dashboard shells are implemented in Phase 3. Billing is implemented through Phase 9 Stripe-hosted Checkout/Customer Portal flows, and notification infrastructure is implemented through Phase 10.
 
 Phase 9 Stripe placeholders in `.env.example`:
 
@@ -159,24 +160,19 @@ NEXT_PUBLIC_PRO_ANNUAL_PRICE_LABEL=
 Phase 10 email provider placeholders in `.env.example`:
 
 ```bash
-EMAIL_PROVIDER=resend
+EMAIL_PROVIDER=postmark
 EMAIL_SEND_ENABLED=false
 EMAIL_FROM=
 EMAIL_REPLY_TO=
-RESEND_API_KEY=
-RESEND_WEBHOOK_SECRET=
-EMAIL_CRON_SECRET=
 EMAIL_TEST_RECIPIENT=
+EMAIL_CRON_SECRET=
+POSTMARK_SERVER_TOKEN=
+POSTMARK_MESSAGE_STREAM=outbound
+POSTMARK_WEBHOOK_USERNAME=
+POSTMARK_WEBHOOK_PASSWORD=
 ```
 
-`EMAIL_PROVIDER=resend` selects the default provider while keeping the app
-behind an email-provider abstraction so Postmark can be swapped in later if
-needed. `EMAIL_SEND_ENABLED=false` means email workflows should queue/log only
-and must not actually send. `EMAIL_TEST_RECIPIENT` can be used during
-deploy-preview QA to redirect non-transactional test email to a safe inbox.
-`EMAIL_CRON_SECRET` protects manual or scheduled digest and queue-processing
-routes. `RESEND_API_KEY` and `RESEND_WEBHOOK_SECRET` are server-only and must
-never be imported into client components or committed.
+`EMAIL_PROVIDER=postmark` selects the active Phase 10 provider. `EMAIL_SEND_ENABLED=false` means email workflows should queue/log only and must not actually send. `EMAIL_TEST_RECIPIENT` can be used during deploy-preview QA to redirect non-transactional test email to a safe inbox. `EMAIL_CRON_SECRET` protects manual or scheduled digest and queue-processing routes. `POSTMARK_SERVER_TOKEN`, `POSTMARK_WEBHOOK_USERNAME`, and `POSTMARK_WEBHOOK_PASSWORD` are server-only and must never be imported into client components or committed. Resend remains a legacy/optional provider path only if `EMAIL_PROVIDER=resend` and the matching Resend server-only variables are configured.
 
 ## Supabase Local Development
 
@@ -213,7 +209,7 @@ Row Level Security policies, and access model have been reviewed.
 The initial schema includes:
 
 - `profiles`: user profile metadata linked to Supabase Auth users.
-- `subscriptions`: subscription tier/status metadata for future billing integration.
+- `subscriptions`: subscription tier/status metadata used by Phase 9 billing sync and access automation.
 - `trading_ideas`: structured research cards with ticker, thesis, visibility, status, risk, and publication fields.
 - `idea_updates`: timestamped updates for a trading idea.
 - `idea_charts`: chart metadata for future TradingView/image/lightweight chart integrations.
@@ -221,7 +217,7 @@ The initial schema includes:
 - `tags`: reusable content labels.
 - `idea_tags`: many-to-many link table between ideas and tags.
 - `watchlist_items`: user-owned watchlist records.
-- `email_notifications`: future notification tracking records.
+- `email_notifications`: email queue/audit records extended by Phase 10 notification workflows.
 
 ## RLS Model
 
@@ -312,9 +308,8 @@ Phase 10 email environment checklist:
   Preview context, and Netlify Production context.
 - Keep `EMAIL_SEND_ENABLED=false` until provider-domain verification, email QA,
   unsubscribe handling, event logging, and leak checks pass.
-- `EMAIL_PROVIDER` defaults to `resend`; provider-specific APIs should stay
-  behind server-side email utilities so another provider such as Postmark can be
-  added later.
+- `EMAIL_PROVIDER` defaults to `postmark`; Resend remains a legacy/optional
+  provider path through the same server-side abstraction.
 - `EMAIL_FROM` must use a verified sender/domain before real sending is
   enabled.
 - `EMAIL_REPLY_TO` should be a monitored support inbox when configured.
@@ -333,9 +328,17 @@ Phase 10 email environment checklist:
   approved.
 - Do not expose `EMAIL_CRON_SECRET` in client code, logs, README examples, or
   browser-visible configuration.
-- `RESEND_API_KEY` and `RESEND_WEBHOOK_SECRET` are server-only values for
-  Netlify runtime/functions and local `.env.local`; never expose them to the
-  browser or commit them.
+- `POSTMARK_SERVER_TOKEN`, `POSTMARK_MESSAGE_STREAM`,
+  `POSTMARK_WEBHOOK_USERNAME`, and `POSTMARK_WEBHOOK_PASSWORD` are server-only
+  values for Netlify runtime/functions and local `.env.local`; never expose
+  them to the browser or commit them. `POSTMARK_MESSAGE_STREAM` should be
+  `outbound` for the default transactional stream unless Postmark is configured
+  otherwise.
+- Postmark webhooks are protected with Basic Auth credentials in the webhook
+  URL. Configure the Postmark webhook URL as
+  `https://<username>:<password>@deploy-preview-12--trading-research-portal.netlify.app/api/email/webhook`
+  for deploy-preview QA, matching the server-only Netlify
+  `POSTMARK_WEBHOOK_USERNAME` and `POSTMARK_WEBHOOK_PASSWORD` values.
 - Production sending should remain disabled until Phase 10 QA passes and
   business approval is complete.
 
@@ -685,9 +688,9 @@ Phase 8 deploy-preview QA:
 ## Phase 9 Stripe Subscriptions
 
 Phase 9 adds Stripe-hosted subscription billing and webhook-driven tier
-automation. It does not add email notification backend behavior, broker
-integrations, order execution, copy trading, automatic TradingView invite
-automation, or performance reporting.
+automation. It does not add broker integrations, order execution, copy trading,
+automatic TradingView invite automation, or performance reporting. Email
+notification infrastructure is handled separately in Phase 10.
 
 Phase 9 billing implementation:
 
@@ -761,6 +764,95 @@ Phase 9 deploy-preview QA status:
 - Frontend actions were verified not to grant tier/status directly; access
   changes only after webhook sync.
 
+## Phase 10 Email Notifications
+
+Phase 10 adds server-side email notification infrastructure with Postmark as the
+active provider and Resend retained as an optional legacy provider behind the
+same abstraction. It does not add SMS, push notifications, broker integrations,
+order execution, copy trading, automatic TradingView invite automation, or
+arbitrary admin blast emails.
+
+Phase 10 email implementation:
+
+- Postmark and optional Resend email provider utilities with server-only token
+  usage.
+- Notification preferences at `/account/notifications`.
+- Public token-based unsubscribe flow at `/unsubscribe?token=...`.
+- Safe content notification queueing for new ideas, idea updates, lifecycle
+  updates, and closed reviews.
+- Weekly digest generation for opted-in users.
+- Software access request status emails for admin-managed request updates.
+- Billing/access status emails from meaningful Stripe webhook-driven access
+  changes, without duplicating Stripe receipts.
+- Email provider webhook event capture for sent, delivered, delayed, bounced,
+  complained, failed, opened, and clicked events.
+- Admin notification center for queue/audit review, retry/cancel actions, and
+  digest dry-run/queue controls.
+
+Phase 10 routes:
+
+- `/account/notifications`
+- `/unsubscribe?token=...`
+- `/admin/notifications`
+- `/admin/notifications/[id]`
+- `/admin/notifications/digests`
+- `/api/email/process-queue`
+- `/api/email/digest/weekly`
+- `/api/email/webhook`
+
+Phase 10 notification categories:
+
+- `content`
+- `lifecycle`
+- `digest`
+- `software`
+- `billing`
+- `account`
+- `system`
+
+Phase 10 queue/send behavior:
+
+- Admin content and lifecycle workflows can optionally queue notifications for
+  eligible members.
+- Queueing inserts `email_notifications` rows with dedupe keys and safe
+  template content.
+- `EMAIL_SEND_ENABLED=false` keeps the system in queue/log-only mode.
+- `/api/email/process-queue` sends a limited batch only when protected by
+  `EMAIL_CRON_SECRET` and email sending is enabled.
+- `EMAIL_TEST_RECIPIENT` can redirect deploy-preview non-transactional test
+  messages to a safe inbox.
+- Suppressed, bounced, complained, and unsubscribed recipients are skipped.
+
+Phase 10 security model:
+
+- Email provider secrets are server-only and must never be committed or
+  imported into client components.
+- Premium/pro content is not placed directly into email bodies.
+- Free users must not receive premium/pro private content.
+- Software emails must not include Pine Script source code or private
+  implementation files.
+- Email bodies use safe summaries and protected app links.
+- Notification preferences and unsubscribe groups are enforced before sending.
+- Bounced, complained, and suppressed recipients are skipped before future
+  sends.
+- Queue and digest endpoints require `EMAIL_CRON_SECRET` and return safe counts
+  only, never recipient lists.
+
+Phase 10 QA status:
+
+- Local queue-only notification QA passed for content, lifecycle, software,
+  billing/access, and weekly digest queueing.
+- Preferences, unsubscribe, suppression, and leak-check QA passed locally.
+- Local `npm run build`, `npm run lint`, and `npx tsc --noEmit` passed.
+- Deploy preview PR #12 is available at
+  `https://deploy-preview-12--trading-research-portal.netlify.app`.
+- Public/protected route smoke checks passed on deploy preview.
+- Deploy-preview provider-send QA is Yellow/pending until the Postmark env
+  changes are rebuilt and hosted provider-send QA is rerun.
+- Production readiness is Yellow: production sending is safely disabled, but
+  production sender-domain verification, SPF/DKIM/DMARC review, legal/business
+  review, and explicit send approval are still required.
+
 ## Security Notes
 
 - Never commit `.env`, `.env.local`, `.env.development`, or `.env.production`.
@@ -773,19 +865,20 @@ Phase 9 deploy-preview QA status:
 - Stripe subscription logic is limited to Phase 9 Checkout, Customer Portal, and
   verified webhook-driven subscription sync. Frontend actions must not directly
   grant paid access.
+- Email notification sending must remain server-side, preference-aware, and
+  safe-preview-only for paid content.
 - Broker integration, order execution, copy trading, automatic TradingView
-  invite automation, and email notification backend logic remain out of scope.
+  invite automation, SMS, and push notifications remain out of scope.
 - New users remain free unless verified Stripe webhook sync updates their
   subscription state.
 
 ## Next Phase
 
-Recommended next phase after Phase 9 QA/merge: Phase 10 - Email Notifications.
-
-Phase 10 should add opt-in email notification workflows after Stripe billing is
-verified and production-ready. It should not add broker integrations, order
-execution, copy trading, or automatic TradingView invite automation.
+Recommended next work before any future Phase 11: complete Phase 10 hosted
+email QA after deploy-preview email env vars and provider-domain setup are
+configured.
 
 Future planned phases:
 
-- Phase 10: Email notifications.
+- Phase 11: To be defined after Phase 10 hosted email QA and production
+  readiness are Green.
