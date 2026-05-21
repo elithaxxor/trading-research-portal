@@ -43,6 +43,8 @@ type StoredProviderEvent = {
   provider_event_id: string | null;
 };
 
+class EmailWebhookAuthError extends Error {}
+
 const HANDLED_EVENTS = new Set([
   "email.sent",
   "email.delivered",
@@ -390,7 +392,7 @@ function verifyPostmarkBasicAuth(request: Request) {
   const authorization = request.headers.get("authorization") ?? "";
 
   if (!authorization.toLowerCase().startsWith("basic ")) {
-    throw new Error("Missing Postmark webhook authorization.");
+    throw new EmailWebhookAuthError("Missing Postmark webhook authorization.");
   }
 
   const decoded = Buffer.from(authorization.slice(6), "base64").toString(
@@ -399,7 +401,7 @@ function verifyPostmarkBasicAuth(request: Request) {
   const separatorIndex = decoded.indexOf(":");
 
   if (separatorIndex < 0) {
-    throw new Error("Invalid Postmark webhook authorization.");
+    throw new EmailWebhookAuthError("Invalid Postmark webhook authorization.");
   }
 
   const suppliedUsername = decoded.slice(0, separatorIndex);
@@ -409,7 +411,7 @@ function verifyPostmarkBasicAuth(request: Request) {
     !safeCompare(suppliedUsername, username) ||
     !safeCompare(suppliedPassword, password)
   ) {
-    throw new Error("Invalid Postmark webhook authorization.");
+    throw new EmailWebhookAuthError("Invalid Postmark webhook authorization.");
   }
 }
 
@@ -461,7 +463,15 @@ export async function POST(request: Request) {
 
   try {
     event = await verifyProviderWebhook(request, rawBody);
-  } catch {
+  } catch (error) {
+    if (error instanceof EmailWebhookAuthError) {
+      return jsonResponse(
+        { error: "Invalid email provider webhook authorization." },
+        401,
+        { "WWW-Authenticate": 'Basic realm="email-webhook"' }
+      );
+    }
+
     return jsonResponse({ error: "Invalid email provider webhook." }, 400);
   }
 
