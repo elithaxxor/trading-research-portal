@@ -18,10 +18,8 @@ import { VisibilitySelect } from "@/components/admin/forms/VisibilitySelect";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-import {
-  createTradingIdeaAction,
-  initialTradingIdeaActionState,
-} from "../actions";
+import { initialTradingIdeaActionState } from "../action-state";
+import { createTradingIdeaAction } from "../actions";
 
 export function NewIdeaForm() {
   const [title, setTitle] = useState("");

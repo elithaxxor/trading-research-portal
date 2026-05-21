@@ -33,15 +33,7 @@ import {
   shouldNotifyEligibleMembers,
 } from "@/lib/email/content-notifications";
 
-export type TradingIdeaActionState = {
-  fieldErrors?: Record<string, string>;
-  message?: string;
-  status: "idle" | "error";
-};
-
-export const initialTradingIdeaActionState: TradingIdeaActionState = {
-  status: "idle",
-};
+import type { TradingIdeaActionState } from "./action-state";
 
 function getRequiredId(formData: FormData) {
   const id = formData.get("id");
