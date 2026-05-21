@@ -303,6 +303,12 @@ function StatusTransitionForm({
           label="Major update"
           name="is_major"
         />
+        <AdminCheckbox
+          description="Queues a safe lifecycle email for opted-in members who can access this idea."
+          id={`transition-notify-email-${action.nextStatus}`}
+          label="Notify eligible members by email"
+          name="notify_email"
+        />
         <ActionNotice state={state} />
         <LifecycleSubmitButton label={action.buttonLabel} />
       </form>
@@ -351,6 +357,12 @@ function TargetHitForm({
           label="Update body"
           name="update_body"
           placeholder="Optional context for the target-hit review."
+        />
+        <AdminCheckbox
+          description="Queues a safe lifecycle email without exact target levels."
+          id={`target-notify-email-${targetNumber}`}
+          label="Notify eligible members by email"
+          name="notify_email"
         />
         <ActionNotice state={state} />
         <LifecycleSubmitButton disabled={disabled} label={`Mark Target ${targetNumber} Hit`} />
@@ -421,6 +433,12 @@ function CloseReviewForm({ idea }: { idea: AdminIdea }) {
           name="review_published"
         />
         <AdminCheckbox id="close-major" label="Major update" name="is_major" />
+        <AdminCheckbox
+          description="Queues a closed-review email only for opted-in members who can access this idea. Review details stay protected in the portal."
+          id="close-notify-email"
+          label="Notify eligible members by email"
+          name="notify_email"
+        />
         <ActionNotice state={state} />
         <LifecycleSubmitButton label="Close with Review" />
       </form>
@@ -465,6 +483,12 @@ function ReopenIdeaForm({ idea }: { idea: AdminIdea }) {
           name="update_body"
           placeholder="Optional correction note for reopening this idea."
         />
+        <AdminCheckbox
+          description="Queues a safe lifecycle email for opted-in members who can access this idea."
+          id="reopen-notify-email"
+          label="Notify eligible members by email"
+          name="notify_email"
+        />
         <ActionNotice state={state} />
         <LifecycleSubmitButton icon="reopen" label="Reopen Idea" />
       </form>
@@ -500,6 +524,14 @@ function ReviewToggleForm({
             ? "The review is currently published."
             : "The review is currently not published."}
         </p>
+        {actionKind === "publish" ? (
+          <AdminCheckbox
+            description="Queues a closed-review email for opted-in members who can access this idea."
+            id="review-toggle-notify-email"
+            label="Notify eligible members by email"
+            name="notify_email"
+          />
+        ) : null}
         <ActionNotice state={state} />
         <LifecycleSubmitButton
           label={buttonLabel}

@@ -27,6 +27,11 @@ import {
   validateSlug,
   validateTicker,
 } from "@/lib/admin/validation";
+import {
+  formatQueueResultMessage,
+  queueNewIdeaEmailNotifications,
+  shouldNotifyEligibleMembers,
+} from "@/lib/email/content-notifications";
 
 export type TradingIdeaActionState = {
   fieldErrors?: Record<string, string>;
@@ -173,6 +178,7 @@ export async function createTradingIdeaAction(
   const title = getFormValue(formData, "title");
   const slugValue = getFormValue(formData, "slug") || generateSlug(title);
   const published = getPublishedValue(formData);
+  const notifyByEmail = shouldNotifyEligibleMembers(formData);
   const fieldErrors: Record<string, string> = {};
 
   if (!title) {
@@ -285,6 +291,10 @@ export async function createTradingIdeaAction(
   try {
     const created = await createAdminIdea(payload);
     createdSlug = created.slug;
+
+    if (notifyByEmail && created.published) {
+      await queueNewIdeaEmailNotifications(created);
+    }
   } catch {
     return errorState(
       "The trading idea could not be created. Check for duplicate slugs and try again."
@@ -311,6 +321,7 @@ export async function updateTradingIdeaAction(
   const title = getFormValue(formData, "title");
   const slugValue = getFormValue(formData, "slug") || generateSlug(title);
   const published = getCurrentPublishedValue(formData, currentIdea.published);
+  const notifyByEmail = shouldNotifyEligibleMembers(formData);
   const fieldErrors: Record<string, string> = {};
 
   if (!title) {
@@ -430,8 +441,15 @@ export async function updateTradingIdeaAction(
     visibility: visibility.value,
   };
 
+  let notificationMessage = "";
+
   try {
-    await updateAdminIdea(id, payload);
+    const updated = await updateAdminIdea(id, payload);
+
+    if (notifyByEmail && !currentIdea.published && updated.published) {
+      const queueResult = await queueNewIdeaEmailNotifications(updated);
+      notificationMessage = formatQueueResultMessage(queueResult);
+    }
   } catch {
     return errorState("The trading idea could not be updated. Try again.");
   }
@@ -439,7 +457,7 @@ export async function updateTradingIdeaAction(
   revalidateIdeaPaths([currentIdea.slug, slug.value]);
 
   return {
-    message: "Trading idea saved.",
+    message: `Trading idea saved.${notificationMessage}`,
     status: "idle",
   };
 }
@@ -452,7 +470,12 @@ export async function publishTradingIdeaAction(formData: FormData) {
     throw new Error("Trading idea not found.");
   }
 
-  await publishAdminIdea(idea.id);
+  const published = await publishAdminIdea(idea.id);
+
+  if (shouldNotifyEligibleMembers(formData)) {
+    await queueNewIdeaEmailNotifications(published);
+  }
+
   revalidateIdeaPaths([idea.slug]);
 }
 

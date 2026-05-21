@@ -130,6 +130,21 @@ export async function listAdminSoftwareAccessRequests() {
   return data ?? [];
 }
 
+export async function getAdminSoftwareAccessRequestById(requestId: string) {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("software_access_requests")
+    .select("*")
+    .eq("id", requestId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error("Unable to load software access request.");
+  }
+
+  return data;
+}
+
 export async function updateSoftwareAccessRequestStatus(
   requestId: string,
   status: SoftwareAccessRequestStatus,

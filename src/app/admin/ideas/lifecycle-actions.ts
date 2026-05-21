@@ -6,6 +6,12 @@ import { getAdminIdeaById, updateAdminIdea } from "@/lib/admin/ideas";
 import { createIdeaUpdate } from "@/lib/admin/updates";
 import { requireAdmin } from "@/lib/auth/admin";
 import {
+  formatQueueResultMessage,
+  queueClosedReviewEmailNotifications,
+  queueLifecycleUpdateEmailNotifications,
+  shouldNotifyEligibleMembers,
+} from "@/lib/email/content-notifications";
+import {
   canTransitionIdeaStatus,
   getLifecycleEventTypeForStatusChange,
   shouldSetClosedAt,
@@ -127,6 +133,24 @@ function successState(message: string): LifecycleActionState {
   };
 }
 
+async function queueLifecycleEmailIfRequested({
+  formData,
+  idea,
+  update,
+}: {
+  formData: FormData;
+  idea: Awaited<ReturnType<typeof getRequiredIdea>>;
+  update: Awaited<ReturnType<typeof createIdeaUpdate>>;
+}) {
+  if (!shouldNotifyEligibleMembers(formData)) {
+    return "";
+  }
+
+  const queueResult = await queueLifecycleUpdateEmailNotifications(idea, update);
+
+  return formatQueueResultMessage(queueResult);
+}
+
 function getTargetHitColumn(targetNumber: number) {
   if (!shouldSetTargetHitAt(targetNumber)) {
     return null;
@@ -186,6 +210,7 @@ export async function transitionIdeaStatusAction(
   }
 
   const eventAt = updateResult.value.event_at;
+  let notificationMessage = "";
 
   try {
     await updateAdminIdea(ideaId, {
@@ -202,7 +227,7 @@ export async function transitionIdeaStatusAction(
         : idea.triggered_at,
     });
 
-    await createIdeaUpdate(ideaId, {
+    const update = await createIdeaUpdate(ideaId, {
       body: updateResult.value.body,
       event_at: eventAt,
       event_type: eventType,
@@ -212,13 +237,19 @@ export async function transitionIdeaStatusAction(
       status_before: idea.status,
       title: updateResult.value.title,
     });
+
+    notificationMessage = await queueLifecycleEmailIfRequested({
+      formData,
+      idea,
+      update,
+    });
   } catch {
     return errorState("The lifecycle transition could not be saved.");
   }
 
   revalidateLifecyclePaths(ideaId, idea.slug);
 
-  return successState("Lifecycle status updated.");
+  return successState(`Lifecycle status updated.${notificationMessage}`);
 }
 
 export async function markTargetHitAction(
@@ -251,6 +282,7 @@ export async function markTargetHitAction(
   }
 
   const eventAt = updateResult.value.event_at;
+  let notificationMessage = "";
 
   try {
     await updateAdminIdea(ideaId, {
@@ -259,7 +291,7 @@ export async function markTargetHitAction(
       [targetColumn]: eventAt,
     });
 
-    await createIdeaUpdate(ideaId, {
+    const update = await createIdeaUpdate(ideaId, {
       body: updateResult.value.body,
       event_at: eventAt,
       event_type: "target_hit",
@@ -269,13 +301,19 @@ export async function markTargetHitAction(
       status_before: idea.status,
       title: updateResult.value.title,
     });
+
+    notificationMessage = await queueLifecycleEmailIfRequested({
+      formData,
+      idea,
+      update,
+    });
   } catch {
     return errorState("The target-hit update could not be saved.");
   }
 
   revalidateLifecyclePaths(ideaId, idea.slug);
 
-  return successState("Target hit recorded.");
+  return successState(`Target hit recorded.${notificationMessage}`);
 }
 
 export async function closeIdeaWithReviewAction(
@@ -329,9 +367,10 @@ export async function closeIdeaWithReviewAction(
   }
 
   const eventAt = updateResult.value.event_at;
+  let notificationMessage = "";
 
   try {
-    await updateAdminIdea(ideaId, {
+    const updatedIdea = await updateAdminIdea(ideaId, {
       closed_at: idea.closed_at ?? eventAt,
       last_lifecycle_event_at: eventAt,
       lessons_learned: lessonsLearnedResult.value,
@@ -342,7 +381,7 @@ export async function closeIdeaWithReviewAction(
       status: "closed",
     });
 
-    await createIdeaUpdate(ideaId, {
+    const update = await createIdeaUpdate(ideaId, {
       body: updateResult.value.body,
       event_at: eventAt,
       event_type: eventType,
@@ -352,13 +391,20 @@ export async function closeIdeaWithReviewAction(
       status_before: idea.status,
       title: updateResult.value.title,
     });
+
+    if (shouldNotifyEligibleMembers(formData)) {
+      const queueResult = reviewPublished
+        ? await queueClosedReviewEmailNotifications(updatedIdea)
+        : await queueLifecycleUpdateEmailNotifications(updatedIdea, update);
+      notificationMessage = formatQueueResultMessage(queueResult);
+    }
   } catch {
     return errorState("The idea review could not be saved.");
   }
 
   revalidateLifecyclePaths(ideaId, idea.slug);
 
-  return successState("Idea closed with review.");
+  return successState(`Idea closed with review.${notificationMessage}`);
 }
 
 export async function reopenIdeaAction(
@@ -395,6 +441,7 @@ export async function reopenIdeaAction(
   }
 
   const eventAt = updateResult.value.event_at;
+  let notificationMessage = "";
 
   try {
     await updateAdminIdea(ideaId, {
@@ -402,7 +449,7 @@ export async function reopenIdeaAction(
       status: requestedStatus,
     });
 
-    await createIdeaUpdate(ideaId, {
+    const update = await createIdeaUpdate(ideaId, {
       body: updateResult.value.body,
       event_at: eventAt,
       event_type: "status_change",
@@ -412,13 +459,19 @@ export async function reopenIdeaAction(
       status_before: idea.status,
       title: updateResult.value.title,
     });
+
+    notificationMessage = await queueLifecycleEmailIfRequested({
+      formData,
+      idea,
+      update,
+    });
   } catch {
     return errorState("The idea could not be reopened.");
   }
 
   revalidateLifecyclePaths(ideaId, idea.slug);
 
-  return successState("Idea reopened.");
+  return successState(`Idea reopened.${notificationMessage}`);
 }
 
 export async function publishReviewAction(
@@ -430,19 +483,26 @@ export async function publishReviewAction(
   const idea = await getRequiredIdea(ideaId);
   const publishedAt = idea.review_published_at ?? new Date().toISOString();
 
+  let notificationMessage = "";
+
   try {
-    await updateAdminIdea(ideaId, {
+    const updatedIdea = await updateAdminIdea(ideaId, {
       last_lifecycle_event_at: publishedAt,
       review_published: true,
       review_published_at: publishedAt,
     });
+
+    if (shouldNotifyEligibleMembers(formData)) {
+      const queueResult = await queueClosedReviewEmailNotifications(updatedIdea);
+      notificationMessage = formatQueueResultMessage(queueResult);
+    }
   } catch {
     return errorState("The review could not be published.");
   }
 
   revalidateLifecyclePaths(ideaId, idea.slug);
 
-  return successState("Review published.");
+  return successState(`Review published.${notificationMessage}`);
 }
 
 export async function unpublishReviewAction(

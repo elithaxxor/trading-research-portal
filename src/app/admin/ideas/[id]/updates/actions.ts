@@ -10,10 +10,17 @@ import {
 } from "@/lib/admin/updates";
 import type {
   AdminIdeaStatus,
+  AdminIdeaUpdateRecord,
   CreateIdeaUpdateInput,
   UpdateIdeaUpdateInput,
 } from "@/lib/admin/types";
 import { requireAdmin } from "@/lib/auth/admin";
+import {
+  formatQueueResultMessage,
+  queueIdeaUpdateEmailNotifications,
+  queueLifecycleUpdateEmailNotifications,
+  shouldNotifyEligibleMembers,
+} from "@/lib/email/content-notifications";
 import { validateLifecycleUpdateInput } from "@/lib/lifecycle/validation";
 
 export type IdeaUpdateActionState = {
@@ -81,6 +88,29 @@ function revalidateUpdatePaths(ideaId: string, slug: string) {
   revalidatePath(`/ideas/${slug}`);
 }
 
+async function queueUpdateNotificationIfRequested({
+  formData,
+  idea,
+  update,
+}: {
+  formData: FormData;
+  idea: Awaited<ReturnType<typeof getParentIdea>>;
+  update: AdminIdeaUpdateRecord;
+}) {
+  if (!shouldNotifyEligibleMembers(formData)) {
+    return "";
+  }
+
+  const queueResult =
+    update.event_type !== "note" ||
+    update.status_after_update ||
+    update.outcome_after
+      ? await queueLifecycleUpdateEmailNotifications(idea, update)
+      : await queueIdeaUpdateEmailNotifications(idea, update);
+
+  return formatQueueResultMessage(queueResult);
+}
+
 function buildIdeaUpdateInput(
   formData: FormData,
   currentStatus: AdminIdeaStatus
@@ -144,8 +174,10 @@ export async function createIdeaUpdateAction(
     return errorState("Review the update fields and try again.", fieldErrors);
   }
 
+  let notificationMessage = "";
+
   try {
-    await createIdeaUpdate(ideaId, input as CreateIdeaUpdateInput);
+    const update = await createIdeaUpdate(ideaId, input as CreateIdeaUpdateInput);
 
     if (statusAfterUpdate) {
       await updateAdminIdea(ideaId, {
@@ -157,6 +189,12 @@ export async function createIdeaUpdateAction(
         last_lifecycle_event_at: eventAt,
       });
     }
+
+    notificationMessage = await queueUpdateNotificationIfRequested({
+      formData,
+      idea,
+      update,
+    });
   } catch {
     return errorState("The idea update could not be created.");
   }
@@ -164,7 +202,7 @@ export async function createIdeaUpdateAction(
   revalidateUpdatePaths(ideaId, idea.slug);
 
   return {
-    message: "Idea update created.",
+    message: `Idea update created.${notificationMessage}`,
     status: "idle",
   };
 }
@@ -185,8 +223,10 @@ export async function updateIdeaUpdateAction(
     return errorState("Review the update fields and try again.", fieldErrors);
   }
 
+  let notificationMessage = "";
+
   try {
-    await updateIdeaUpdate(updateId, input);
+    const update = await updateIdeaUpdate(updateId, input);
 
     if (statusAfterUpdate) {
       await updateAdminIdea(ideaId, {
@@ -198,6 +238,12 @@ export async function updateIdeaUpdateAction(
         last_lifecycle_event_at: eventAt,
       });
     }
+
+    notificationMessage = await queueUpdateNotificationIfRequested({
+      formData,
+      idea,
+      update,
+    });
   } catch {
     return errorState("The idea update could not be saved.");
   }
@@ -205,7 +251,7 @@ export async function updateIdeaUpdateAction(
   revalidateUpdatePaths(ideaId, idea.slug);
 
   return {
-    message: "Idea update saved.",
+    message: `Idea update saved.${notificationMessage}`,
     status: "idle",
   };
 }

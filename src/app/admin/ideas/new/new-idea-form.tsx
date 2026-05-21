@@ -212,6 +212,12 @@ export function NewIdeaForm() {
           label="Publish immediately"
           name="published"
         />
+        <AdminCheckbox
+          description="Queues safe preview emails for opted-in members who can access this idea. Sending still depends on the email queue configuration."
+          id="notify-email"
+          label="Notify eligible members by email"
+          name="notify_email"
+        />
         <AdminTextInput
           description="Optional. Leave blank to use the current time when publishing."
           error={fieldError("published_at")}

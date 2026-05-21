@@ -156,6 +156,28 @@ NEXT_PUBLIC_PRO_MONTHLY_PRICE_LABEL=
 NEXT_PUBLIC_PRO_ANNUAL_PRICE_LABEL=
 ```
 
+Phase 10 email provider placeholders in `.env.example`:
+
+```bash
+EMAIL_PROVIDER=resend
+EMAIL_SEND_ENABLED=false
+EMAIL_FROM=
+EMAIL_REPLY_TO=
+RESEND_API_KEY=
+RESEND_WEBHOOK_SECRET=
+EMAIL_CRON_SECRET=
+EMAIL_TEST_RECIPIENT=
+```
+
+`EMAIL_PROVIDER=resend` selects the default provider while keeping the app
+behind an email-provider abstraction so Postmark can be swapped in later if
+needed. `EMAIL_SEND_ENABLED=false` means email workflows should queue/log only
+and must not actually send. `EMAIL_TEST_RECIPIENT` can be used during
+deploy-preview QA to redirect non-transactional test email to a safe inbox.
+`EMAIL_CRON_SECRET` protects manual or scheduled digest and queue-processing
+routes. `RESEND_API_KEY` and `RESEND_WEBHOOK_SECRET` are server-only and must
+never be imported into client components or committed.
+
 ## Supabase Local Development
 
 Phase 2 introduced Supabase CLI project files and migrations for schema work.
@@ -283,6 +305,39 @@ Phase 9 Stripe environment checklist:
 - Stripe keys, webhook secrets, and real price IDs must never be committed.
 - Checkout and the Customer Portal are Stripe-hosted flows.
 - Subscription tier changes in Supabase must be driven by verified Stripe webhook events, not by frontend clicks or client-submitted tier values.
+
+Phase 10 email environment checklist:
+
+- Configure email variables separately in local `.env.local`, Netlify Deploy
+  Preview context, and Netlify Production context.
+- Keep `EMAIL_SEND_ENABLED=false` until provider-domain verification, email QA,
+  unsubscribe handling, event logging, and leak checks pass.
+- `EMAIL_PROVIDER` defaults to `resend`; provider-specific APIs should stay
+  behind server-side email utilities so another provider such as Postmark can be
+  added later.
+- `EMAIL_FROM` must use a verified sender/domain before real sending is
+  enabled.
+- `EMAIL_REPLY_TO` should be a monitored support inbox when configured.
+- `EMAIL_TEST_RECIPIENT` may redirect deploy-preview non-transactional test
+  messages to a safe inbox.
+- `EMAIL_CRON_SECRET` must protect any manual or scheduled digest and queue
+  processing routes.
+- Phase 10 queue processing is exposed through protected POST endpoints:
+  `/api/email/process-queue` processes a limited batch of queued emails and
+  `/api/email/digest/weekly` builds and queues weekly digests. Both require
+  `EMAIL_CRON_SECRET` via `Authorization: Bearer ...`, `x-email-cron-secret`,
+  or `x-cron-secret`; responses return safe counts only, never recipients.
+- These endpoints can be triggered manually, by a scheduler, or by a future
+  scheduled function. Supabase Cron or another scheduler can call the protected
+  endpoint later, but production cron is not configured until explicitly
+  approved.
+- Do not expose `EMAIL_CRON_SECRET` in client code, logs, README examples, or
+  browser-visible configuration.
+- `RESEND_API_KEY` and `RESEND_WEBHOOK_SECRET` are server-only values for
+  Netlify runtime/functions and local `.env.local`; never expose them to the
+  browser or commit them.
+- Production sending should remain disabled until Phase 10 QA passes and
+  business approval is complete.
 
 For deploy previews, `NEXT_PUBLIC_SITE_URL` must not be set to localhost. It can
 be the production Netlify URL while auth server actions use the current preview

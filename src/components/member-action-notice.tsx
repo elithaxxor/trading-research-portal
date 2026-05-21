@@ -30,6 +30,10 @@ const noticeMessages: Record<
     message: "Dashboard preferences saved.",
     tone: "success",
   },
+  "notification-preferences-saved": {
+    message: "Notification preferences saved.",
+    tone: "success",
+  },
   saved: {
     message: "Idea saved to your dashboard.",
     tone: "success",
