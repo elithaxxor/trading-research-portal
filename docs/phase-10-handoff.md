@@ -34,7 +34,8 @@ Phase 10 adds server-side email notification infrastructure:
 - Software access request status emails.
 - Billing/access status emails from meaningful Stripe webhook-driven access
   changes.
-- Resend provider webhook event handling.
+- Optional legacy Resend provider webhook handling, used only if
+  `EMAIL_PROVIDER=resend` is configured later.
 - Admin notification center for queue/audit review, retry/cancel actions, and
   digest controls.
 
