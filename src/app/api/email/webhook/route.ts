@@ -388,7 +388,6 @@ function safeCompare(value: string, expected: string) {
 }
 
 function verifyPostmarkBasicAuth(request: Request) {
-  const { password, username } = requirePostmarkWebhookCredentials();
   const authorization = request.headers.get("authorization") ?? "";
 
   if (!authorization.toLowerCase().startsWith("basic ")) {
@@ -406,10 +405,17 @@ function verifyPostmarkBasicAuth(request: Request) {
 
   const suppliedUsername = decoded.slice(0, separatorIndex);
   const suppliedPassword = decoded.slice(separatorIndex + 1);
+  let credentials: ReturnType<typeof requirePostmarkWebhookCredentials>;
+
+  try {
+    credentials = requirePostmarkWebhookCredentials();
+  } catch {
+    throw new EmailWebhookAuthError("Postmark webhook authorization unavailable.");
+  }
 
   if (
-    !safeCompare(suppliedUsername, username) ||
-    !safeCompare(suppliedPassword, password)
+    !safeCompare(suppliedUsername, credentials.username) ||
+    !safeCompare(suppliedPassword, credentials.password)
   ) {
     throw new EmailWebhookAuthError("Invalid Postmark webhook authorization.");
   }
