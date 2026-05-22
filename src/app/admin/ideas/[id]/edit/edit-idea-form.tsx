@@ -21,9 +21,9 @@ import { buttonVariants } from "@/components/ui/button";
 import type { AdminIdea } from "@/lib/admin/types";
 import { cn } from "@/lib/utils";
 
+import { initialTradingIdeaActionState } from "../../action-state";
 import {
   deleteTradingIdeaAction,
-  initialTradingIdeaActionState,
   publishTradingIdeaAction,
   unpublishTradingIdeaAction,
   updateTradingIdeaAction,
@@ -243,6 +243,12 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
             label="Published"
             name="published"
           />
+          <AdminCheckbox
+            description="Only queues safe preview emails when this save publishes a draft idea. It does not include protected levels or thesis details."
+            id="notify-email"
+            label="Notify eligible members by email"
+            name="notify_email"
+          />
           <AdminTextInput
             defaultValue={toDateTimeLocalValue(idea.published_at)}
             description="Optional. If publishing with no date, the current time is used."
@@ -286,6 +292,14 @@ export function EditIdeaForm({ idea }: EditIdeaFormProps) {
               }
             >
               <input name="id" type="hidden" value={idea.id} />
+              {!idea.published ? (
+                <AdminCheckbox
+                  description="Queues a safe new-idea email for opted-in members after publishing."
+                  id="publish-notify-email"
+                  label="Notify eligible members by email"
+                  name="notify_email"
+                />
+              ) : null}
               <PublishToggleButton published={idea.published} title={idea.title} />
             </form>
             <form action={deleteTradingIdeaAction}>

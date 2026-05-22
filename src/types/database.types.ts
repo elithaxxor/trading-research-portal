@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -14,41 +14,232 @@ export type Database = {
   }
   public: {
     Tables: {
+      email_digest_runs: {
+        Row: {
+          completed_at: string | null
+          error: string | null
+          failed_count: number
+          id: string
+          metadata: Json
+          recipient_count: number
+          run_key: string
+          sent_count: number
+          skipped_count: number
+          started_at: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          error?: string | null
+          failed_count?: number
+          id?: string
+          metadata?: Json
+          recipient_count?: number
+          run_key: string
+          sent_count?: number
+          skipped_count?: number
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          error?: string | null
+          failed_count?: number
+          id?: string
+          metadata?: Json
+          recipient_count?: number
+          run_key?: string
+          sent_count?: number
+          skipped_count?: number
+          started_at?: string
+          status?: string
+        }
+        Relationships: []
+      }
       email_notifications: {
         Row: {
+          bounced_at: string | null
+          category: Database["public"]["Enums"]["notification_category"] | null
+          channel: Database["public"]["Enums"]["notification_channel"]
+          complained_at: string | null
           content_id: string | null
           content_type: string | null
           created_at: string
+          dedupe_key: string | null
+          delivered_at: string | null
+          failed_at: string | null
+          html_body: string | null
           id: string
+          last_error: string | null
+          max_retries: number
+          metadata: Json
           notification_type: Database["public"]["Enums"]["notification_type"]
+          preview_text: string | null
+          provider: string | null
           provider_message_id: string | null
+          queued_at: string
+          recipient_email: string | null
+          retry_count: number
+          send_after: string | null
           sent_at: string | null
-          status: Database["public"]["Enums"]["notification_status"]
+          status: Database["public"]["Enums"]["email_notification_status"]
           subject: string | null
+          suppressed_at: string | null
+          template_key: string | null
+          text_body: string | null
+          unsubscribe_group:
+            | Database["public"]["Enums"]["email_unsubscribe_group"]
+            | null
+          updated_at: string
           user_id: string | null
         }
         Insert: {
+          bounced_at?: string | null
+          category?: Database["public"]["Enums"]["notification_category"] | null
+          channel?: Database["public"]["Enums"]["notification_channel"]
+          complained_at?: string | null
           content_id?: string | null
           content_type?: string | null
           created_at?: string
+          dedupe_key?: string | null
+          delivered_at?: string | null
+          failed_at?: string | null
+          html_body?: string | null
           id?: string
+          last_error?: string | null
+          max_retries?: number
+          metadata?: Json
           notification_type: Database["public"]["Enums"]["notification_type"]
+          preview_text?: string | null
+          provider?: string | null
           provider_message_id?: string | null
+          queued_at?: string
+          recipient_email?: string | null
+          retry_count?: number
+          send_after?: string | null
           sent_at?: string | null
-          status?: Database["public"]["Enums"]["notification_status"]
+          status?: Database["public"]["Enums"]["email_notification_status"]
           subject?: string | null
+          suppressed_at?: string | null
+          template_key?: string | null
+          text_body?: string | null
+          unsubscribe_group?:
+            | Database["public"]["Enums"]["email_unsubscribe_group"]
+            | null
+          updated_at?: string
           user_id?: string | null
         }
         Update: {
+          bounced_at?: string | null
+          category?: Database["public"]["Enums"]["notification_category"] | null
+          channel?: Database["public"]["Enums"]["notification_channel"]
+          complained_at?: string | null
           content_id?: string | null
           content_type?: string | null
           created_at?: string
+          dedupe_key?: string | null
+          delivered_at?: string | null
+          failed_at?: string | null
+          html_body?: string | null
           id?: string
+          last_error?: string | null
+          max_retries?: number
+          metadata?: Json
           notification_type?: Database["public"]["Enums"]["notification_type"]
+          preview_text?: string | null
+          provider?: string | null
           provider_message_id?: string | null
+          queued_at?: string
+          recipient_email?: string | null
+          retry_count?: number
+          send_after?: string | null
           sent_at?: string | null
-          status?: Database["public"]["Enums"]["notification_status"]
+          status?: Database["public"]["Enums"]["email_notification_status"]
           subject?: string | null
+          suppressed_at?: string | null
+          template_key?: string | null
+          text_body?: string | null
+          unsubscribe_group?:
+            | Database["public"]["Enums"]["email_unsubscribe_group"]
+            | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      email_provider_events: {
+        Row: {
+          email_notification_id: string | null
+          event_type: string
+          id: string
+          payload: Json
+          provider: string
+          provider_event_id: string | null
+          provider_message_id: string | null
+          received_at: string
+          recipient_email: string | null
+        }
+        Insert: {
+          email_notification_id?: string | null
+          event_type: string
+          id?: string
+          payload?: Json
+          provider: string
+          provider_event_id?: string | null
+          provider_message_id?: string | null
+          received_at?: string
+          recipient_email?: string | null
+        }
+        Update: {
+          email_notification_id?: string | null
+          event_type?: string
+          id?: string
+          payload?: Json
+          provider?: string
+          provider_event_id?: string | null
+          provider_message_id?: string | null
+          received_at?: string
+          recipient_email?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "email_provider_events_email_notification_id_fkey"
+            columns: ["email_notification_id"]
+            isOneToOne: false
+            referencedRelation: "email_notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_unsubscribes: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          reason: string | null
+          token: string
+          unsubscribe_group: Database["public"]["Enums"]["email_unsubscribe_group"]
+          unsubscribed_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          reason?: string | null
+          token: string
+          unsubscribe_group: Database["public"]["Enums"]["email_unsubscribe_group"]
+          unsubscribed_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          reason?: string | null
+          token?: string
+          unsubscribe_group?: Database["public"]["Enums"]["email_unsubscribe_group"]
+          unsubscribed_at?: string
           user_id?: string | null
         }
         Relationships: []
@@ -299,6 +490,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notification_preferences: {
+        Row: {
+          billing_account_updates: boolean
+          closed_reviews: boolean
+          content_idea_updates: boolean
+          content_new_ideas: boolean
+          created_at: string
+          digest_day_of_week: number
+          digest_time_utc: string
+          email_enabled: boolean
+          lifecycle_updates: boolean
+          software_access_updates: boolean
+          updated_at: string
+          user_id: string
+          weekly_digest: boolean
+        }
+        Insert: {
+          billing_account_updates?: boolean
+          closed_reviews?: boolean
+          content_idea_updates?: boolean
+          content_new_ideas?: boolean
+          created_at?: string
+          digest_day_of_week?: number
+          digest_time_utc?: string
+          email_enabled?: boolean
+          lifecycle_updates?: boolean
+          software_access_updates?: boolean
+          updated_at?: string
+          user_id: string
+          weekly_digest?: boolean
+        }
+        Update: {
+          billing_account_updates?: boolean
+          closed_reviews?: boolean
+          content_idea_updates?: boolean
+          content_new_ideas?: boolean
+          created_at?: string
+          digest_day_of_week?: number
+          digest_time_utc?: string
+          email_enabled?: boolean
+          lifecycle_updates?: boolean
+          software_access_updates?: boolean
+          updated_at?: string
+          user_id?: string
+          weekly_digest?: boolean
+        }
+        Relationships: []
       }
       posts: {
         Row: {
@@ -1128,6 +1367,24 @@ export type Database = {
         | "other"
       chart_type: "tradingview_embed" | "image" | "lightweight_chart"
       content_visibility: "free" | "premium" | "pro"
+      email_notification_status:
+        | "queued"
+        | "sending"
+        | "sent"
+        | "delivered"
+        | "failed"
+        | "bounced"
+        | "complained"
+        | "suppressed"
+        | "skipped"
+        | "canceled"
+      email_unsubscribe_group:
+        | "all"
+        | "content_updates"
+        | "lifecycle_updates"
+        | "weekly_digest"
+        | "software_updates"
+        | "billing_account"
       idea_bias: "long" | "short" | "neutral" | "watch"
       idea_lifecycle_event_type:
         | "note"
@@ -1172,6 +1429,15 @@ export type Database = {
         | "lifecycle_recent"
         | "status"
         | "ticker"
+      notification_category:
+        | "content"
+        | "lifecycle"
+        | "digest"
+        | "software"
+        | "billing"
+        | "account"
+        | "system"
+      notification_channel: "email"
       notification_status: "pending" | "sent" | "failed"
       notification_type:
         | "new_idea"
@@ -1352,6 +1618,26 @@ export const Constants = {
       ],
       chart_type: ["tradingview_embed", "image", "lightweight_chart"],
       content_visibility: ["free", "premium", "pro"],
+      email_notification_status: [
+        "queued",
+        "sending",
+        "sent",
+        "delivered",
+        "failed",
+        "bounced",
+        "complained",
+        "suppressed",
+        "skipped",
+        "canceled",
+      ],
+      email_unsubscribe_group: [
+        "all",
+        "content_updates",
+        "lifecycle_updates",
+        "weekly_digest",
+        "software_updates",
+        "billing_account",
+      ],
       idea_bias: ["long", "short", "neutral", "watch"],
       idea_lifecycle_event_type: [
         "note",
@@ -1401,6 +1687,16 @@ export const Constants = {
         "status",
         "ticker",
       ],
+      notification_category: [
+        "content",
+        "lifecycle",
+        "digest",
+        "software",
+        "billing",
+        "account",
+        "system",
+      ],
+      notification_channel: ["email"],
       notification_status: ["pending", "sent", "failed"],
       notification_type: [
         "new_idea",

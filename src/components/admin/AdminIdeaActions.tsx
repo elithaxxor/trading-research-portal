@@ -57,6 +57,17 @@ export function AdminIdeaActions({
       </Link>
       <form action={published ? unpublishIdeaAction : publishIdeaAction}>
         <input name="id" type="hidden" value={id} />
+        {!published ? (
+          <label className="mb-2 flex items-center gap-2 text-xs text-muted-foreground">
+            <input
+              className="size-3.5 rounded border border-input bg-background accent-primary"
+              name="notify_email"
+              type="checkbox"
+            />
+            <span aria-hidden="true">Notify</span>
+            <span className="sr-only"> eligible members by email</span>
+          </label>
+        ) : null}
         <IdeaActionButton
           confirmMessage={
             published

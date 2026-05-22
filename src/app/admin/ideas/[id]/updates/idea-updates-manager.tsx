@@ -58,7 +58,7 @@ export function IdeaUpdatesManager({
   return (
     <div className="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
       <AdminFormSection
-        description="Create timestamped update-log entries. Email alerts are not active yet and will come in a later phase."
+        description="Create timestamped update-log entries. Optional email notifications use safe preview copy and protected portal links."
         title="Create update"
       >
         <form action={formAction} className="flex flex-col gap-5">
@@ -117,6 +117,12 @@ export function IdeaUpdatesManager({
             id="new-update-major"
             label="Major update"
             name="is_major"
+          />
+          <AdminCheckbox
+            description="Queues a safe email for opted-in members who can access this idea. The full update body stays in the protected portal."
+            id="new-update-notify-email"
+            label="Notify eligible members by email"
+            name="notify_email"
           />
           <CreateUpdateButton />
         </form>
@@ -275,6 +281,12 @@ function UpdateEditor({
             id={`update-major-${update.id}`}
             label="Major update"
             name="is_major"
+          />
+          <AdminCheckbox
+            description="Queues a safe email for opted-in members who can access this idea. Default off to avoid duplicate announcements."
+            id={`update-notify-email-${update.id}`}
+            label="Notify eligible members by email"
+            name="notify_email"
           />
           <dl className="grid gap-3 rounded-lg border border-border bg-background/50 p-3 text-sm md:grid-cols-2">
             <TimelineMeta

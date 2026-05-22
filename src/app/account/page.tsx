@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
   ArrowLeft,
+  Bell,
   CreditCard,
   ShieldCheck,
   UserRound,
@@ -228,6 +229,15 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
               >
                 Billing
               </Link>
+              <Link
+                className={cn(
+                  buttonVariants({ size: "lg", variant: "outline" }),
+                  "w-full sm:w-auto"
+                )}
+                href="/account/notifications"
+              >
+                Notifications
+              </Link>
               <form action={signOutAction}>
                 <SignOutSubmitButton className="w-full sm:w-auto" />
               </form>
@@ -370,6 +380,33 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
                     Account data is loaded server-side through Supabase RLS
                     using the current user session, not an admin client.
                   </p>
+                </div>
+              </div>
+            </CardShell>
+
+            <CardShell padding="lg">
+              <div className="flex items-start gap-4">
+                <div className="flex size-11 items-center justify-center rounded-lg border border-border bg-secondary text-primary">
+                  <Bell aria-hidden />
+                </div>
+                <div>
+                  <Badge tone="muted">Email preferences</Badge>
+                  <h2 className="mt-3 text-2xl font-semibold text-foreground">
+                    Notification controls
+                  </h2>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    Manage optional content, lifecycle, digest, software, and
+                    account email preferences.
+                  </p>
+                  <Link
+                    className={cn(
+                      buttonVariants({ size: "sm", variant: "outline" }),
+                      "mt-4"
+                    )}
+                    href="/account/notifications"
+                  >
+                    Manage Notifications
+                  </Link>
                 </div>
               </div>
             </CardShell>

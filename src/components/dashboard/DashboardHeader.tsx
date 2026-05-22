@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, UserCircle } from "lucide-react";
+import { ArrowLeft, Bell, UserCircle } from "lucide-react";
 
 import { signOutAction } from "@/app/(auth)/actions";
 import { SignOutSubmitButton } from "@/components/sign-out-submit-button";
@@ -51,6 +51,13 @@ export function DashboardHeader({
           >
             <UserCircle data-icon="inline-start" />
             Account
+          </Link>
+          <Link
+            className={cn(buttonVariants({ size: "sm", variant: "outline" }))}
+            href="/account/notifications"
+          >
+            <Bell data-icon="inline-start" />
+            Notifications
           </Link>
           <form action={signOutAction}>
             <SignOutSubmitButton size="sm" variant="outline" />

@@ -2,6 +2,7 @@ import "server-only";
 
 import type Stripe from "stripe";
 
+import { queueBillingAccessStatusEmailIfChanged } from "@/lib/email/billing-notifications";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -269,6 +270,15 @@ export async function syncSubscriptionFromStripe(
     sourceEventId,
     stripeCustomerId: customerId,
     stripeSubscriptionId: subscription.id,
+    userId,
+  });
+
+  await queueBillingAccessStatusEmailIfChanged({
+    newStatus,
+    newTier,
+    previousStatus: previousSubscription?.status ?? null,
+    previousTier: previousSubscription?.tier ?? null,
+    sourceEventId,
     userId,
   });
 

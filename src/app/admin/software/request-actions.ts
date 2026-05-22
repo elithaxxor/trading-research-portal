@@ -4,7 +4,11 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { requireAdmin } from "@/lib/auth/admin";
-import { updateSoftwareAccessRequestStatus } from "@/lib/software/requests";
+import { queueSoftwareAccessStatusEmailNotification } from "@/lib/email/software-notifications";
+import {
+  getAdminSoftwareAccessRequestById,
+  updateSoftwareAccessRequestStatus,
+} from "@/lib/software/requests";
 import type { SoftwareAccessRequestStatus } from "@/lib/software/types";
 import { validateSoftwareAccessRequestStatus } from "@/lib/software/validation";
 
@@ -31,8 +35,18 @@ export async function updateSoftwareAccessRequestAction(formData: FormData) {
     getFormValue(formData, "status")
   ) as SoftwareAccessRequestStatus;
   const adminNote = getFormValue(formData, "admin_note");
+  const existingRequest = await getAdminSoftwareAccessRequestById(requestId);
+  const previousStatus = existingRequest?.status;
 
-  await updateSoftwareAccessRequestStatus(requestId, status, adminNote);
+  const updatedRequest = await updateSoftwareAccessRequestStatus(
+    requestId,
+    status,
+    adminNote
+  );
+
+  if (previousStatus !== updatedRequest.status) {
+    await queueSoftwareAccessStatusEmailNotification(updatedRequest);
+  }
 
   revalidatePath("/admin/software");
   revalidatePath("/admin/software/requests");

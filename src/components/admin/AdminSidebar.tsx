@@ -4,6 +4,7 @@ import {
   FileText,
   FolderKanban,
   LayoutDashboard,
+  Mail,
   Newspaper,
   Package,
   Tag,
@@ -46,6 +47,11 @@ const adminLinks = [
     href: "/admin/software",
     icon: Package,
     label: "Software",
+  },
+  {
+    href: "/admin/notifications",
+    icon: Mail,
+    label: "Notifications",
   },
 ];
 

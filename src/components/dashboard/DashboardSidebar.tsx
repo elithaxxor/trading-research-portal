@@ -60,6 +60,11 @@ const dashboardLinks = [
     icon: UserCircle,
     label: "Account",
   },
+  {
+    href: "/account/notifications",
+    icon: Bell,
+    label: "Notifications",
+  },
 ];
 
 type DashboardSidebarProps = {
