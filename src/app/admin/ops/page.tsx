@@ -20,6 +20,11 @@ import { Badge } from "@/components/badge";
 import { CardShell } from "@/components/card-shell";
 import { buttonVariants } from "@/components/ui/button";
 import { requireAdmin } from "@/lib/auth/admin";
+import {
+  formatFeatureFlagState,
+  getFeatureFlagTone,
+} from "@/lib/flags/format";
+import { listFeatureFlags } from "@/lib/flags/server";
 import { getAdminOpsOverview } from "@/lib/ops/metrics";
 import { listReadinessChecks } from "@/lib/ops/readiness";
 import { formatMetricDate } from "@/lib/ops/format";
@@ -69,6 +74,7 @@ export default async function AdminOpsPage() {
     getAdminOpsOverview(),
     listReadinessChecks(),
   ]);
+  const featureFlags = listFeatureFlags();
   const build = getBuildSummary();
   const queuedEmailCount = bucketCount(
     overview.email.notificationsByStatus,
@@ -108,6 +114,30 @@ export default async function AdminOpsPage() {
               href="/admin/ops/incidents"
             >
               Incidents
+            </Link>
+            <Link
+              className={cn(buttonVariants({ size: "lg", variant: "outline" }))}
+              href="/admin/ops/launch"
+            >
+              Launch
+            </Link>
+            <Link
+              className={cn(buttonVariants({ size: "lg", variant: "outline" }))}
+              href="/admin/ops/email"
+            >
+              Email
+            </Link>
+            <Link
+              className={cn(buttonVariants({ size: "lg", variant: "outline" }))}
+              href="/admin/ops/stripe"
+            >
+              Stripe
+            </Link>
+            <Link
+              className={cn(buttonVariants({ size: "lg", variant: "outline" }))}
+              href="/admin/ops/metrics"
+            >
+              Metrics
             </Link>
             <Link
               className={cn(buttonVariants({ size: "lg", variant: "outline" }))}
@@ -248,6 +278,52 @@ export default async function AdminOpsPage() {
           </div>
         </CardShell>
       </section>
+
+      <CardShell padding="md" tone="subtle">
+        <div className="space-y-5">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-foreground">
+                Launch Controls
+              </h2>
+              <p className="text-sm leading-6 text-muted-foreground">
+                Feature flags are operational kill switches only. Server-side
+                tier checks, RLS, webhook sync, and preferences remain the source
+                of truth.
+              </p>
+            </div>
+            <Badge tone="muted">Env backed</Badge>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {featureFlags.map((flag) => (
+              <div
+                className="rounded-lg border border-border bg-background/60 p-4"
+                key={flag.key}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      {flag.label}
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                      {flag.description}
+                    </p>
+                  </div>
+                  <Badge tone={getFeatureFlagTone(flag)}>
+                    {formatFeatureFlagState(flag)}
+                  </Badge>
+                </div>
+                <p className="mt-3 text-xs leading-5 text-muted-foreground">
+                  Source: {flag.sourceEnvVar} ({flag.source})
+                </p>
+                <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                  {flag.safetyNote}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </CardShell>
 
       <p className="text-xs leading-5 text-muted-foreground">
         Generated {formatMetricDate(overview.generatedAt)}. Branch:{" "}

@@ -265,6 +265,10 @@ export default async function AccountNotificationsPage({
                     sent when needed. You can update preferences any time.
                   </p>
                   <PreferencesSubmitButton
+                    analyticsEventName="notification_preference_updated"
+                    analyticsProperties={{
+                      route: "/account/notifications",
+                    }}
                     label="Save preferences"
                     pendingLabel="Saving..."
                   />

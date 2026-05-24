@@ -16,9 +16,11 @@ import { buttonVariants } from "@/components/ui/button";
 import {
   formatSoftwareAccessTier,
 } from "@/lib/software/format";
+import { recordOpsEventSafely } from "@/lib/ops/events";
 import { getSoftwareProductPageData } from "@/lib/software/products";
 import { getMySoftwareAccessRequest } from "@/lib/software/requests";
 import { sanitizeSoftwareUrl } from "@/lib/software/validation";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
 type SoftwareProductPageProps = {
@@ -72,6 +74,13 @@ export default async function SoftwareProductPage({
   }
 
   const product = data.product;
+  await recordSoftwareProductViewEvent({
+    accessTier: product.access_tier,
+    deliveryType: product.delivery_type,
+    productId: product.id,
+    slug,
+    softwareType: product.software_type,
+  });
   const existingRequest = await getMySoftwareAccessRequest(product.id).catch(
     () => null
   );
@@ -218,6 +227,52 @@ function LockedSoftwareProduct({ reason }: { reason: string }) {
       <SoftwareLockedPanel message="Software access is available to Premium and Pro members." reason={reason} />
     </div>
   );
+}
+
+async function getCurrentUserIdForOpsView() {
+  const supabase = await createSupabaseServerClient().catch(() => null);
+
+  if (!supabase) {
+    return null;
+  }
+
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    return user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function recordSoftwareProductViewEvent({
+  accessTier,
+  deliveryType,
+  productId,
+  slug,
+  softwareType,
+}: {
+  accessTier: string;
+  deliveryType: string;
+  productId: string;
+  slug: string;
+  softwareType: string;
+}) {
+  await recordOpsEventSafely({
+    entityId: productId,
+    entityType: "software_product",
+    eventName: "software_product_viewed",
+    metadata: {
+      access_tier: accessTier,
+      delivery_type: deliveryType,
+      software_type: softwareType,
+    },
+    route: `/dashboard/software/${slug}`,
+    source: "server",
+    userId: await getCurrentUserIdForOpsView(),
+  });
 }
 
 function getSafeSoftwareUrl(value: string | null) {

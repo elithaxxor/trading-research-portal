@@ -8,6 +8,7 @@ import {
   requireResendWebhookSecret,
 } from "@/lib/email/config";
 import type { EmailNotificationUpdate } from "@/lib/email/types";
+import { captureSafeException } from "@/lib/monitoring/sentry";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/types/database.types";
 
@@ -499,6 +500,18 @@ export async function POST(request: Request) {
       type: event.eventType,
     });
   } catch (error) {
+    captureSafeException(error, {
+      area: "email",
+      extra: {
+        event_type: event.eventType,
+        provider: event.provider,
+        provider_event_id_present: Boolean(event.providerEventId),
+        provider_message_id_present: Boolean(event.providerMessageId),
+      },
+      route: "/api/email/webhook",
+      stage: "provider_webhook_processing",
+    });
+
     console.error("Email provider webhook processing failed.", {
       error:
         error instanceof Error

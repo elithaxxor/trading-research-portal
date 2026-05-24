@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 
 import { generateSlug, normalizeEmptyString, parsePublishedAt } from "@/lib/admin/validation";
 import { requireAdmin } from "@/lib/auth/admin";
+import { captureSafeException } from "@/lib/monitoring/sentry";
+import { recordOpsEventSafely } from "@/lib/ops/events";
 import type {
   SoftwareProductInsert,
   SoftwareProductUpdate,
@@ -381,8 +383,40 @@ export async function createSoftwareProductAction(
     .single();
 
   if (error) {
+    captureSafeException(error, {
+      area: "admin",
+      extra: {
+        access_tier: payload.access_tier,
+        delivery_type: payload.delivery_type,
+        published: payload.published,
+        software_type: payload.software_type,
+      },
+      route: "/admin/software/new",
+      stage: "admin_software_create",
+      tags: {
+        admin_user_present: Boolean(admin.user.id),
+      },
+    });
     return errorState("Software product could not be created. Check for duplicate slugs and try again.");
   }
+
+  await recordOpsEventSafely({
+    entityId: data.id,
+    entityType: "software_product",
+    eventName: payload.published
+      ? "admin_content_published"
+      : "admin_content_updated",
+    metadata: {
+      access_tier: payload.access_tier,
+      content_type: "software_product",
+      delivery_type: payload.delivery_type,
+      published: payload.published,
+      software_type: payload.software_type,
+    },
+    route: "/admin/software/new",
+    source: "admin",
+    userId: admin.user.id,
+  });
 
   revalidateSoftwarePaths([data.slug]);
   redirect(`/admin/software/${data.id}/edit?notice=created`);
@@ -392,7 +426,7 @@ export async function updateSoftwareProductAction(
   _state: SoftwareProductActionState,
   formData: FormData
 ): Promise<SoftwareProductActionState> {
-  await requireAdmin("/admin/software");
+  const admin = await requireAdmin("/admin/software");
   const id = getRequiredId(formData);
   const currentProduct = await getSoftwareProductById(id);
 
@@ -419,8 +453,43 @@ export async function updateSoftwareProductAction(
     .eq("id", id);
 
   if (error) {
+    captureSafeException(error, {
+      area: "admin",
+      extra: {
+        access_tier: payload.access_tier,
+        delivery_type: payload.delivery_type,
+        next_published: payload.published,
+        previous_published: currentProduct.published,
+        software_type: payload.software_type,
+      },
+      route: `/admin/software/${id}/edit`,
+      stage: "admin_software_update",
+      tags: {
+        admin_user_present: Boolean(admin.user.id),
+      },
+    });
     return errorState("Software product could not be saved.");
   }
+
+  await recordOpsEventSafely({
+    entityId: id,
+    entityType: "software_product",
+    eventName:
+      !currentProduct.published && payload.published
+        ? "admin_content_published"
+        : "admin_content_updated",
+    metadata: {
+      access_tier: payload.access_tier,
+      content_type: "software_product",
+      delivery_type: payload.delivery_type,
+      next_published: payload.published,
+      previous_published: currentProduct.published,
+      software_type: payload.software_type,
+    },
+    route: `/admin/software/${id}/edit`,
+    source: "admin",
+    userId: admin.user.id,
+  });
 
   revalidateSoftwarePaths([currentProduct.slug, payload.slug]);
 
@@ -431,7 +500,7 @@ export async function updateSoftwareProductAction(
 }
 
 export async function publishSoftwareProductAction(formData: FormData) {
-  await requireAdmin("/admin/software");
+  const admin = await requireAdmin("/admin/software");
   const product = await getSoftwareProductById(getRequiredId(formData));
 
   if (!product) {
@@ -448,12 +517,27 @@ export async function publishSoftwareProductAction(formData: FormData) {
     .eq("id", product.id)
     .throwOnError();
 
+  await recordOpsEventSafely({
+    entityId: product.id,
+    entityType: "software_product",
+    eventName: "admin_content_published",
+    metadata: {
+      access_tier: product.access_tier,
+      content_type: "software_product",
+      delivery_type: product.delivery_type,
+      software_type: product.software_type,
+    },
+    route: "/admin/software",
+    source: "admin",
+    userId: admin.user.id,
+  });
+
   revalidateSoftwarePaths([product.slug]);
   redirect("/admin/software?notice=published");
 }
 
 export async function unpublishSoftwareProductAction(formData: FormData) {
-  await requireAdmin("/admin/software");
+  const admin = await requireAdmin("/admin/software");
   const product = await getSoftwareProductById(getRequiredId(formData));
 
   if (!product) {
@@ -469,6 +553,22 @@ export async function unpublishSoftwareProductAction(formData: FormData) {
     })
     .eq("id", product.id)
     .throwOnError();
+
+  await recordOpsEventSafely({
+    entityId: product.id,
+    entityType: "software_product",
+    eventName: "admin_content_updated",
+    metadata: {
+      action: "unpublished",
+      access_tier: product.access_tier,
+      content_type: "software_product",
+      delivery_type: product.delivery_type,
+      software_type: product.software_type,
+    },
+    route: "/admin/software",
+    source: "admin",
+    userId: admin.user.id,
+  });
 
   revalidateSoftwarePaths([product.slug]);
   redirect("/admin/software?notice=unpublished");

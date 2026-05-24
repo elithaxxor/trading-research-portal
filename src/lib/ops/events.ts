@@ -10,7 +10,7 @@ import type {
   OpsEventCount,
   RecordOpsEventInput,
 } from "./types";
-import { analyticsEventSourceValues } from "./types";
+import { analyticsEventSourceValues, productAnalyticsEventNames } from "./types";
 import { stripSecretsFromMetadata } from "./safety";
 import {
   validateOpsEventName,
@@ -51,6 +51,12 @@ export function createSafeOpsMetadata(input: unknown) {
   return validateSafeMetadata(stripSecretsFromMetadata(input));
 }
 
+export function isProductAnalyticsEventName(value: string) {
+  return productAnalyticsEventNames.includes(
+    value as (typeof productAnalyticsEventNames)[number]
+  );
+}
+
 export async function recordOpsEvent(
   input: RecordOpsEventInput
 ): Promise<OpsEvent> {
@@ -77,6 +83,22 @@ export async function recordOpsEvent(
   }
 
   return data;
+}
+
+export async function recordOpsEventSafely(
+  input: RecordOpsEventInput
+): Promise<void> {
+  try {
+    await recordOpsEvent(input);
+  } catch (error) {
+    console.error("[ops] Failed to record operations event.", {
+      eventName: input.eventName,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Unknown operations event recording error.",
+    });
+  }
 }
 
 export async function listOpsEvents(

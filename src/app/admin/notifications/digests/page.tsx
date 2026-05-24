@@ -16,6 +16,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { requireAdmin } from "@/lib/auth/admin";
 import { formatEmailDate } from "@/lib/email/format";
 import { listAdminEmailDigestRuns } from "@/lib/email/admin";
+import { isFeatureEnabled } from "@/lib/flags/server";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -87,6 +88,14 @@ function getNotice(
     };
   }
 
+  if (notice === "digest_disabled") {
+    return {
+      message:
+        "Weekly digest queueing is disabled by launch controls. Dry-runs remain available.",
+      tone: "error" as const,
+    };
+  }
+
   return null;
 }
 
@@ -110,6 +119,7 @@ export default async function AdminDigestRunsPage({
   const params = await searchParams;
   const notice = getNotice(params);
   const runs = await listAdminEmailDigestRuns();
+  const weeklyDigestEnabled = isFeatureEnabled("weekly_digest_enabled");
 
   return (
     <div className="space-y-8">
@@ -168,6 +178,11 @@ export default async function AdminDigestRunsPage({
                 This creates digest notification rows. It does not send emails
                 until the protected queue processor runs.
               </p>
+              {!weeklyDigestEnabled ? (
+                <p className="rounded-lg border border-gold-400/25 bg-gold-400/10 px-3 py-2 text-sm leading-6 text-gold-100">
+                  Weekly digest queueing is disabled by launch controls.
+                </p>
+              ) : null}
             </div>
             <DigestWindowFields />
             <AdminCheckbox
@@ -178,7 +193,11 @@ export default async function AdminDigestRunsPage({
               value="yes"
             />
             <button
-              className={cn(buttonVariants({ size: "lg", variant: "default" }))}
+              className={cn(
+                buttonVariants({ size: "lg", variant: "default" }),
+                !weeklyDigestEnabled && "cursor-not-allowed opacity-50"
+              )}
+              disabled={!weeklyDigestEnabled}
               type="submit"
             >
               Queue Digest

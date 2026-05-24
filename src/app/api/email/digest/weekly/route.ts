@@ -1,5 +1,7 @@
 import { assertValidEmailCronSecret } from "@/lib/email/config";
 import { queueWeeklyDigestRun } from "@/lib/email/digest";
+import { isFeatureEnabled } from "@/lib/flags/server";
+import { captureSafeException } from "@/lib/monitoring/sentry";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -84,6 +86,10 @@ export async function POST(request: Request) {
     return unauthorized;
   }
 
+  if (!isFeatureEnabled("weekly_digest_enabled")) {
+    return jsonResponse({ error: "Weekly digest queueing is disabled." }, 403);
+  }
+
   try {
     const result = await queueWeeklyDigestRun(await readDigestOptions(request));
 
@@ -95,6 +101,12 @@ export async function POST(request: Request) {
       totalEligible: result.totalEligible,
     });
   } catch (error) {
+    captureSafeException(error, {
+      area: "email",
+      route: "/api/email/digest/weekly",
+      stage: "weekly_digest_queue",
+    });
+
     console.error("Weekly digest queueing failed.", {
       error:
         error instanceof Error

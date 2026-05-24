@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { updateNotificationPreferencesForCurrentUser } from "@/lib/email/preferences";
 import type { UpdateNotificationPreferencesInput } from "@/lib/email/types";
+import { recordOpsEventSafely } from "@/lib/ops/events";
 
 function getFormBoolean(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -55,9 +56,26 @@ function getPreferencePayload(formData: FormData): UpdateNotificationPreferences
 
 export async function updateNotificationPreferencesAction(formData: FormData) {
   try {
-    await updateNotificationPreferencesForCurrentUser(
+    const preferences = await updateNotificationPreferencesForCurrentUser(
       getPreferencePayload(formData)
     );
+    await recordOpsEventSafely({
+      entityType: "notification_preferences",
+      eventName: "notification_preference_updated",
+      metadata: {
+        billing_account_updates: preferences.billing_account_updates,
+        closed_reviews: preferences.closed_reviews,
+        content_idea_updates: preferences.content_idea_updates,
+        content_new_ideas: preferences.content_new_ideas,
+        email_enabled: preferences.email_enabled,
+        lifecycle_updates: preferences.lifecycle_updates,
+        software_access_updates: preferences.software_access_updates,
+        weekly_digest: preferences.weekly_digest,
+      },
+      route: "/account/notifications",
+      source: "server",
+      userId: preferences.user_id,
+    });
   } catch (error) {
     if (
       error instanceof Error &&

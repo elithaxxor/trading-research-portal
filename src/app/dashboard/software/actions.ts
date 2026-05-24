@@ -8,6 +8,9 @@ import {
   requestSoftwareAccess,
   updateMySoftwareAccessRequest,
 } from "@/lib/software/requests";
+import { isFeatureEnabled } from "@/lib/flags/server";
+import { captureSafeException } from "@/lib/monitoring/sentry";
+import { recordOpsEventSafely } from "@/lib/ops/events";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 function getFormString(formData: FormData, key: string) {
@@ -42,6 +45,11 @@ export async function requestSoftwareAccessAction(formData: FormData) {
     "Software product id"
   );
   const slug = validateSlug(getFormString(formData, "slug"));
+
+  if (!isFeatureEnabled("software_access_requests_enabled")) {
+    redirect(`/dashboard/software/${slug}?notice=requests-disabled`);
+  }
+
   const tradingviewUsername = getFormString(formData, "tradingview_username");
   const userNote = getFormString(formData, "user_note");
   let notice = "software-requested";
@@ -50,7 +58,7 @@ export async function requestSoftwareAccessAction(formData: FormData) {
     const supabase = await createSupabaseServerClient();
     const { data: product, error } = await supabase
       .from("software_products")
-      .select("id,delivery_type,published")
+      .select("id,access_tier,delivery_type,published")
       .eq("id", productId)
       .eq("published", true)
       .maybeSingle();
@@ -69,13 +77,45 @@ export async function requestSoftwareAccessAction(formData: FormData) {
     const existingRequest = await getMySoftwareAccessRequest(productId);
 
     if (existingRequest) {
-      await updateMySoftwareAccessRequest(productId, {
+      const updated = await updateMySoftwareAccessRequest(productId, {
         tradingviewUsername,
         userNote,
       });
+      await recordOpsEventSafely({
+        entityId: updated.id,
+        entityType: "software_access_request",
+        eventName: "software_access_request_updated",
+        metadata: {
+          delivery_type: product.delivery_type,
+          has_tradingview_username: Boolean(updated.tradingview_username),
+          software_access_tier: product.access_tier,
+          status: updated.status,
+        },
+        route: `/dashboard/software/${slug}`,
+        source: "server",
+        userId: updated.user_id,
+      });
       notice = "software-request-updated";
     } else {
-      await requestSoftwareAccess(productId, tradingviewUsername, userNote);
+      const request = await requestSoftwareAccess(
+        productId,
+        tradingviewUsername,
+        userNote
+      );
+      await recordOpsEventSafely({
+        entityId: request.id,
+        entityType: "software_access_request",
+        eventName: "software_access_requested",
+        metadata: {
+          delivery_type: product.delivery_type,
+          has_tradingview_username: Boolean(request.tradingview_username),
+          software_access_tier: product.access_tier,
+          status: request.status,
+        },
+        route: `/dashboard/software/${slug}`,
+        source: "server",
+        userId: request.user_id,
+      });
     }
   } catch (error) {
     if (
@@ -86,6 +126,16 @@ export async function requestSoftwareAccessAction(formData: FormData) {
         `/login?redirectedFrom=${encodeURIComponent(`/dashboard/software/${slug}`)}`
       );
     }
+
+    captureSafeException(error, {
+      area: "dashboard",
+      extra: {
+        has_tradingview_username: Boolean(tradingviewUsername),
+        product_id_present: Boolean(productId),
+      },
+      route: `/dashboard/software/${slug}`,
+      stage: "software_access_request",
+    });
 
     throw error;
   }

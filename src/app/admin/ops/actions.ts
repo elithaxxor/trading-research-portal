@@ -51,6 +51,7 @@ export async function updateReadinessCheckAction(formData: FormData) {
   await requireAdmin("/admin/ops/readiness");
 
   const id = getRequiredString(formData, "id");
+  const returnTo = getString(formData, "return_to") || "/admin/ops/readiness";
   await updateReadinessCheck(id, {
     evidenceNote: getOptionalString(formData, "evidence_note"),
     owner: getOptionalString(formData, "owner"),
@@ -59,7 +60,10 @@ export async function updateReadinessCheckAction(formData: FormData) {
 
   revalidatePath("/admin/ops");
   revalidatePath("/admin/ops/readiness");
-  redirect("/admin/ops/readiness?notice=readiness_saved");
+  revalidatePath("/admin/ops/stripe");
+  redirect(
+    `${returnTo}${returnTo.includes("?") ? "&" : "?"}notice=readiness_saved`
+  );
 }
 
 export async function createIncidentAction(formData: FormData) {

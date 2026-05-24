@@ -183,6 +183,42 @@ OPS_HEALTH_SECRET=
 
 `/api/health` is a public-safe GET endpoint for uptime monitors. It returns only app name, status, version, and timestamp. `/api/health/deep` is protected by an admin session or `OPS_HEALTH_SECRET` via `Authorization: Bearer ...`, `x-ops-health-secret`, or `x-health-secret`. The deep health endpoint returns redacted table/config presence checks only; it must not expose environment values, secrets, recipient lists, Stripe IDs, private content, card data, or Pine Script/source code.
 
+Optional Phase 11 PostHog analytics placeholders:
+
+```bash
+NEXT_PUBLIC_POSTHOG_KEY=
+NEXT_PUBLIC_POSTHOG_HOST=
+POSTHOG_ENABLED=false
+```
+
+PostHog is optional. If `POSTHOG_ENABLED=false` or `NEXT_PUBLIC_POSTHOG_KEY` is missing, analytics and feature-flag helpers are no-ops and builds must continue to pass. Only safe product events are captured: page views, pricing views, checkout-start clicks, dashboard section views, software product views, software access request clicks, and notification preference save clicks. Do not send private idea details, exact levels, protected research bodies, Pine Script/source code, secrets, card data, raw emails, or sensitive user data. Production analytics requires privacy/legal review, and session replay must remain disabled unless explicitly approved.
+
+Optional Phase 11 Sentry monitoring placeholders:
+
+```bash
+NEXT_PUBLIC_SENTRY_DSN=
+SENTRY_AUTH_TOKEN=
+SENTRY_ORG=
+SENTRY_PROJECT=
+SENTRY_ENABLED=false
+```
+
+Sentry is optional. If `SENTRY_ENABLED=false` or `NEXT_PUBLIC_SENTRY_DSN` is missing, Sentry client, server, edge/proxy, and request-error capture are no-ops and builds must continue to pass. `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, and `SENTRY_PROJECT` are server/build-time values used only for source-map upload when intentionally configured; source-map upload stays disabled unless all required Sentry release values are present. The app scrubs Supabase/Stripe/Postmark secrets, authorization headers, cookies, raw emails, private content bodies, exact levels, Pine Script/source code, and payment/card data from Sentry events. Production monitoring requires environment setup and privacy/legal review.
+
+Phase 11 launch control placeholders:
+
+```bash
+FEATURE_CHECKOUT_ENABLED=false
+FEATURE_CUSTOMER_PORTAL_ENABLED=false
+FEATURE_PRODUCTION_EMAIL_SENDING_ENABLED=false
+FEATURE_WEEKLY_DIGEST_ENABLED=false
+FEATURE_ADMIN_CONTENT_EMAIL_NOTIFY_ENABLED=true
+FEATURE_SOFTWARE_ACCESS_REQUESTS_ENABLED=true
+FEATURE_MAINTENANCE_BANNER_ENABLED=false
+```
+
+Feature flags are operational kill switches, not access control. They can disable risky launch surfaces such as Checkout, Customer Portal, provider email sending, weekly digest queueing, admin content notification queueing, and software access request submission. Client-visible flags cannot grant paid access; RLS, server-side tier checks, Stripe webhooks, notification preferences, unsubscribes, and suppression remain authoritative. Email provider sends require both `EMAIL_SEND_ENABLED=true` and `FEATURE_PRODUCTION_EMAIL_SENDING_ENABLED=true`.
+
 ## Supabase Local Development
 
 Phase 2 introduced Supabase CLI project files and migrations for schema work.
@@ -350,6 +386,47 @@ Phase 10 email environment checklist:
   `POSTMARK_WEBHOOK_USERNAME` and `POSTMARK_WEBHOOK_PASSWORD` values.
 - Production sending should remain disabled until Phase 10 QA passes and
   business approval is complete.
+
+Phase 11 optional PostHog analytics checklist:
+
+- PostHog is not required for local builds, deploy previews, or production.
+- Leave `POSTHOG_ENABLED=false` until privacy/legal review approves analytics.
+- Configure `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST` only when
+  a PostHog project is intentionally selected for that environment.
+- Session replay is disabled in code and must not be enabled without explicit
+  approval.
+- Feature flags are read-only convenience flags only; security, billing,
+  content access, and software access remain enforced by server code and RLS.
+- Do not identify users by raw email unless explicitly approved by the
+  privacy/legal review.
+
+Phase 11 optional Sentry monitoring checklist:
+
+- Sentry is not required for local builds, deploy previews, or production.
+- Leave `SENTRY_ENABLED=false` until monitoring is intentionally approved for
+  the environment.
+- Configure `NEXT_PUBLIC_SENTRY_DSN` only for the selected Sentry project.
+- Keep `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, and `SENTRY_PROJECT` server/build-time
+  only; never expose `SENTRY_AUTH_TOKEN` to client components or browser JS.
+- Source-map upload is gated on `SENTRY_ENABLED=true`, a DSN, and all
+  source-map credentials being present.
+- Error events are scrubbed for secrets, auth material, private trading content,
+  Pine Script/source code, raw emails, and payment/card data before delivery.
+
+Phase 11 launch control checklist:
+
+- Keep `FEATURE_CHECKOUT_ENABLED=false` until live or test-mode Checkout is
+  explicitly approved for the target environment.
+- Keep `FEATURE_CUSTOMER_PORTAL_ENABLED=false` until Customer Portal use is
+  approved for the target environment.
+- Keep `FEATURE_PRODUCTION_EMAIL_SENDING_ENABLED=false` unless provider sending
+  is explicitly approved; `EMAIL_SEND_ENABLED` must also be true before sends.
+- Keep `FEATURE_WEEKLY_DIGEST_ENABLED=false` until digest queueing is approved.
+- `FEATURE_ADMIN_CONTENT_EMAIL_NOTIFY_ENABLED` controls admin content email
+  queueing only; queued emails still require preferences, eligibility, and
+  provider-send flags before delivery.
+- `FEATURE_SOFTWARE_ACCESS_REQUESTS_ENABLED` controls member request submission
+  only; it does not grant software access.
 
 For deploy previews, `NEXT_PUBLIC_SITE_URL` must not be set to localhost. It can
 be the production Netlify URL while auth server actions use the current preview

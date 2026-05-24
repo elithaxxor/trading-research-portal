@@ -4,9 +4,16 @@ import { useFormStatus } from "react-dom";
 import { RotateCcw, Save } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
+import {
+  type AnalyticsEventName,
+  type SafeAnalyticsProperties,
+} from "@/lib/analytics/events";
+import { captureAnalyticsEvent } from "@/lib/analytics/posthog-client";
 import { cn } from "@/lib/utils";
 
 type PreferencesSubmitButtonProps = {
+  analyticsEventName?: AnalyticsEventName;
+  analyticsProperties?: SafeAnalyticsProperties;
   className?: string;
   intent?: "reset" | "save";
   label: string;
@@ -15,6 +22,8 @@ type PreferencesSubmitButtonProps = {
 };
 
 export function PreferencesSubmitButton({
+  analyticsEventName,
+  analyticsProperties,
   className,
   intent = "save",
   label,
@@ -28,6 +37,11 @@ export function PreferencesSubmitButton({
     <button
       className={cn(buttonVariants({ size: "lg", variant }), className)}
       disabled={pending}
+      onClick={() => {
+        if (analyticsEventName && !pending) {
+          captureAnalyticsEvent(analyticsEventName, analyticsProperties);
+        }
+      }}
       type="submit"
     >
       <Icon data-icon="inline-start" />

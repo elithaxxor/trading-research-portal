@@ -40,6 +40,7 @@ import type {
   IdeaFullContent,
   IdeaPreview,
 } from "@/lib/content/types";
+import { recordOpsEventSafely } from "@/lib/ops/events";
 import { getPublicMetadataUrl, getSafeMetadataDescription } from "@/lib/seo";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
@@ -156,6 +157,13 @@ export default async function IdeaDetailPage({
       getIdeaSaveState(data.preview.id),
       getTickerFollowState(data.preview.ticker),
     ]);
+    await recordIdeaViewEvent({
+      accessState: "locked",
+      ideaId: data.preview.id,
+      slug,
+      status: data.preview.status,
+      visibility: data.preview.visibility,
+    });
 
     return (
       <LockedIdeaPage
@@ -171,6 +179,13 @@ export default async function IdeaDetailPage({
     getIdeaSaveState(data.idea.id),
     getTickerFollowState(data.idea.ticker),
   ]);
+  await recordIdeaViewEvent({
+    accessState: "full",
+    ideaId: data.idea.id,
+    slug,
+    status: data.idea.status,
+    visibility: data.idea.visibility,
+  });
 
   return (
     <FullIdeaPage
@@ -180,6 +195,52 @@ export default async function IdeaDetailPage({
       tickerFollowState={tickerFollowState}
     />
   );
+}
+
+async function getCurrentUserIdForOpsView() {
+  const supabase = await createSupabaseServerClient().catch(() => null);
+
+  if (!supabase) {
+    return null;
+  }
+
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    return user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function recordIdeaViewEvent({
+  accessState,
+  ideaId,
+  slug,
+  status,
+  visibility,
+}: {
+  accessState: "full" | "locked";
+  ideaId: string;
+  slug: string;
+  status: string;
+  visibility: string;
+}) {
+  await recordOpsEventSafely({
+    entityId: ideaId,
+    entityType: "trading_idea",
+    eventName: "idea_viewed",
+    metadata: {
+      access_state: accessState,
+      status,
+      visibility,
+    },
+    route: `/ideas/${slug}`,
+    source: "server",
+    userId: await getCurrentUserIdForOpsView(),
+  });
 }
 
 async function getIdeaSaveState(ideaId: string): Promise<IdeaSaveState> {

@@ -2,6 +2,7 @@ import "server-only";
 
 import type { AdminIdea, AdminIdeaUpdateRecord } from "@/lib/admin/types";
 import { formatVisibilityLabel } from "@/lib/content/format";
+import { isFeatureEnabled } from "@/lib/flags/server";
 import {
   formatIdeaOutcome,
   formatIdeaStatus,
@@ -115,6 +116,10 @@ async function queueForEligibleRecipients({
   templateKey,
   unsubscribeGroup,
 }: QueueRecipientsInput): Promise<QueueContentNotificationResult> {
+  if (!isFeatureEnabled("admin_content_email_notify_enabled")) {
+    return emptyResult("Admin content email notification queueing is disabled.");
+  }
+
   if (!idea.published) {
     return emptyResult("The idea is not published.");
   }
@@ -181,7 +186,10 @@ async function queueForEligibleRecipients({
 }
 
 export function shouldNotifyEligibleMembers(formData: FormData) {
-  return formData.get(NOTIFY_EMAIL_FIELD) === "on";
+  return (
+    isFeatureEnabled("admin_content_email_notify_enabled") &&
+    formData.get(NOTIFY_EMAIL_FIELD) === "on"
+  );
 }
 
 export function formatQueueResultMessage(

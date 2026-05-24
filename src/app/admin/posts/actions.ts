@@ -22,6 +22,8 @@ import {
   validateSlug,
 } from "@/lib/admin/validation";
 import { requireAdmin } from "@/lib/auth/admin";
+import { captureSafeException } from "@/lib/monitoring/sentry";
+import { recordOpsEventSafely } from "@/lib/ops/events";
 
 export type ResearchPostActionState = {
   fieldErrors?: Record<string, string>;
@@ -99,19 +101,31 @@ function revalidatePostPaths(slugs: (string | null | undefined)[] = []) {
 }
 
 async function publishPostRecord(formData: FormData) {
-  await requireAdmin("/admin/posts");
+  const admin = await requireAdmin("/admin/posts");
   const post = await getAdminPostById(getRequiredId(formData));
 
   if (!post) {
     throw new Error("Research post not found.");
   }
 
-  await publishAdminPost(post.id);
+  const published = await publishAdminPost(post.id);
+  await recordOpsEventSafely({
+    entityId: published.id,
+    entityType: "post",
+    eventName: "admin_content_published",
+    metadata: {
+      content_type: "research_post",
+      visibility: published.visibility,
+    },
+    route: "/admin/posts",
+    source: "admin",
+    userId: admin.user.id,
+  });
   revalidatePostPaths([post.slug]);
 }
 
 async function unpublishPostRecord(formData: FormData) {
-  await requireAdmin("/admin/posts");
+  const admin = await requireAdmin("/admin/posts");
   const post = await getAdminPostById(getRequiredId(formData));
 
   if (!post) {
@@ -119,6 +133,19 @@ async function unpublishPostRecord(formData: FormData) {
   }
 
   await unpublishAdminPost(post.id);
+  await recordOpsEventSafely({
+    entityId: post.id,
+    entityType: "post",
+    eventName: "admin_content_updated",
+    metadata: {
+      action: "unpublished",
+      content_type: "research_post",
+      visibility: post.visibility,
+    },
+    route: "/admin/posts",
+    source: "admin",
+    userId: admin.user.id,
+  });
   revalidatePostPaths([post.slug]);
 }
 
@@ -307,7 +334,7 @@ export async function createResearchPostAction(
   _state: ResearchPostActionState,
   formData: FormData
 ): Promise<ResearchPostActionState> {
-  await requireAdmin("/admin/posts/new");
+  const admin = await requireAdmin("/admin/posts/new");
 
   const { fieldErrors, payload } = await buildPostPayload({ formData });
 
@@ -322,7 +349,34 @@ export async function createResearchPostAction(
     const created = await createAdminPost(payload as CreateAdminPostInput);
     createdId = created.id;
     createdSlug = created.slug;
-  } catch {
+    await recordOpsEventSafely({
+      entityId: created.id,
+      entityType: "post",
+      eventName: created.published
+        ? "admin_content_published"
+        : "admin_content_updated",
+      metadata: {
+        content_type: "research_post",
+        published: created.published,
+        visibility: created.visibility,
+      },
+      route: "/admin/posts/new",
+      source: "admin",
+      userId: admin.user.id,
+    });
+  } catch (error) {
+    captureSafeException(error, {
+      area: "admin",
+      extra: {
+        published: payload.published,
+        visibility: payload.visibility,
+      },
+      route: "/admin/posts/new",
+      stage: "admin_post_create",
+      tags: {
+        admin_user_present: Boolean(admin.user.id),
+      },
+    });
     return errorState(
       "The research post could not be created. Check for duplicate slugs and try again."
     );
@@ -336,7 +390,7 @@ export async function updateResearchPostAction(
   _state: ResearchPostActionState,
   formData: FormData
 ): Promise<ResearchPostActionState> {
-  await requireAdmin("/admin/posts");
+  const admin = await requireAdmin("/admin/posts");
 
   const id = getRequiredId(formData);
   const currentPost = await getAdminPostById(id);
@@ -357,8 +411,40 @@ export async function updateResearchPostAction(
   }
 
   try {
-    await updateAdminPost(id, payload as UpdateAdminPostInput);
-  } catch {
+    const updated = await updateAdminPost(id, payload as UpdateAdminPostInput);
+    await recordOpsEventSafely({
+      entityId: updated.id,
+      entityType: "post",
+      eventName:
+        !currentPost.published && updated.published
+          ? "admin_content_published"
+          : "admin_content_updated",
+      metadata: {
+        content_type: "research_post",
+        next_published: updated.published,
+        next_visibility: updated.visibility,
+        previous_published: currentPost.published,
+        previous_visibility: currentPost.visibility,
+      },
+      route: `/admin/posts/${id}/edit`,
+      source: "admin",
+      userId: admin.user.id,
+    });
+  } catch (error) {
+    captureSafeException(error, {
+      area: "admin",
+      extra: {
+        next_published: payload.published,
+        next_visibility: payload.visibility,
+        previous_published: currentPost.published,
+        previous_visibility: currentPost.visibility,
+      },
+      route: `/admin/posts/${id}/edit`,
+      stage: "admin_post_update",
+      tags: {
+        admin_user_present: Boolean(admin.user.id),
+      },
+    });
     return errorState("The research post could not be updated. Try again.");
   }
 

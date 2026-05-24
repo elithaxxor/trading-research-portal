@@ -31,6 +31,7 @@ import {
   validateOutcomeSummary,
   validateLessonsLearned,
 } from "@/lib/lifecycle/validation";
+import { recordOpsEventSafely } from "@/lib/ops/events";
 
 export type LifecycleActionState = {
   fieldErrors?: Record<string, string>;
@@ -166,7 +167,7 @@ export async function transitionIdeaStatusAction(
   _state: LifecycleActionState,
   formData: FormData
 ): Promise<LifecycleActionState> {
-  await requireAdmin("/admin/ideas");
+  const admin = await requireAdmin("/admin/ideas");
   const ideaId = getRequiredId(formData);
   const idea = await getRequiredIdea(ideaId);
   const fieldErrors: Record<string, string> = {};
@@ -243,6 +244,22 @@ export async function transitionIdeaStatusAction(
       idea,
       update,
     });
+
+    await recordOpsEventSafely({
+      entityId: ideaId,
+      entityType: "trading_idea",
+      eventName: "admin_lifecycle_updated",
+      metadata: {
+        event_type: eventType,
+        next_status: nextStatusResult.value,
+        notify_requested: shouldNotifyEligibleMembers(formData),
+        previous_status: idea.status,
+        update_major: update.is_major,
+      },
+      route: `/admin/ideas/${ideaId}/updates`,
+      source: "admin",
+      userId: admin.user.id,
+    });
   } catch {
     return errorState("The lifecycle transition could not be saved.");
   }
@@ -256,7 +273,7 @@ export async function markTargetHitAction(
   _state: LifecycleActionState,
   formData: FormData
 ): Promise<LifecycleActionState> {
-  await requireAdmin("/admin/ideas");
+  const admin = await requireAdmin("/admin/ideas");
   const ideaId = getRequiredId(formData);
   const idea = await getRequiredIdea(ideaId);
   const targetNumber = Number(getFormValue(formData, "target_number"));
@@ -307,6 +324,22 @@ export async function markTargetHitAction(
       idea,
       update,
     });
+
+    await recordOpsEventSafely({
+      entityId: ideaId,
+      entityType: "trading_idea",
+      eventName: "admin_lifecycle_updated",
+      metadata: {
+        event_type: "target_hit",
+        next_status: "target_hit",
+        notify_requested: shouldNotifyEligibleMembers(formData),
+        previous_status: idea.status,
+        update_major: update.is_major,
+      },
+      route: `/admin/ideas/${ideaId}/updates`,
+      source: "admin",
+      userId: admin.user.id,
+    });
   } catch {
     return errorState("The target-hit update could not be saved.");
   }
@@ -320,7 +353,7 @@ export async function closeIdeaWithReviewAction(
   _state: LifecycleActionState,
   formData: FormData
 ): Promise<LifecycleActionState> {
-  await requireAdmin("/admin/ideas");
+  const admin = await requireAdmin("/admin/ideas");
   const ideaId = getRequiredId(formData);
   const idea = await getRequiredIdea(ideaId);
   const fieldErrors: Record<string, string> = {};
@@ -398,6 +431,23 @@ export async function closeIdeaWithReviewAction(
         : await queueLifecycleUpdateEmailNotifications(updatedIdea, update);
       notificationMessage = formatQueueResultMessage(queueResult);
     }
+
+    await recordOpsEventSafely({
+      entityId: ideaId,
+      entityType: "trading_idea",
+      eventName: "admin_lifecycle_updated",
+      metadata: {
+        event_type: eventType,
+        next_status: "closed",
+        notify_requested: shouldNotifyEligibleMembers(formData),
+        previous_status: idea.status,
+        review_published: reviewPublished,
+        update_major: update.is_major,
+      },
+      route: `/admin/ideas/${ideaId}/updates`,
+      source: "admin",
+      userId: admin.user.id,
+    });
   } catch {
     return errorState("The idea review could not be saved.");
   }
@@ -411,7 +461,7 @@ export async function reopenIdeaAction(
   _state: LifecycleActionState,
   formData: FormData
 ): Promise<LifecycleActionState> {
-  await requireAdmin("/admin/ideas");
+  const admin = await requireAdmin("/admin/ideas");
   const ideaId = getRequiredId(formData);
   const idea = await getRequiredIdea(ideaId);
   const requestedStatus = getFormValue(formData, "next_status") || "active";
@@ -465,6 +515,22 @@ export async function reopenIdeaAction(
       idea,
       update,
     });
+
+    await recordOpsEventSafely({
+      entityId: ideaId,
+      entityType: "trading_idea",
+      eventName: "admin_lifecycle_updated",
+      metadata: {
+        event_type: "status_change",
+        next_status: requestedStatus,
+        notify_requested: shouldNotifyEligibleMembers(formData),
+        previous_status: idea.status,
+        update_major: update.is_major,
+      },
+      route: `/admin/ideas/${ideaId}/updates`,
+      source: "admin",
+      userId: admin.user.id,
+    });
   } catch {
     return errorState("The idea could not be reopened.");
   }
@@ -478,7 +544,7 @@ export async function publishReviewAction(
   _state: LifecycleActionState,
   formData: FormData
 ): Promise<LifecycleActionState> {
-  await requireAdmin("/admin/ideas");
+  const admin = await requireAdmin("/admin/ideas");
   const ideaId = getRequiredId(formData);
   const idea = await getRequiredIdea(ideaId);
   const publishedAt = idea.review_published_at ?? new Date().toISOString();
@@ -496,6 +562,22 @@ export async function publishReviewAction(
       const queueResult = await queueClosedReviewEmailNotifications(updatedIdea);
       notificationMessage = formatQueueResultMessage(queueResult);
     }
+
+    await recordOpsEventSafely({
+      entityId: ideaId,
+      entityType: "trading_idea",
+      eventName: "admin_lifecycle_updated",
+      metadata: {
+        event_type: "review_posted",
+        next_status: idea.status,
+        notify_requested: shouldNotifyEligibleMembers(formData),
+        previous_status: idea.status,
+        review_published: true,
+      },
+      route: `/admin/ideas/${ideaId}/updates`,
+      source: "admin",
+      userId: admin.user.id,
+    });
   } catch {
     return errorState("The review could not be published.");
   }
@@ -509,7 +591,7 @@ export async function unpublishReviewAction(
   _state: LifecycleActionState,
   formData: FormData
 ): Promise<LifecycleActionState> {
-  await requireAdmin("/admin/ideas");
+  const admin = await requireAdmin("/admin/ideas");
   const ideaId = getRequiredId(formData);
   const idea = await getRequiredIdea(ideaId);
 
@@ -517,6 +599,21 @@ export async function unpublishReviewAction(
     await updateAdminIdea(ideaId, {
       review_published: false,
       review_published_at: null,
+    });
+
+    await recordOpsEventSafely({
+      entityId: ideaId,
+      entityType: "trading_idea",
+      eventName: "admin_lifecycle_updated",
+      metadata: {
+        event_type: "review_unpublished",
+        next_status: idea.status,
+        previous_status: idea.status,
+        review_published: false,
+      },
+      route: `/admin/ideas/${ideaId}/updates`,
+      source: "admin",
+      userId: admin.user.id,
     });
   } catch {
     return errorState("The review could not be unpublished.");

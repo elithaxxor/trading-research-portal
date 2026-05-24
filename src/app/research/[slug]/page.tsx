@@ -18,7 +18,9 @@ import { buttonVariants } from "@/components/ui/button";
 import { formatDate, formatVisibilityLabel } from "@/lib/content/format";
 import { getPostPageData } from "@/lib/content/posts";
 import type { PostDetail, PostPreview } from "@/lib/content/types";
+import { recordOpsEventSafely } from "@/lib/ops/events";
 import { getPublicMetadataUrl, getSafeMetadataDescription } from "@/lib/seo";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
 
 type ResearchDetailPageProps = {
@@ -110,10 +112,67 @@ export default async function ResearchDetailPage({
   }
 
   if (data.kind === "locked") {
+    await recordResearchViewEvent({
+      accessState: "locked",
+      postId: data.preview.id,
+      slug,
+      visibility: data.preview.visibility,
+    });
+
     return <LockedResearchPage preview={data.preview} />;
   }
 
+  await recordResearchViewEvent({
+    accessState: "full",
+    postId: data.post.id,
+    slug,
+    visibility: data.post.visibility,
+  });
+
   return <FullResearchPage post={data.post} />;
+}
+
+async function getCurrentUserIdForOpsView() {
+  const supabase = await createSupabaseServerClient().catch(() => null);
+
+  if (!supabase) {
+    return null;
+  }
+
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    return user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function recordResearchViewEvent({
+  accessState,
+  postId,
+  slug,
+  visibility,
+}: {
+  accessState: "full" | "locked";
+  postId: string;
+  slug: string;
+  visibility: string;
+}) {
+  await recordOpsEventSafely({
+    entityId: postId,
+    entityType: "post",
+    eventName: "research_viewed",
+    metadata: {
+      access_state: accessState,
+      visibility,
+    },
+    route: `/research/${slug}`,
+    source: "server",
+    userId: await getCurrentUserIdForOpsView(),
+  });
 }
 
 function LockedResearchPage({ preview }: { preview: PostPreview }) {

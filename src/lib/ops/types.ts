@@ -51,6 +51,34 @@ export const analyticsEventSourceValues = [
   "system",
 ] as const satisfies readonly AnalyticsEventSource[];
 
+export const productAnalyticsEventNames = [
+  "page_view_server",
+  "idea_viewed",
+  "research_viewed",
+  "software_product_viewed",
+  "software_access_requested",
+  "software_access_request_updated",
+  "saved_idea_added",
+  "saved_idea_removed",
+  "ticker_followed",
+  "ticker_unfollowed",
+  "watchlist_item_added",
+  "watchlist_item_updated",
+  "watchlist_item_removed",
+  "checkout_started",
+  "checkout_completed",
+  "billing_portal_opened",
+  "notification_preference_updated",
+  "notification_unsubscribed",
+  "admin_content_published",
+  "admin_content_updated",
+  "admin_lifecycle_updated",
+  "admin_software_request_updated",
+] as const;
+
+export type ProductAnalyticsEventName =
+  (typeof productAnalyticsEventNames)[number];
+
 export const incidentSeverityValues = [
   "low",
   "medium",
@@ -91,7 +119,7 @@ export type UpsertReadinessCheckInput = UpdateReadinessCheckInput & {
 export type RecordOpsEventInput = {
   entityId?: string | null;
   entityType?: string | null;
-  eventName: string;
+  eventName: ProductAnalyticsEventName | (string & {});
   metadata?: unknown;
   route?: string | null;
   sessionId?: string | null;
@@ -194,4 +222,56 @@ export type AdminOpsOverview = {
   readiness: ReadinessSummary;
   software: SoftwareMetrics;
   system: SystemRouteHealthSummary;
+};
+
+export type AdminDetailedMetrics = {
+  adminOps: {
+    blockedReadinessChecks: number;
+    launchBlockingChecks: number;
+    openIncidents: number;
+    readinessChecks: number;
+  };
+  billing: {
+    activePremiumCount: number;
+    activeProCount: number;
+    canceledCount: number;
+    pastDueCount: number;
+    recentCheckoutSessions: number;
+    webhookFailures: number;
+  };
+  content: {
+    closedReviews: number;
+    premiumProIdeas: number;
+    publishedIdeas: number;
+    recentlyUpdatedIdeas: number;
+    researchPosts: number;
+    totalIdeas: number;
+  };
+  email: {
+    bounced: number;
+    complained: number;
+    delivered: number;
+    digestRuns: number;
+    failed: number;
+    queued: number;
+    sent: number;
+    suppressed: number;
+  };
+  generatedAt: string;
+  members: {
+    activeFreeSubscriptions: number;
+    activePremiumSubscriptions: number;
+    activeProSubscriptions: number;
+    dashboardActivityCount: number;
+    recentSignups: number;
+    totalProfiles: number;
+  };
+  recentWindowDays: number;
+  software: {
+    grantedAccessRequests: number;
+    openAccessRequests: number;
+    publishedLiteSoftware: number;
+    publishedProSoftware: number;
+    revokedRejectedRequests: number;
+  };
 };

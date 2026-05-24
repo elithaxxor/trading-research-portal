@@ -7,7 +7,9 @@ import {
   syncSubscriptionFromStripe,
 } from "@/lib/billing/subscriptions";
 import { getStripeClient } from "@/lib/billing/stripe";
+import { captureSafeException } from "@/lib/monitoring/sentry";
 import type { BillingSupabaseClient } from "@/lib/billing/types";
+import { recordOpsEventSafely } from "@/lib/ops/events";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -186,6 +188,20 @@ async function handleCheckoutSessionCompleted(event: Stripe.Event) {
 
   const subscription = await retrieveSubscription(subscriptionId);
   await syncSubscriptionFromStripe(subscription, event.id);
+
+  await recordOpsEventSafely({
+    entityType: "stripe_checkout_session",
+    eventName: "checkout_completed",
+    metadata: {
+      billing_interval: session.metadata?.billing_interval ?? null,
+      event_type: event.type,
+      requested_tier: session.metadata?.requested_tier ?? null,
+      subscription_synced: true,
+    },
+    route: "/api/stripe/webhook",
+    source: "webhook",
+    userId,
+  });
 }
 
 async function handleSubscriptionEvent(event: Stripe.Event) {
@@ -296,6 +312,15 @@ export async function POST(request: Request) {
   } catch (error) {
     const errorMessage = getEventErrorMessage(error);
     await markWebhookEventFailed(billingDb, event.id, errorMessage);
+    captureSafeException(error, {
+      area: "billing",
+      extra: {
+        event_type: event.type,
+        stripe_event_id_present: Boolean(event.id),
+      },
+      route: "/api/stripe/webhook",
+      stage: "stripe_webhook_processing",
+    });
     console.error(`Stripe webhook ${event.id} failed: ${errorMessage}`);
 
     return jsonResponse({ error: "Stripe webhook processing failed." }, 500);

@@ -3,6 +3,7 @@ import "server-only";
 import { getEffectiveSubscriptionTier } from "@/lib/billing/tiers";
 import { canAccessVisibility } from "@/lib/content/access";
 import { formatVisibilityLabel } from "@/lib/content/format";
+import { isFeatureEnabled } from "@/lib/flags/server";
 import { canAccessSoftwareTier } from "@/lib/software/access";
 import { formatSoftwareAccessTier } from "@/lib/software/format";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
@@ -515,6 +516,10 @@ export async function summarizeDigestItemsForUser(userId: string) {
 export async function queueWeeklyDigestRun(
   options: QueueWeeklyDigestRunOptions = {}
 ): Promise<QueueWeeklyDigestRunResult> {
+  if (!isFeatureEnabled("weekly_digest_enabled")) {
+    throw new Error("Weekly digest queueing is disabled by launch controls.");
+  }
+
   const defaultWindow = getDefaultDigestWindow();
   const since = toDate(options.since, defaultWindow.since);
   const until = toDate(options.until, defaultWindow.until);
