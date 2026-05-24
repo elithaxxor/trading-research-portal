@@ -289,6 +289,8 @@ Before enabling production sends:
 
 ## Recommended Next Step
 
-Prepare the Phase 10 PR for merge. Keep production sending disabled. Before
-live email sending, complete Postmark sender/domain deliverability review,
-SPF/DKIM/DMARC review, legal/business approval, and a production readiness pass.
+Phase 10 code is safe to merge after the Green deploy-preview gate. Keep
+production sending disabled. It is not safe to enable production email sending
+yet; before live email sending, complete Postmark sender/domain deliverability
+review, SPF/DKIM/DMARC review, legal/business approval, and a production
+readiness pass.

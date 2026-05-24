@@ -866,9 +866,11 @@ Phase 10 QA status:
   idea/notification rows remained.
 - Deploy-preview gate is Green: all Phase 10 hosted QA, leak checks, cleanup,
   build, lint, and typecheck passed.
+- Phase 10 code is safe to merge after the Green deploy-preview gate.
 - Production readiness is Yellow: production sending is safely disabled, but
   production sender-domain verification, SPF/DKIM/DMARC review, legal/business
-  review, and explicit send approval are still required.
+  review, and explicit send approval are still required. It is not safe to
+  enable production email sending yet.
 
 ## Security Notes
 
