@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   Mail,
   Newspaper,
+  Settings2,
   Package,
   Tag,
 } from "lucide-react";
@@ -52,6 +53,11 @@ const adminLinks = [
     href: "/admin/notifications",
     icon: Mail,
     label: "Notifications",
+  },
+  {
+    href: "/admin/ops",
+    icon: Settings2,
+    label: "Operations",
   },
 ];
 

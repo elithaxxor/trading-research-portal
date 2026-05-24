@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_notes: {
+        Row: {
+          area: string
+          body: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          related_entity_id: string | null
+          related_entity_type: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          area: string
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          area?: string
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          related_entity_id?: string | null
+          related_entity_type?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       email_digest_runs: {
         Row: {
           completed_at: string | null
@@ -536,6 +572,147 @@ export type Database = {
           updated_at?: string
           user_id?: string
           weekly_digest?: boolean
+        }
+        Relationships: []
+      }
+      ops_events: {
+        Row: {
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          event_name: string
+          id: string
+          metadata: Json
+          route: string | null
+          session_id: string | null
+          source: Database["public"]["Enums"]["analytics_event_source"]
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          event_name: string
+          id?: string
+          metadata?: Json
+          route?: string | null
+          session_id?: string | null
+          source?: Database["public"]["Enums"]["analytics_event_source"]
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          event_name?: string
+          id?: string
+          metadata?: Json
+          route?: string | null
+          session_id?: string | null
+          source?: Database["public"]["Enums"]["analytics_event_source"]
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      ops_incidents: {
+        Row: {
+          affected_area: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          metadata: Json
+          resolution_note: string | null
+          resolved_at: string | null
+          severity: string
+          started_at: string
+          status: string
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          affected_area?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metadata?: Json
+          resolution_note?: string | null
+          resolved_at?: string | null
+          severity?: string
+          started_at?: string
+          status?: string
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          affected_area?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          metadata?: Json
+          resolution_note?: string | null
+          resolved_at?: string | null
+          severity?: string
+          started_at?: string
+          status?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ops_readiness_checks: {
+        Row: {
+          blocking_launch: boolean
+          category: Database["public"]["Enums"]["ops_check_category"]
+          created_at: string
+          description: string | null
+          due_at: string | null
+          evidence_note: string | null
+          evidence_url: string | null
+          id: string
+          key: string
+          last_checked_at: string | null
+          metadata: Json
+          owner: string | null
+          status: Database["public"]["Enums"]["ops_check_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          blocking_launch?: boolean
+          category: Database["public"]["Enums"]["ops_check_category"]
+          created_at?: string
+          description?: string | null
+          due_at?: string | null
+          evidence_note?: string | null
+          evidence_url?: string | null
+          id?: string
+          key: string
+          last_checked_at?: string | null
+          metadata?: Json
+          owner?: string | null
+          status?: Database["public"]["Enums"]["ops_check_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          blocking_launch?: boolean
+          category?: Database["public"]["Enums"]["ops_check_category"]
+          created_at?: string
+          description?: string | null
+          due_at?: string | null
+          evidence_note?: string | null
+          evidence_url?: string | null
+          id?: string
+          key?: string
+          last_checked_at?: string | null
+          metadata?: Json
+          owner?: string | null
+          status?: Database["public"]["Enums"]["ops_check_status"]
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1354,6 +1531,12 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
+      analytics_event_source:
+        | "server"
+        | "client"
+        | "webhook"
+        | "admin"
+        | "system"
       app_role: "user" | "admin"
       asset_class:
         | "stock"
@@ -1444,6 +1627,26 @@ export type Database = {
         | "idea_update"
         | "new_post"
         | "weekly_digest"
+      ops_check_category:
+        | "app_health"
+        | "auth"
+        | "database"
+        | "content"
+        | "billing"
+        | "email"
+        | "software"
+        | "security"
+        | "legal"
+        | "deployment"
+        | "analytics"
+        | "launch"
+      ops_check_status:
+        | "pending"
+        | "passing"
+        | "warning"
+        | "failing"
+        | "blocked"
+        | "skipped"
       risk_level: "low" | "medium" | "high"
       software_access_request_status:
         | "requested"
@@ -1604,6 +1807,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      analytics_event_source: [
+        "server",
+        "client",
+        "webhook",
+        "admin",
+        "system",
+      ],
       app_role: ["user", "admin"],
       asset_class: [
         "stock",
@@ -1703,6 +1913,28 @@ export const Constants = {
         "idea_update",
         "new_post",
         "weekly_digest",
+      ],
+      ops_check_category: [
+        "app_health",
+        "auth",
+        "database",
+        "content",
+        "billing",
+        "email",
+        "software",
+        "security",
+        "legal",
+        "deployment",
+        "analytics",
+        "launch",
+      ],
+      ops_check_status: [
+        "pending",
+        "passing",
+        "warning",
+        "failing",
+        "blocked",
+        "skipped",
       ],
       risk_level: ["low", "medium", "high"],
       software_access_request_status: [

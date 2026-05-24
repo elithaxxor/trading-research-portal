@@ -166,6 +166,7 @@ EMAIL_FROM=
 EMAIL_REPLY_TO=
 EMAIL_TEST_RECIPIENT=
 EMAIL_CRON_SECRET=
+OPS_HEALTH_SECRET=
 POSTMARK_SERVER_TOKEN=
 POSTMARK_MESSAGE_STREAM=outbound
 POSTMARK_WEBHOOK_USERNAME=
@@ -173,6 +174,14 @@ POSTMARK_WEBHOOK_PASSWORD=
 ```
 
 `EMAIL_PROVIDER=postmark` selects the active Phase 10 provider. `EMAIL_SEND_ENABLED=false` means email workflows should queue/log only and must not actually send. `EMAIL_TEST_RECIPIENT` can be used during deploy-preview QA to redirect non-transactional test email to a safe inbox. `EMAIL_CRON_SECRET` protects manual or scheduled digest and queue-processing routes. `POSTMARK_SERVER_TOKEN`, `POSTMARK_WEBHOOK_USERNAME`, and `POSTMARK_WEBHOOK_PASSWORD` are server-only and must never be imported into client components or committed. Resend remains a legacy/optional provider path only if `EMAIL_PROVIDER=resend` and the matching Resend server-only variables are configured.
+
+Phase 11 health route placeholder:
+
+```bash
+OPS_HEALTH_SECRET=
+```
+
+`/api/health` is a public-safe GET endpoint for uptime monitors. It returns only app name, status, version, and timestamp. `/api/health/deep` is protected by an admin session or `OPS_HEALTH_SECRET` via `Authorization: Bearer ...`, `x-ops-health-secret`, or `x-health-secret`. The deep health endpoint returns redacted table/config presence checks only; it must not expose environment values, secrets, recipient lists, Stripe IDs, private content, card data, or Pine Script/source code.
 
 ## Supabase Local Development
 
