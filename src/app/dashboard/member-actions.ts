@@ -24,6 +24,9 @@ import {
   updateWatchlistItem,
 } from "@/lib/member/watchlist";
 import { validateMemberNote, validateTicker } from "@/lib/member/validation";
+import { captureSafeException } from "@/lib/monitoring/sentry";
+import { recordOpsEventSafely } from "@/lib/ops/events";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 function getFormString(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -175,6 +178,42 @@ function loginRedirect(slug: string | null): never {
   );
 }
 
+async function getCurrentUserIdForOpsEvent() {
+  try {
+    const supabase = await createSupabaseServerClient();
+    const { data } = await supabase.auth.getUser();
+
+    return data.user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function isSignedInRequiredError(error: unknown) {
+  return (
+    error instanceof Error &&
+    error.message.toLowerCase().includes("signed in")
+  );
+}
+
+function captureDashboardMemberActionError(
+  error: unknown,
+  stage: string,
+  route: string,
+  extra: Record<string, unknown> = {}
+) {
+  if (isSignedInRequiredError(error)) {
+    return;
+  }
+
+  captureSafeException(error, {
+    area: "dashboard",
+    extra,
+    route,
+    stage,
+  });
+}
+
 const defaultMemberPreferences: Required<MemberPreferencesInput> = {
   default_sort: "recently_updated",
   default_view: "overview",
@@ -227,12 +266,24 @@ export async function saveIdeaAction(formData: FormData) {
   const { ideaId, note, returnTo, slug } = getActionPayload(formData);
 
   try {
-    await saveIdea(ideaId, note);
+    const saved = await saveIdea(ideaId, note);
+    await recordOpsEventSafely({
+      entityId: saved.idea_id,
+      entityType: "trading_idea",
+      eventName: "saved_idea_added",
+      metadata: {
+        has_note: Boolean(saved.note),
+      },
+      route: returnTo,
+      source: "server",
+      userId: saved.user_id,
+    });
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.toLowerCase().includes("signed in")
-    ) {
+    captureDashboardMemberActionError(error, "save_idea", returnTo, {
+      has_note: Boolean(note),
+    });
+
+    if (isSignedInRequiredError(error)) {
       loginRedirect(slug);
     }
 
@@ -251,10 +302,14 @@ export async function updateMemberPreferencesAction(formData: FormData) {
     await ensureMemberPreferences();
     await updateMemberPreferences(payload);
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.toLowerCase().includes("signed in")
-    ) {
+    captureDashboardMemberActionError(
+      error,
+      "member_preferences_update",
+      "/dashboard/preferences",
+      { reset: isReset }
+    );
+
+    if (isSignedInRequiredError(error)) {
       redirect("/login?redirectedFrom=%2Fdashboard%2Fpreferences");
     }
 
@@ -272,12 +327,23 @@ export async function followTickerAction(formData: FormData) {
   const { note, returnTo, slug, ticker } = getTickerActionPayload(formData);
 
   try {
-    await followTicker(ticker, note);
+    const followed = await followTicker(ticker, note);
+    await recordOpsEventSafely({
+      entityType: "ticker",
+      eventName: "ticker_followed",
+      metadata: {
+        has_note: Boolean(followed.note),
+      },
+      route: returnTo,
+      source: "server",
+      userId: followed.user_id,
+    });
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.toLowerCase().includes("signed in")
-    ) {
+    captureDashboardMemberActionError(error, "follow_ticker", returnTo, {
+      has_note: Boolean(note),
+    });
+
+    if (isSignedInRequiredError(error)) {
       loginRedirect(slug);
     }
 
@@ -298,11 +364,20 @@ export async function unfollowTickerAction(formData: FormData) {
 
   try {
     await unfollowTicker(ticker);
+    await recordOpsEventSafely({
+      entityType: "ticker",
+      eventName: "ticker_unfollowed",
+      metadata: {
+        action: "removed",
+      },
+      route: returnTo,
+      source: "server",
+      userId: await getCurrentUserIdForOpsEvent(),
+    });
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.toLowerCase().includes("signed in")
-    ) {
+    captureDashboardMemberActionError(error, "unfollow_ticker", returnTo);
+
+    if (isSignedInRequiredError(error)) {
       loginRedirect(slug);
     }
 
@@ -319,10 +394,14 @@ export async function updateFollowedTickerNoteAction(formData: FormData) {
   try {
     await updateFollowedTickerNote(ticker, note);
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.toLowerCase().includes("signed in")
-    ) {
+    captureDashboardMemberActionError(
+      error,
+      "update_followed_ticker_note",
+      returnTo,
+      { has_note: Boolean(note) }
+    );
+
+    if (isSignedInRequiredError(error)) {
       loginRedirect(slug);
     }
 
@@ -339,16 +418,35 @@ export async function addWatchlistItemAction(formData: FormData) {
   const note = validateMemberNote(getFormString(formData, "note"));
 
   try {
-    await addWatchlistItem({
+    const item = await addWatchlistItem({
       ideaId,
       note,
       ticker,
     });
+    await recordOpsEventSafely({
+      entityId: item.id,
+      entityType: "watchlist_item",
+      eventName: "watchlist_item_added",
+      metadata: {
+        has_linked_idea: Boolean(item.idea_id),
+        has_note: Boolean(item.note),
+      },
+      route: "/dashboard/watchlist",
+      source: "server",
+      userId: item.user_id,
+    });
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.toLowerCase().includes("signed in")
-    ) {
+    captureDashboardMemberActionError(
+      error,
+      "add_watchlist_item",
+      "/dashboard/watchlist",
+      {
+        has_linked_idea: Boolean(ideaId),
+        has_note: Boolean(note),
+      }
+    );
+
+    if (isSignedInRequiredError(error)) {
       redirect("/login?redirectedFrom=%2Fdashboard%2Fwatchlist");
     }
 
@@ -366,16 +464,35 @@ export async function updateWatchlistItemAction(formData: FormData) {
   const note = validateMemberNote(getFormString(formData, "note"));
 
   try {
-    await updateWatchlistItem(id, {
+    const item = await updateWatchlistItem(id, {
       ideaId,
       note,
       ticker,
     });
+    await recordOpsEventSafely({
+      entityId: item.id,
+      entityType: "watchlist_item",
+      eventName: "watchlist_item_updated",
+      metadata: {
+        has_linked_idea: Boolean(item.idea_id),
+        has_note: Boolean(item.note),
+      },
+      route: "/dashboard/watchlist",
+      source: "server",
+      userId: item.user_id,
+    });
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.toLowerCase().includes("signed in")
-    ) {
+    captureDashboardMemberActionError(
+      error,
+      "update_watchlist_item",
+      "/dashboard/watchlist",
+      {
+        has_linked_idea: Boolean(ideaId),
+        has_note: Boolean(note),
+      }
+    );
+
+    if (isSignedInRequiredError(error)) {
       redirect("/login?redirectedFrom=%2Fdashboard%2Fwatchlist");
     }
 
@@ -391,11 +508,22 @@ export async function removeWatchlistItemAction(formData: FormData) {
 
   try {
     await removeWatchlistItem(id);
+    await recordOpsEventSafely({
+      entityId: id,
+      entityType: "watchlist_item",
+      eventName: "watchlist_item_removed",
+      route: "/dashboard/watchlist",
+      source: "server",
+      userId: await getCurrentUserIdForOpsEvent(),
+    });
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.toLowerCase().includes("signed in")
-    ) {
+    captureDashboardMemberActionError(
+      error,
+      "remove_watchlist_item",
+      "/dashboard/watchlist"
+    );
+
+    if (isSignedInRequiredError(error)) {
       redirect("/login?redirectedFrom=%2Fdashboard%2Fwatchlist");
     }
 
@@ -416,11 +544,18 @@ export async function unsaveIdeaAction(formData: FormData) {
 
   try {
     await unsaveIdea(ideaId);
+    await recordOpsEventSafely({
+      entityId: ideaId,
+      entityType: "trading_idea",
+      eventName: "saved_idea_removed",
+      route: returnTo,
+      source: "server",
+      userId: await getCurrentUserIdForOpsEvent(),
+    });
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.toLowerCase().includes("signed in")
-    ) {
+    captureDashboardMemberActionError(error, "unsave_idea", returnTo);
+
+    if (isSignedInRequiredError(error)) {
       loginRedirect(slug);
     }
 
@@ -437,10 +572,14 @@ export async function updateSavedIdeaNoteAction(formData: FormData) {
   try {
     await updateSavedIdeaNote(ideaId, note);
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.toLowerCase().includes("signed in")
-    ) {
+    captureDashboardMemberActionError(
+      error,
+      "update_saved_idea_note",
+      returnTo,
+      { has_note: Boolean(note) }
+    );
+
+    if (isSignedInRequiredError(error)) {
       loginRedirect(slug);
     }
 

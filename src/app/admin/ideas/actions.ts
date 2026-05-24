@@ -32,6 +32,8 @@ import {
   queueNewIdeaEmailNotifications,
   shouldNotifyEligibleMembers,
 } from "@/lib/email/content-notifications";
+import { captureSafeException } from "@/lib/monitoring/sentry";
+import { recordOpsEventSafely } from "@/lib/ops/events";
 
 import type { TradingIdeaActionState } from "./action-state";
 
@@ -165,7 +167,7 @@ export async function createTradingIdeaAction(
   _state: TradingIdeaActionState,
   formData: FormData
 ): Promise<TradingIdeaActionState> {
-  await requireAdmin("/admin/ideas/new");
+  const admin = await requireAdmin("/admin/ideas/new");
 
   const title = getFormValue(formData, "title");
   const slugValue = getFormValue(formData, "slug") || generateSlug(title);
@@ -287,7 +289,38 @@ export async function createTradingIdeaAction(
     if (notifyByEmail && created.published) {
       await queueNewIdeaEmailNotifications(created);
     }
-  } catch {
+
+    await recordOpsEventSafely({
+      entityId: created.id,
+      entityType: "trading_idea",
+      eventName: created.published
+        ? "admin_content_published"
+        : "admin_content_updated",
+      metadata: {
+        content_type: "trading_idea",
+        notify_requested: notifyByEmail,
+        published: created.published,
+        status: created.status,
+        visibility: created.visibility,
+      },
+      route: "/admin/ideas/new",
+      source: "admin",
+      userId: admin.user.id,
+    });
+  } catch (error) {
+    captureSafeException(error, {
+      area: "admin",
+      extra: {
+        notify_requested: notifyByEmail,
+        published: payload.published,
+        visibility: payload.visibility,
+      },
+      route: "/admin/ideas/new",
+      stage: "admin_idea_create",
+      tags: {
+        admin_user_present: Boolean(admin.user.id),
+      },
+    });
     return errorState(
       "The trading idea could not be created. Check for duplicate slugs and try again."
     );
@@ -301,7 +334,7 @@ export async function updateTradingIdeaAction(
   _state: TradingIdeaActionState,
   formData: FormData
 ): Promise<TradingIdeaActionState> {
-  await requireAdmin("/admin/ideas");
+  const admin = await requireAdmin("/admin/ideas");
 
   const id = getRequiredId(formData);
   const currentIdea = await getAdminIdeaById(id);
@@ -442,7 +475,44 @@ export async function updateTradingIdeaAction(
       const queueResult = await queueNewIdeaEmailNotifications(updated);
       notificationMessage = formatQueueResultMessage(queueResult);
     }
-  } catch {
+
+    await recordOpsEventSafely({
+      entityId: updated.id,
+      entityType: "trading_idea",
+      eventName:
+        !currentIdea.published && updated.published
+          ? "admin_content_published"
+          : "admin_content_updated",
+      metadata: {
+        content_type: "trading_idea",
+        next_published: updated.published,
+        next_status: updated.status,
+        next_visibility: updated.visibility,
+        notify_requested: notifyByEmail,
+        previous_published: currentIdea.published,
+        previous_status: currentIdea.status,
+        previous_visibility: currentIdea.visibility,
+      },
+      route: `/admin/ideas/${id}/edit`,
+      source: "admin",
+      userId: admin.user.id,
+    });
+  } catch (error) {
+    captureSafeException(error, {
+      area: "admin",
+      extra: {
+        notify_requested: notifyByEmail,
+        next_published: payload.published,
+        next_visibility: payload.visibility,
+        previous_published: currentIdea.published,
+        previous_visibility: currentIdea.visibility,
+      },
+      route: `/admin/ideas/${id}/edit`,
+      stage: "admin_idea_update",
+      tags: {
+        admin_user_present: Boolean(admin.user.id),
+      },
+    });
     return errorState("The trading idea could not be updated. Try again.");
   }
 
@@ -455,24 +525,55 @@ export async function updateTradingIdeaAction(
 }
 
 export async function publishTradingIdeaAction(formData: FormData) {
-  await requireAdmin("/admin/ideas");
+  const admin = await requireAdmin("/admin/ideas");
   const idea = await getAdminIdeaById(getRequiredId(formData));
 
   if (!idea) {
     throw new Error("Trading idea not found.");
   }
 
-  const published = await publishAdminIdea(idea.id);
+  try {
+    const published = await publishAdminIdea(idea.id);
 
-  if (shouldNotifyEligibleMembers(formData)) {
-    await queueNewIdeaEmailNotifications(published);
+    if (shouldNotifyEligibleMembers(formData)) {
+      await queueNewIdeaEmailNotifications(published);
+    }
+
+    await recordOpsEventSafely({
+      entityId: published.id,
+      entityType: "trading_idea",
+      eventName: "admin_content_published",
+      metadata: {
+        content_type: "trading_idea",
+        notify_requested: shouldNotifyEligibleMembers(formData),
+        status: published.status,
+        visibility: published.visibility,
+      },
+      route: "/admin/ideas",
+      source: "admin",
+      userId: admin.user.id,
+    });
+  } catch (error) {
+    captureSafeException(error, {
+      area: "admin",
+      extra: {
+        notify_requested: shouldNotifyEligibleMembers(formData),
+        visibility: idea.visibility,
+      },
+      route: "/admin/ideas",
+      stage: "admin_idea_publish",
+      tags: {
+        admin_user_present: Boolean(admin.user.id),
+      },
+    });
+    throw error;
   }
 
   revalidateIdeaPaths([idea.slug]);
 }
 
 export async function unpublishTradingIdeaAction(formData: FormData) {
-  await requireAdmin("/admin/ideas");
+  const admin = await requireAdmin("/admin/ideas");
   const idea = await getAdminIdeaById(getRequiredId(formData));
 
   if (!idea) {
@@ -480,6 +581,20 @@ export async function unpublishTradingIdeaAction(formData: FormData) {
   }
 
   await unpublishAdminIdea(idea.id);
+  await recordOpsEventSafely({
+    entityId: idea.id,
+    entityType: "trading_idea",
+    eventName: "admin_content_updated",
+    metadata: {
+      action: "unpublished",
+      content_type: "trading_idea",
+      previous_status: idea.status,
+      visibility: idea.visibility,
+    },
+    route: "/admin/ideas",
+    source: "admin",
+    userId: admin.user.id,
+  });
   revalidateIdeaPaths([idea.slug]);
 }
 

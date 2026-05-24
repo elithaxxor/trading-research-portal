@@ -23,6 +23,9 @@ import {
   validateCheckoutPlan,
   validateInternalReturnPath,
 } from "@/lib/billing/validation";
+import { isFeatureEnabled } from "@/lib/flags/server";
+import { captureSafeException } from "@/lib/monitoring/sentry";
+import { recordOpsEventSafely } from "@/lib/ops/events";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -126,6 +129,19 @@ function logCheckoutFailure(
     userId?: string | null;
   } = {}
 ) {
+  captureSafeException(error, {
+    area: "billing",
+    extra: {
+      env: getEnvPresence(),
+      interval: context.interval ?? null,
+      stripe: getStripeErrorContext(error),
+      tier: context.tier ?? null,
+      user_id_present: Boolean(context.userId),
+    },
+    route: "/pricing",
+    stage,
+  });
+
   console.error("[billing] Checkout failed", {
     env: getEnvPresence(),
     interval: context.interval ?? null,
@@ -146,6 +162,14 @@ function redirectToInvalidSelectionMessage(): never {
 }
 
 export async function createCheckoutSessionAction(formData: FormData) {
+  if (!isFeatureEnabled("checkout_enabled")) {
+    logCheckoutFailure(
+      "feature_checkout_disabled",
+      new Error("Checkout is disabled by launch controls.")
+    );
+    redirectToCheckoutSetupMessage();
+  }
+
   let tier: CheckoutPlan;
   let interval: BillingInterval;
 
@@ -329,6 +353,20 @@ export async function createCheckoutSessionAction(formData: FormData) {
     });
     redirectToCheckoutSetupMessage();
   }
+
+  await recordOpsEventSafely({
+    entityType: "stripe_checkout_session",
+    eventName: "checkout_started",
+    metadata: {
+      billing_interval: interval,
+      checkout_audit_recorded: true,
+      mode: checkoutSession.mode ?? "subscription",
+      requested_tier: tier,
+    },
+    route: "/pricing",
+    source: "server",
+    userId: user.id,
+  });
 
   redirect(checkoutSession.url);
 }

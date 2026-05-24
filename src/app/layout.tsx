@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { AnalyticsProvider } from "@/components/analytics-provider";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
@@ -11,6 +12,8 @@ const siteDescription =
 const fallbackSiteUrl = "https://trading-research-portal.netlify.app";
 const configuredSiteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.trim() || fallbackSiteUrl;
+const posthogEnabled =
+  process.env.POSTHOG_ENABLED?.trim().toLowerCase() === "true";
 
 function getMetadataBase(url: string) {
   try {
@@ -51,9 +54,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark h-full antialiased">
       <body className="flex min-h-full flex-col">
-        <SiteHeader />
-        {children}
-        <SiteFooter />
+        <AnalyticsProvider posthogEnabled={posthogEnabled}>
+          <SiteHeader />
+          {children}
+          <SiteFooter />
+        </AnalyticsProvider>
       </body>
     </html>
   );

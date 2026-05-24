@@ -16,6 +16,7 @@ import {
   notificationCategoryValues,
 } from "@/lib/email/admin";
 import { formatEmailDate, formatNotificationCategory } from "@/lib/email/format";
+import { getFeatureFlagState } from "@/lib/flags/server";
 import type {
   EmailNotificationStatus,
   NotificationCategory,
@@ -280,6 +281,11 @@ export default async function AdminNotificationsPage({
   const templateKey = parseSearch(params?.template_key);
   const page = parsePage(params?.page);
   const offset = (page - 1) * PAGE_SIZE;
+  const emailSendFlag = getFeatureFlagState("production_email_sending_enabled");
+  const contentNotifyFlag = getFeatureFlagState(
+    "admin_content_email_notify_enabled"
+  );
+  const digestFlag = getFeatureFlagState("weekly_digest_enabled");
   const notifications = await listAdminEmailNotifications({
     category,
     date,
@@ -337,6 +343,31 @@ export default async function AdminNotificationsPage({
         status={status}
         templateKey={templateKey}
       />
+
+      <CardShell padding="md" tone="subtle">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">
+              Email Launch Controls
+            </h2>
+            <p className="text-sm leading-6 text-muted-foreground">
+              These flags control queueing and provider sends. Access checks,
+              preferences, unsubscribes, and suppression still apply.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Badge tone={contentNotifyFlag.enabled ? "positive" : "muted"}>
+              Content Notify {contentNotifyFlag.enabled ? "On" : "Off"}
+            </Badge>
+            <Badge tone={digestFlag.enabled ? "positive" : "muted"}>
+              Weekly Digest {digestFlag.enabled ? "On" : "Off"}
+            </Badge>
+            <Badge tone={emailSendFlag.enabled ? "positive" : "muted"}>
+              Provider Send {emailSendFlag.enabled ? "On" : "Off"}
+            </Badge>
+          </div>
+        </div>
+      </CardShell>
 
       <CardShell padding="none" tone="elevated">
         {notifications.items.length > 0 ? (

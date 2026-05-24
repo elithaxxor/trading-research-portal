@@ -299,6 +299,11 @@ function CheckoutForm({
       <input name="interval" type="hidden" value={interval} />
       <input name="returnPath" type="hidden" value="/account" />
       <PricingCheckoutSubmitButton
+        analyticsEventName="checkout_started"
+        analyticsProperties={{
+          billing_interval: interval,
+          requested_tier: tier,
+        }}
         className="w-full"
         label={label}
         pendingLabel="Opening Stripe..."

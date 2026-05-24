@@ -1,5 +1,6 @@
 import { assertValidEmailCronSecret } from "@/lib/email/config";
 import { processQueuedEmail } from "@/lib/email/queue";
+import { captureSafeException } from "@/lib/monitoring/sentry";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -74,6 +75,12 @@ export async function POST(request: Request) {
       skipped: result.skipped,
     });
   } catch (error) {
+    captureSafeException(error, {
+      area: "email",
+      route: "/api/email/process-queue",
+      stage: "process_queue",
+    });
+
     console.error("Email queue processing failed.", {
       error:
         error instanceof Error

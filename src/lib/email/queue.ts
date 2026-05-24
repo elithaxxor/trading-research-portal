@@ -2,6 +2,7 @@ import "server-only";
 
 import { createHash } from "crypto";
 
+import { isFeatureEnabled } from "@/lib/flags/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 import { getEmailConfig, isEmailSendingEnabled } from "./config";
@@ -366,7 +367,10 @@ export async function processQueuedEmail(limit?: number) {
   for (const notification of data ?? []) {
     result.total += 1;
 
-    if (!isEmailSendingEnabled()) {
+    if (
+      !isEmailSendingEnabled() ||
+      !isFeatureEnabled("production_email_sending_enabled")
+    ) {
       result.skipped += 1;
       continue;
     }

@@ -22,6 +22,7 @@ import {
   shouldNotifyEligibleMembers,
 } from "@/lib/email/content-notifications";
 import { validateLifecycleUpdateInput } from "@/lib/lifecycle/validation";
+import { recordOpsEventSafely } from "@/lib/ops/events";
 
 export type IdeaUpdateActionState = {
   fieldErrors?: Record<string, string>;
@@ -163,7 +164,7 @@ export async function createIdeaUpdateAction(
   _state: IdeaUpdateActionState,
   formData: FormData
 ): Promise<IdeaUpdateActionState> {
-  await requireAdmin("/admin/ideas");
+  const admin = await requireAdmin("/admin/ideas");
 
   const ideaId = getRequiredId(formData, "idea_id");
   const idea = await getParentIdea(ideaId);
@@ -195,6 +196,26 @@ export async function createIdeaUpdateAction(
       idea,
       update,
     });
+
+    await recordOpsEventSafely({
+      entityId: ideaId,
+      entityType: "trading_idea",
+      eventName:
+        update.event_type !== "note" || update.status_after_update
+          ? "admin_lifecycle_updated"
+          : "admin_content_updated",
+      metadata: {
+        content_type: "idea_update",
+        event_type: update.event_type,
+        next_status: update.status_after_update ?? null,
+        notify_requested: shouldNotifyEligibleMembers(formData),
+        previous_status: update.status_before ?? idea.status,
+        update_major: update.is_major,
+      },
+      route: `/admin/ideas/${ideaId}/updates`,
+      source: "admin",
+      userId: admin.user.id,
+    });
   } catch {
     return errorState("The idea update could not be created.");
   }
@@ -211,7 +232,7 @@ export async function updateIdeaUpdateAction(
   _state: IdeaUpdateActionState,
   formData: FormData
 ): Promise<IdeaUpdateActionState> {
-  await requireAdmin("/admin/ideas");
+  const admin = await requireAdmin("/admin/ideas");
 
   const ideaId = getRequiredId(formData, "idea_id");
   const updateId = getRequiredId(formData, "update_id");
@@ -244,6 +265,26 @@ export async function updateIdeaUpdateAction(
       idea,
       update,
     });
+
+    await recordOpsEventSafely({
+      entityId: ideaId,
+      entityType: "trading_idea",
+      eventName:
+        update.event_type !== "note" || update.status_after_update
+          ? "admin_lifecycle_updated"
+          : "admin_content_updated",
+      metadata: {
+        content_type: "idea_update",
+        event_type: update.event_type,
+        next_status: update.status_after_update ?? null,
+        notify_requested: shouldNotifyEligibleMembers(formData),
+        previous_status: update.status_before ?? idea.status,
+        update_major: update.is_major,
+      },
+      route: `/admin/ideas/${ideaId}/updates`,
+      source: "admin",
+      userId: admin.user.id,
+    });
   } catch {
     return errorState("The idea update could not be saved.");
   }
@@ -260,7 +301,7 @@ export async function deleteIdeaUpdateAction(
   _state: IdeaUpdateActionState,
   formData: FormData
 ): Promise<IdeaUpdateActionState> {
-  await requireAdmin("/admin/ideas");
+  const admin = await requireAdmin("/admin/ideas");
 
   const ideaId = getRequiredId(formData, "idea_id");
   const updateId = getRequiredId(formData, "update_id");
@@ -268,6 +309,18 @@ export async function deleteIdeaUpdateAction(
 
   try {
     await deleteIdeaUpdate(updateId);
+    await recordOpsEventSafely({
+      entityId: ideaId,
+      entityType: "trading_idea",
+      eventName: "admin_content_updated",
+      metadata: {
+        action: "update_deleted",
+        content_type: "idea_update",
+      },
+      route: `/admin/ideas/${ideaId}/updates`,
+      source: "admin",
+      userId: admin.user.id,
+    });
   } catch {
     return errorState("The idea update could not be deleted.");
   }

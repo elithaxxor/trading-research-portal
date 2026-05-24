@@ -13,6 +13,7 @@ import {
   cancelQueuedEmailNotification,
   retryEmailNotification,
 } from "@/lib/email/queue";
+import { isFeatureEnabled } from "@/lib/flags/server";
 
 function getString(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -143,6 +144,10 @@ export async function triggerWeeklyDigestDryRunAction(formData: FormData) {
 
 export async function triggerWeeklyDigestQueueAction(formData: FormData) {
   await requireAdmin("/admin/notifications/digests");
+
+  if (!isFeatureEnabled("weekly_digest_enabled")) {
+    redirect(buildDigestRedirect({ notice: "digest_disabled" }));
+  }
 
   if (getString(formData, "confirm_digest_queue") !== "yes") {
     redirect(buildDigestRedirect({ notice: "missing_confirmation" }));

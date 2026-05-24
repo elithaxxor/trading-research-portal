@@ -2,6 +2,7 @@ import "server-only";
 
 import { randomBytes } from "crypto";
 
+import { recordOpsEventSafely } from "@/lib/ops/events";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 import { buildProtectedAppLink } from "./safety";
@@ -141,6 +142,19 @@ export async function processUnsubscribeToken(token: string) {
       throw new Error("Unable to update unsubscribe preferences.");
     }
   }
+
+  await recordOpsEventSafely({
+    entityId: data.id,
+    entityType: "email_unsubscribe",
+    eventName: "notification_unsubscribed",
+    metadata: {
+      unsubscribe_group: data.unsubscribe_group,
+      user_linked: Boolean(data.user_id),
+    },
+    route: "/unsubscribe",
+    source: "server",
+    userId: data.user_id,
+  });
 
   return data;
 }

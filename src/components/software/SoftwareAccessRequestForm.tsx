@@ -6,6 +6,7 @@ import { requestSoftwareAccessAction } from "@/app/dashboard/software/actions";
 import { CardShell } from "@/components/card-shell";
 import { SoftwareAccessBadge } from "@/components/software/SoftwareAccessBadge";
 import { buttonVariants } from "@/components/ui/button";
+import { captureAnalyticsEvent } from "@/lib/analytics/posthog-client";
 import type {
   SoftwareAccessRequest,
   SoftwareDeliveryType,
@@ -98,7 +99,9 @@ export function SoftwareAccessRequestForm({
               advice, trade execution, or a guarantee of results.
             </p>
             <SoftwareRequestSubmitButton
+              existingRequest={Boolean(existingRequest)}
               label={existingRequest ? "Update request" : "Submit request"}
+              slug={slug}
             />
           </div>
         </form>
@@ -107,7 +110,15 @@ export function SoftwareAccessRequestForm({
   );
 }
 
-function SoftwareRequestSubmitButton({ label }: { label: string }) {
+function SoftwareRequestSubmitButton({
+  existingRequest,
+  label,
+  slug,
+}: {
+  existingRequest: boolean;
+  label: string;
+  slug: string;
+}) {
   const { pending } = useFormStatus();
 
   return (
@@ -115,6 +126,14 @@ function SoftwareRequestSubmitButton({ label }: { label: string }) {
       aria-disabled={pending}
       className={buttonVariants({ size: "lg" })}
       disabled={pending}
+      onClick={() => {
+        if (!pending) {
+          captureAnalyticsEvent("software_access_requested", {
+            existing_request: existingRequest,
+            path: `/dashboard/software/${slug}`,
+          });
+        }
+      }}
       type="submit"
     >
       {pending ? "Submitting..." : label}

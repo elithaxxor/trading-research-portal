@@ -2,7 +2,7 @@
 
 A professional trading research portal built with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Netlify, and Supabase.
 
-The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, Phase 7 idea lifecycle refinement, Phase 8 advanced member dashboard/software library implementation, Phase 9 Stripe subscription implementation, and Phase 10 email notification infrastructure are in place for development. Phase 9 hosted Stripe test-mode deploy-preview QA has passed for Checkout, Customer Portal, webhook sync, idempotency, cancellation, payment-failure access downgrade, and access automation. Phase 10 deploy-preview QA is complete with Postmark as the active provider: local queue-only QA, deploy-preview route smoke, authenticated preferences/unsubscribe/admin notification UI checks, hosted queue-only infrastructure checks, provider-send QA to `EMAIL_TEST_RECIPIENT`, Postmark webhook checks, admin content notification publish QA, mobile checks, leak checks, cleanup, build, lint, and typecheck all passed. Production email sending remains disabled until sender/domain deliverability, legal/business review, and explicit send approval are complete. Broker integrations, order execution, copy trading, automatic TradingView invite automation, SMS, and push notifications remain intentionally out of scope for the current build.
+The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, Phase 7 idea lifecycle refinement, Phase 8 advanced member dashboard/software library implementation, Phase 9 Stripe subscription implementation, Phase 10 email notification infrastructure, and Phase 11 operations/launch-readiness tooling are in place for development. Phase 9 hosted Stripe test-mode deploy-preview QA has passed for Checkout, Customer Portal, webhook sync, idempotency, cancellation, payment-failure access downgrade, and access automation. Phase 10 deploy-preview QA is complete with Postmark as the active provider: local queue-only QA, deploy-preview route smoke, authenticated preferences/unsubscribe/admin notification UI checks, hosted queue-only infrastructure checks, provider-send QA to `EMAIL_TEST_RECIPIENT`, Postmark webhook checks, admin content notification publish QA, mobile checks, leak checks, cleanup, build, lint, and typecheck all passed. Phase 11 deploy-preview QA is complete for operations dashboards, health routes, readiness/incident workflows, safe metrics, feature flags, leak checks, regression checks, cleanup, build, lint, and typecheck. Production email sending remains disabled until sender/domain deliverability, legal/business review, and explicit send approval are complete. Live Stripe subscriptions remain disabled until live-mode Stripe/legal/business approval is complete. Broker integrations, order execution, copy trading, live market data feeds, performance promises, automatic TradingView invite automation, SMS, and push notifications remain intentionally out of scope for the current build.
 
 ## Phase Status
 
@@ -18,6 +18,7 @@ The public site is live as a marketing experience. Supabase schema, RLS, seed da
 - Phase 8: Complete. Advanced member dashboard routes, saved ideas, followed tickers, watchlist workflows, dashboard preferences, member notes, recent activity, closed reviews, gated software library, software access requests, and admin software management are implemented and verified. Anonymous and authenticated deploy-preview QA, user-owned RLS isolation, software access-control checks, admin software management QA, leak checks, mobile QA, cleanup, and local build/lint/typecheck all passed.
 - Phase 9: Complete. Stripe Checkout, Customer Portal, webhook route, billing schema migration, subscription sync helpers, pricing/account billing UI, and webhook-driven Premium/Pro access automation are implemented. Phase 9 migrations are applied, generated types are updated, hosted Stripe test-mode Checkout and Customer Portal QA passed, webhook sync/idempotency/cancellation/payment-failure downgrade QA passed, and access automation/leak checks passed.
 - Phase 10: Complete for deploy-preview QA. Postmark-backed email provider support, a Resend-compatible provider abstraction, notification preferences, unsubscribe flow, content/lifecycle notification queueing, weekly digest generation, software access request emails, billing/access status emails, provider webhook event handling, and admin notification center are implemented. Local queue-only, deploy-preview route smoke, authenticated preferences/unsubscribe/admin UI, hosted queue-only direct queue processing, controlled Postmark provider-send, hosted Postmark webhook, admin content notification publish, mobile, suppression, leak-check, cleanup, build, lint, and typecheck QA passed. Production sending remains disabled and still requires Postmark sender/domain deliverability, SPF/DKIM/DMARC review, legal/business review, and explicit send approval.
+- Phase 11: Complete for deploy-preview QA. Admin operations dashboards, public and protected health checks, readiness checklists, incident tracking, ops event logging, safe product metrics, Stripe live-readiness dashboard, email production-readiness dashboard, launch checklist, feature flags, optional no-op PostHog/Sentry integrations, and production runbooks are implemented. Deploy-preview route smoke, anonymous protection checks, authenticated admin ops checks, readiness/incident server-action QA, metrics/leak checks, regression checks, cleanup, build, lint, and typecheck passed. Live Stripe subscriptions and production email sending remain disabled until explicit legal/business/operations approval.
 
 ## Phase 1 Public Site
 
@@ -166,6 +167,7 @@ EMAIL_FROM=
 EMAIL_REPLY_TO=
 EMAIL_TEST_RECIPIENT=
 EMAIL_CRON_SECRET=
+OPS_HEALTH_SECRET=
 POSTMARK_SERVER_TOKEN=
 POSTMARK_MESSAGE_STREAM=outbound
 POSTMARK_WEBHOOK_USERNAME=
@@ -173,6 +175,50 @@ POSTMARK_WEBHOOK_PASSWORD=
 ```
 
 `EMAIL_PROVIDER=postmark` selects the active Phase 10 provider. `EMAIL_SEND_ENABLED=false` means email workflows should queue/log only and must not actually send. `EMAIL_TEST_RECIPIENT` can be used during deploy-preview QA to redirect non-transactional test email to a safe inbox. `EMAIL_CRON_SECRET` protects manual or scheduled digest and queue-processing routes. `POSTMARK_SERVER_TOKEN`, `POSTMARK_WEBHOOK_USERNAME`, and `POSTMARK_WEBHOOK_PASSWORD` are server-only and must never be imported into client components or committed. Resend remains a legacy/optional provider path only if `EMAIL_PROVIDER=resend` and the matching Resend server-only variables are configured.
+
+Phase 11 health route placeholder:
+
+```bash
+OPS_HEALTH_SECRET=
+```
+
+`/api/health` is a public-safe GET endpoint for uptime monitors. It returns only app name, status, version, and timestamp. `/api/health/deep` is protected by an admin session or `OPS_HEALTH_SECRET` via `Authorization: Bearer ...`, `x-ops-health-secret`, or `x-health-secret`. The deep health endpoint returns redacted table/config presence checks only; it must not expose environment values, secrets, recipient lists, Stripe IDs, private content, card data, or Pine Script/source code.
+
+Optional Phase 11 PostHog analytics placeholders:
+
+```bash
+NEXT_PUBLIC_POSTHOG_KEY=
+NEXT_PUBLIC_POSTHOG_HOST=
+POSTHOG_ENABLED=false
+```
+
+PostHog is optional. If `POSTHOG_ENABLED=false` or `NEXT_PUBLIC_POSTHOG_KEY` is missing, analytics and feature-flag helpers are no-ops and builds must continue to pass. Only safe product events are captured: page views, pricing views, checkout-start clicks, dashboard section views, software product views, software access request clicks, and notification preference save clicks. Do not send private idea details, exact levels, protected research bodies, Pine Script/source code, secrets, card data, raw emails, or sensitive user data. Production analytics requires privacy/legal review, and session replay must remain disabled unless explicitly approved.
+
+Optional Phase 11 Sentry monitoring placeholders:
+
+```bash
+NEXT_PUBLIC_SENTRY_DSN=
+SENTRY_AUTH_TOKEN=
+SENTRY_ORG=
+SENTRY_PROJECT=
+SENTRY_ENABLED=false
+```
+
+Sentry is optional. If `SENTRY_ENABLED=false` or `NEXT_PUBLIC_SENTRY_DSN` is missing, Sentry client, server, edge/proxy, and request-error capture are no-ops and builds must continue to pass. `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, and `SENTRY_PROJECT` are server/build-time values used only for source-map upload when intentionally configured; source-map upload stays disabled unless all required Sentry release values are present. The app scrubs Supabase/Stripe/Postmark secrets, authorization headers, cookies, raw emails, private content bodies, exact levels, Pine Script/source code, and payment/card data from Sentry events. Production monitoring requires environment setup and privacy/legal review.
+
+Phase 11 launch control placeholders:
+
+```bash
+FEATURE_CHECKOUT_ENABLED=false
+FEATURE_CUSTOMER_PORTAL_ENABLED=false
+FEATURE_PRODUCTION_EMAIL_SENDING_ENABLED=false
+FEATURE_WEEKLY_DIGEST_ENABLED=false
+FEATURE_ADMIN_CONTENT_EMAIL_NOTIFY_ENABLED=true
+FEATURE_SOFTWARE_ACCESS_REQUESTS_ENABLED=true
+FEATURE_MAINTENANCE_BANNER_ENABLED=false
+```
+
+Feature flags are operational kill switches, not access control. They can disable risky launch surfaces such as Checkout, Customer Portal, provider email sending, weekly digest queueing, admin content notification queueing, and software access request submission. Client-visible flags cannot grant paid access; RLS, server-side tier checks, Stripe webhooks, notification preferences, unsubscribes, and suppression remain authoritative. Email provider sends require both `EMAIL_SEND_ENABLED=true` and `FEATURE_PRODUCTION_EMAIL_SENDING_ENABLED=true`.
 
 ## Supabase Local Development
 
@@ -341,6 +387,47 @@ Phase 10 email environment checklist:
   `POSTMARK_WEBHOOK_USERNAME` and `POSTMARK_WEBHOOK_PASSWORD` values.
 - Production sending should remain disabled until Phase 10 QA passes and
   business approval is complete.
+
+Phase 11 optional PostHog analytics checklist:
+
+- PostHog is not required for local builds, deploy previews, or production.
+- Leave `POSTHOG_ENABLED=false` until privacy/legal review approves analytics.
+- Configure `NEXT_PUBLIC_POSTHOG_KEY` and `NEXT_PUBLIC_POSTHOG_HOST` only when
+  a PostHog project is intentionally selected for that environment.
+- Session replay is disabled in code and must not be enabled without explicit
+  approval.
+- Feature flags are read-only convenience flags only; security, billing,
+  content access, and software access remain enforced by server code and RLS.
+- Do not identify users by raw email unless explicitly approved by the
+  privacy/legal review.
+
+Phase 11 optional Sentry monitoring checklist:
+
+- Sentry is not required for local builds, deploy previews, or production.
+- Leave `SENTRY_ENABLED=false` until monitoring is intentionally approved for
+  the environment.
+- Configure `NEXT_PUBLIC_SENTRY_DSN` only for the selected Sentry project.
+- Keep `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, and `SENTRY_PROJECT` server/build-time
+  only; never expose `SENTRY_AUTH_TOKEN` to client components or browser JS.
+- Source-map upload is gated on `SENTRY_ENABLED=true`, a DSN, and all
+  source-map credentials being present.
+- Error events are scrubbed for secrets, auth material, private trading content,
+  Pine Script/source code, raw emails, and payment/card data before delivery.
+
+Phase 11 launch control checklist:
+
+- Keep `FEATURE_CHECKOUT_ENABLED=false` until live or test-mode Checkout is
+  explicitly approved for the target environment.
+- Keep `FEATURE_CUSTOMER_PORTAL_ENABLED=false` until Customer Portal use is
+  approved for the target environment.
+- Keep `FEATURE_PRODUCTION_EMAIL_SENDING_ENABLED=false` unless provider sending
+  is explicitly approved; `EMAIL_SEND_ENABLED` must also be true before sends.
+- Keep `FEATURE_WEEKLY_DIGEST_ENABLED=false` until digest queueing is approved.
+- `FEATURE_ADMIN_CONTENT_EMAIL_NOTIFY_ENABLED` controls admin content email
+  queueing only; queued emails still require preferences, eligibility, and
+  provider-send flags before delivery.
+- `FEATURE_SOFTWARE_ACCESS_REQUESTS_ENABLED` controls member request submission
+  only; it does not grant software access.
 
 For deploy previews, `NEXT_PUBLIC_SITE_URL` must not be set to localhost. It can
 be the production Netlify URL while auth server actions use the current preview
@@ -872,6 +959,103 @@ Phase 10 QA status:
   review, and explicit send approval are still required. It is not safe to
   enable production email sending yet.
 
+## Phase 11 Operations and Launch Readiness
+
+Phase 11 adds production operations, analytics-safe visibility, monitoring
+hooks, launch-readiness controls, and admin operational tooling. It does not
+add broker integrations, order execution, copy trading, live market data feeds,
+performance promises, production email sending, live Stripe enablement, or
+automatic TradingView invite automation.
+
+Phase 11 operations implementation:
+
+- Admin operations overview for platform health, incidents, launch blockers,
+  feature flags, and high-level system metrics.
+- Public-safe `/api/health` endpoint for uptime checks.
+- Protected `/api/health/deep` endpoint for admin or secret-based operational
+  diagnostics.
+- Readiness checklist tracking with status, owner, evidence notes, launch
+  blockers, and seeded production-readiness gates.
+- Incident tracking for operational issues, severity, status, resolution notes,
+  and cleanup.
+- Server-side ops event logging for safe product/admin events.
+- Safe product metrics for content, members, software, billing, email, and
+  admin operations.
+- Stripe live-readiness dashboard that reports readiness without enabling live
+  billing.
+- Email production-readiness dashboard that reports readiness without sending
+  production email.
+- Launch checklist and operational runbooks.
+- Optional PostHog and Sentry integrations that remain no-op unless explicitly
+  configured and approved.
+- Environment-backed feature flags for checkout, Customer Portal, production
+  email sending, weekly digest queueing, admin content email queueing, software
+  access requests, and maintenance banner display.
+
+Phase 11 routes:
+
+- `/admin/ops`
+- `/admin/ops/readiness`
+- `/admin/ops/incidents`
+- `/admin/ops/events`
+- `/admin/ops/metrics`
+- `/admin/ops/stripe`
+- `/admin/ops/email`
+- `/admin/ops/launch`
+- `/api/health`
+- `/api/health/deep`
+
+Phase 11 security model:
+
+- Admin operations pages require `requireAdmin()`.
+- `/api/health` is public-safe and does not query sensitive data.
+- `/api/health/deep` requires an admin session or `OPS_HEALTH_SECRET`.
+- Ops metadata must not store secrets, card data, private content bodies,
+  exact trading levels, private chart metadata, member notes, raw email
+  addresses, or Pine Script/source code.
+- Ops metrics are aggregate/safe operational counts only and must not become
+  trading P&L or performance reporting.
+- Feature flags are kill switches only; client-visible flags cannot grant paid
+  access or bypass RLS/server authorization.
+- Live Stripe billing and production email sending remain disabled unless
+  explicitly approved.
+- Broker integrations, order execution, copy trading, live market data feeds,
+  performance promises, and automatic TradingView invite automation remain out
+  of scope.
+
+Phase 11 deploy-preview QA status:
+
+- Deploy preview PR #13 is available at
+  `https://deploy-preview-13--trading-research-portal.netlify.app`.
+- Public route checks passed for `/`, `/pricing`, `/ideas`, `/research`,
+  `/login`, `/register`, `/api/health`, and `/free`.
+- Anonymous protected route redirects passed for dashboard, account, account
+  billing, account notifications, admin, and admin ops routes.
+- Protected API checks passed: `/api/health/deep` returns `401` without
+  authorization, email queue/digest routes return `401` without
+  `EMAIL_CRON_SECRET`, Postmark webhook returns `401` for missing/invalid Basic
+  Auth, and Stripe webhook invalid signature returns `400`.
+- Authenticated admin checks passed for `/admin/ops`,
+  `/admin/ops/readiness`, `/admin/ops/incidents`, `/admin/ops/events`,
+  `/admin/ops/stripe`, `/admin/ops/email`, `/admin/ops/metrics`, and
+  `/admin/ops/launch`.
+- Readiness update server-action QA passed and restored the edited row.
+- Temporary incident create/resolve server-action QA passed and cleaned up the
+  temporary incident.
+- Feature flag display passed; checkout and production-email live flags remain
+  disabled unless explicitly approved.
+- Regression checks passed for the free chart page, premium/pro locked idea
+  pages, dashboard, account billing, account notifications, admin
+  notifications, and admin software.
+- Secret/leak checks passed for deploy-preview HTML/client JS, admin ops
+  pages, health routes, README/docs, tracked files, and Netlify deploy secret
+  scan.
+- Local `npm run build`, `npm run lint`, and `npx tsc --noEmit` passed.
+- Phase 11 code is safe to merge after the Green deploy-preview gate.
+- Production readiness remains Yellow for live email and live Stripe: both are
+  safely disabled and still require final domain, deliverability, legal,
+  business, and operations approval before activation.
+
 ## Security Notes
 
 - Never commit `.env`, `.env.local`, `.env.development`, or `.env.production`.
@@ -893,11 +1077,16 @@ Phase 10 QA status:
 
 ## Next Phase
 
-Recommended next work before enabling production email: complete Postmark
-sender/domain deliverability review, SPF/DKIM/DMARC review, legal/business
-approval, and a production readiness pass. Keep production sending disabled
-until explicit approval.
+Recommended next work before enabling production email or live subscriptions:
+complete Postmark sender/domain deliverability review, SPF/DKIM/DMARC review,
+live Stripe readiness, legal/business approval, and a controlled production
+readiness pass. Keep production email sending and live Stripe subscriptions
+disabled until explicit approval.
 
 Future planned phases:
 
-- Phase 11: To be defined after production email readiness and business review.
+- Production launch enablement: turn on production email and live Stripe only
+  after the Phase 11 readiness gates, legal/business review, and controlled
+  production approval are complete.
+- Optional future analytics/monitoring depth: expand PostHog/Sentry only after
+  privacy/legal review, with no session replay unless explicitly approved.
