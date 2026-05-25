@@ -33,8 +33,8 @@ export function SoftwareAccessRequestForm({
     return (
       <CardShell padding="md" tone="subtle">
         <p className="text-sm leading-6 text-muted-foreground">
-          This product does not require a manual access request in Phase 8.
-          Follow the documentation and setup notes on this page.
+          This product does not require a manual access request. Follow the
+          documentation and setup notes on this page.
         </p>
       </CardShell>
     );
@@ -56,8 +56,8 @@ export function SoftwareAccessRequestForm({
             ) : null}
           </div>
           <p className="text-sm leading-6 text-muted-foreground">
-            TradingView invite-only access may require manual approval. Phase 8
-            records your request only; it does not automate TradingView
+            TradingView invite-only access may require manual approval. The
+            portal records your request only; it does not automate TradingView
             permissions.
           </p>
         </div>

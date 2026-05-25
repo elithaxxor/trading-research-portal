@@ -144,7 +144,7 @@ export function ResearchPostForm({ mode, post }: ResearchPostFormProps) {
         </AdminFormSection>
 
         <AdminFormSection
-          description="Publishing makes the post visible according to its access level. Email alerts are not active yet."
+          description="Publishing makes the post visible according to its access level. This form does not send research-post email alerts directly."
           title="Publishing"
         >
           <AdminCheckbox

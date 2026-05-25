@@ -132,8 +132,8 @@ export default function FreeResearchPage() {
         <Container className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">
           <SectionHeading
             eyebrow="Research updates"
-            title="Email notifications are planned for a later phase."
-            description="Email collection and notification workflows are intentionally not active yet."
+            title="Production email notifications are not enabled yet."
+            description="Email notification infrastructure exists, but production sending remains disabled until sender/domain, unsubscribe, support, legal, and business review are complete."
           />
 
           <CardShell className="relative overflow-hidden" padding="lg" tone="elevated">
@@ -145,11 +145,11 @@ export default function FreeResearchPage() {
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold text-foreground">
-                    Email updates not active yet
+                    Email updates disabled before launch
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    Email notification backend work is planned for a later
-                    phase. For now, use the public research, dashboard, and
+                    Email updates are held in safe-off mode before production
+                    approval. For now, use the public research, dashboard, and
                     pricing pages directly.
                   </p>
                 </div>
@@ -177,7 +177,7 @@ export default function FreeResearchPage() {
 
               <p className="text-xs leading-5 text-muted-foreground">
                 This visual preview is disabled because email notifications are
-                outside the current subscription phase.
+                not approved for production sending yet.
               </p>
             </div>
           </CardShell>

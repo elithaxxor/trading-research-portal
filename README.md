@@ -2,7 +2,7 @@
 
 A professional trading research portal built with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Netlify, and Supabase.
 
-The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, Phase 7 idea lifecycle refinement, Phase 8 advanced member dashboard/software library implementation, Phase 9 Stripe subscription implementation, Phase 10 email notification infrastructure, and Phase 11 operations/launch-readiness tooling are in place for development. Phase 9 hosted Stripe test-mode deploy-preview QA has passed for Checkout, Customer Portal, webhook sync, idempotency, cancellation, payment-failure access downgrade, and access automation. Phase 10 deploy-preview QA is complete with Postmark as the active provider: local queue-only QA, deploy-preview route smoke, authenticated preferences/unsubscribe/admin notification UI checks, hosted queue-only infrastructure checks, provider-send QA to `EMAIL_TEST_RECIPIENT`, Postmark webhook checks, admin content notification publish QA, mobile checks, leak checks, cleanup, build, lint, and typecheck all passed. Phase 11 deploy-preview QA is complete for operations dashboards, health routes, readiness/incident workflows, safe metrics, feature flags, leak checks, regression checks, cleanup, build, lint, and typecheck. Production email sending remains disabled until sender/domain deliverability, legal/business review, and explicit send approval are complete. Live Stripe subscriptions remain disabled until live-mode Stripe/legal/business approval is complete. Broker integrations, order execution, copy trading, live market data feeds, performance promises, automatic TradingView invite automation, SMS, and push notifications remain intentionally out of scope for the current build.
+The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, Phase 7 idea lifecycle refinement, Phase 8 advanced member dashboard/software library implementation, Phase 9 Stripe subscription implementation, Phase 10 email notification infrastructure, Phase 11 operations/launch-readiness tooling, and Phase 12 production launch controls are in place. Phase 9 hosted Stripe test-mode deploy-preview QA passed for Checkout, Customer Portal, webhook sync, idempotency, cancellation, payment-failure access downgrade, and access automation. Phase 10 deploy-preview QA completed with Postmark as the active provider, and Phase 11 deploy-preview QA completed for operations dashboards, health routes, readiness/incident workflows, safe metrics, feature flags, leak checks, regression checks, cleanup, build, lint, and typecheck. Phase 12 created approval-gated production launch plans and runbooks, audited custom domain/Supabase/Stripe/email/legal/data/feature-flag readiness, completed an approval-gated live Stripe activation and controlled live checkout test, completed a controlled production Postmark send test, restored production email safe-off, and ran post-launch smoke/rollback drills. Production email sending remains disabled; no production queue/digest scheduler is enabled. Live Stripe Checkout and Customer Portal are enabled only after explicit approval, but the final launch gate remains Yellow until readiness rows are closed and the live Stripe secret is rotated. Broker integrations, order execution, copy trading, live market data feeds, performance promises, automatic TradingView invite automation, SMS, and push notifications remain intentionally out of scope for the current build.
 
 ## Phase Status
 
@@ -18,7 +18,8 @@ The public site is live as a marketing experience. Supabase schema, RLS, seed da
 - Phase 8: Complete. Advanced member dashboard routes, saved ideas, followed tickers, watchlist workflows, dashboard preferences, member notes, recent activity, closed reviews, gated software library, software access requests, and admin software management are implemented and verified. Anonymous and authenticated deploy-preview QA, user-owned RLS isolation, software access-control checks, admin software management QA, leak checks, mobile QA, cleanup, and local build/lint/typecheck all passed.
 - Phase 9: Complete. Stripe Checkout, Customer Portal, webhook route, billing schema migration, subscription sync helpers, pricing/account billing UI, and webhook-driven Premium/Pro access automation are implemented. Phase 9 migrations are applied, generated types are updated, hosted Stripe test-mode Checkout and Customer Portal QA passed, webhook sync/idempotency/cancellation/payment-failure downgrade QA passed, and access automation/leak checks passed.
 - Phase 10: Complete for deploy-preview QA. Postmark-backed email provider support, a Resend-compatible provider abstraction, notification preferences, unsubscribe flow, content/lifecycle notification queueing, weekly digest generation, software access request emails, billing/access status emails, provider webhook event handling, and admin notification center are implemented. Local queue-only, deploy-preview route smoke, authenticated preferences/unsubscribe/admin UI, hosted queue-only direct queue processing, controlled Postmark provider-send, hosted Postmark webhook, admin content notification publish, mobile, suppression, leak-check, cleanup, build, lint, and typecheck QA passed. Production sending remains disabled and still requires Postmark sender/domain deliverability, SPF/DKIM/DMARC review, legal/business review, and explicit send approval.
-- Phase 11: Complete for deploy-preview QA. Admin operations dashboards, public and protected health checks, readiness checklists, incident tracking, ops event logging, safe product metrics, Stripe live-readiness dashboard, email production-readiness dashboard, launch checklist, feature flags, optional no-op PostHog/Sentry integrations, and production runbooks are implemented. Deploy-preview route smoke, anonymous protection checks, authenticated admin ops checks, readiness/incident server-action QA, metrics/leak checks, regression checks, cleanup, build, lint, and typecheck passed. Live Stripe subscriptions and production email sending remain disabled until explicit legal/business/operations approval.
+- Phase 11: Complete for deploy-preview QA. Admin operations dashboards, public and protected health checks, readiness checklists, incident tracking, ops event logging, safe product metrics, Stripe live-readiness dashboard, email production-readiness dashboard, launch checklist, feature flags, optional no-op PostHog/Sentry integrations, and production runbooks are implemented. Deploy-preview route smoke, anonymous protection checks, authenticated admin ops checks, readiness/incident server-action QA, metrics/leak checks, regression checks, cleanup, build, lint, and typecheck passed. Live Stripe and production email activation remain gated by explicit legal/business/operations approval.
+- Phase 12: Complete for launch-control documentation, approval-gated activation drills, and production go/no-go reporting. Phase 12 delivered launch-scope approval gates, custom-domain readiness, Supabase production-project decision support, live Stripe activation planning and controlled activation, production email activation planning and controlled Postmark send testing, legal/support review, production data cleanup planning, feature-flag safe-off review, post-launch smoke/rollback drill, and handoff documentation. Production email sending is restored safe-off and schedulers remain disabled. Live Stripe Checkout and Customer Portal are enabled only because explicit approval was provided. Final public-launch readiness remains Yellow until launch-blocking readiness rows are resolved, the live Stripe secret is rotated, and remaining owner decisions are closed.
 
 ## Phase 1 Public Site
 
@@ -50,7 +51,7 @@ Completed UI foundation:
 - Page-level metadata and Open Graph placeholders
 - Auth routes now use real Supabase Auth forms in Phase 3
 
-Public content explains the educational research model, risk limitations, and subscription access paths. Premium and Pro access automation is implemented through Stripe test-mode Checkout and verified webhook sync; live subscriptions still require final live-key setup and business/legal approval.
+Public content explains the educational research model, risk limitations, and subscription access paths. Premium and Pro access automation is implemented through Stripe Checkout and verified webhook sync. Live Stripe Checkout and Customer Portal are enabled after explicit Phase 12 approval, while production email sending and schedulers remain disabled.
 
 ## Local Development
 
@@ -1056,6 +1057,86 @@ Phase 11 deploy-preview QA status:
   safely disabled and still require final domain, deliverability, legal,
   business, and operations approval before activation.
 
+## Phase 12 Production Launch Controls
+
+Phase 12 adds production launch execution planning, approval gates, safe-off
+checks, controlled activation drills, and post-launch rollback procedures. It
+does not add broker integrations, order execution, copy trading, live market
+data feeds, performance promises, automatic TradingView invite automation, SMS,
+push notifications, or arbitrary marketing blast tooling.
+
+Phase 12 launch-control work:
+
+- Launch-scope and approval-gate plan in `docs/phase-12-launch-plan.md`.
+- Custom-domain readiness runbook, including DNS, Netlify domain options,
+  HTTPS, redirect, app URL, Supabase Auth, Stripe webhook, and Postmark link
+  impacts.
+- Supabase production-project decision runbook comparing continued shared
+  prelaunch usage against a dedicated production project.
+- Stripe live-readiness runbook and approval-gated live activation plan.
+- Production Postmark/email readiness runbook and approval-gated activation
+  plan.
+- Legal/support launch review runbook covering pricing, cancellation, refund,
+  privacy, disclaimer, support, email, software access, and no-broker/no-copy
+  claims.
+- Production/prelaunch data cleanup plan for leftover QA/test records.
+- Launch-control feature flag audit for checkout, Customer Portal, production
+  email, weekly digest, admin content email queueing, software requests,
+  PostHog, Sentry, and maintenance banner.
+- Post-launch smoke and rollback runbook with a dry-run rollback target and
+  non-destructive drill result.
+- Phase 12 handoff report in `docs/phase-12-handoff.md`.
+
+Phase 12 production posture:
+
+- Live Stripe Checkout and Customer Portal were enabled only after the exact
+  approval phrase was provided.
+- A controlled live Stripe Checkout test passed, webhook sync granted Premium
+  access, and the temporary internal test subscription was canceled after
+  verification.
+- The temporary `$1` live Stripe test price was made inactive and production
+  Premium monthly pricing was restored to the approved live price.
+- Production email env vars are configured for Postmark, but
+  `EMAIL_SEND_ENABLED=false`,
+  `FEATURE_PRODUCTION_EMAIL_SENDING_ENABLED=false`, and
+  `FEATURE_WEEKLY_DIGEST_ENABLED=false`.
+- A controlled production Postmark test email was sent to the approved test
+  recipient, Postmark stored a MessageID, and Postmark activity reported
+  delivery. Provider webhook ingestion remains a caveat until production
+  `email_provider_events` rows are observed.
+- No queue/digest scheduler is enabled.
+- Final Phase 12 go/no-go status is Yellow because launch-blocking readiness
+  rows remain pending.
+
+Phase 12 runbooks:
+
+- `docs/runbooks/custom-domain-readiness.md`
+- `docs/runbooks/supabase-production-project-decision.md`
+- `docs/runbooks/stripe-live-readiness.md`
+- `docs/runbooks/live-stripe-activation-plan.md`
+- `docs/runbooks/email-production-readiness.md`
+- `docs/runbooks/production-email-activation-plan.md`
+- `docs/runbooks/legal-support-launch-review.md`
+- `docs/runbooks/production-data-cleanup-plan.md`
+- `docs/runbooks/post-launch-smoke-and-rollback.md`
+
+Phase 12 QA status:
+
+- Production public routes passed: `/`, `/pricing`, `/ideas`, `/research`,
+  `/login`, `/register`, and `/api/health`.
+- Protected route/API checks passed for dashboard/admin/account redirects,
+  `/api/health/deep` unauthorized rejection, Stripe invalid-signature rejection,
+  and email queue/webhook auth rejection.
+- Admin ops dashboards loaded with an admin session.
+- Authenticated smoke passed for dashboard, admin, software library, and ops
+  pages.
+- Production HTML/client JS and tracked-file secret-value scans passed.
+- Local `npm run build`, `npm run lint`, and `npx tsc --noEmit` passed.
+- Launch readiness remains Yellow until owners update launch-blocking
+  readiness evidence/status, rotate the live Stripe key that was pasted during
+  setup, confirm provider webhook ingestion, and close remaining owner
+  decisions.
+
 ## Security Notes
 
 - Never commit `.env`, `.env.local`, `.env.development`, or `.env.production`.
@@ -1077,16 +1158,18 @@ Phase 11 deploy-preview QA status:
 
 ## Next Phase
 
-Recommended next work before enabling production email or live subscriptions:
-complete Postmark sender/domain deliverability review, SPF/DKIM/DMARC review,
-live Stripe readiness, legal/business approval, and a controlled production
-readiness pass. Keep production email sending and live Stripe subscriptions
-disabled until explicit approval.
+Recommended next work after Phase 12: close the remaining launch-blocking
+readiness rows, rotate the live Stripe secret key that was pasted during setup,
+confirm production Postmark webhook ingestion in `email_provider_events`, decide
+whether to keep the shared prelaunch Supabase project or create a dedicated
+production project, resolve custom domain ownership/DNS, and review/clean
+leftover QA records. Production email sending and scheduler jobs must remain
+disabled until separate explicit approval.
 
 Future planned phases:
 
-- Production launch enablement: turn on production email and live Stripe only
-  after the Phase 11 readiness gates, legal/business review, and controlled
-  production approval are complete.
+- Production launch readiness closure: update readiness evidence/status, resolve
+  launch blockers, and run a final Green go/no-go gate before broad public
+  launch.
 - Optional future analytics/monitoring depth: expand PostHog/Sentry only after
   privacy/legal review, with no session replay unless explicitly approved.

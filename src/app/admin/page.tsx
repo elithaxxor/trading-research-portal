@@ -124,9 +124,9 @@ const quickActions = [
 ];
 
 const adminNotes = [
-  "No Stripe billing is active yet.",
-  "Premium/pro visibility controls access, but paid subscription automation comes later.",
-  "TradingView chart embeds are not active yet.",
+  "Stripe billing is implemented for test-mode QA; live billing remains disabled until approval.",
+  "Premium/pro visibility is enforced by server/RLS checks and webhook-driven subscription sync.",
+  "TradingView chart display is available where configured; invite-only software access remains manual.",
 ];
 
 function getStatValue(
