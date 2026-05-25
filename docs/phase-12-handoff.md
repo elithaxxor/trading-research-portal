@@ -8,9 +8,10 @@ approval-gated activation drills, and final go/no-go reporting.
 Production readiness is Yellow, not Green. The application is healthy and the
 approval-gated live Stripe and production email drills ran, but launch-blocking
 readiness rows still need owner evidence/status updates, the live Stripe secret
-must be rotated before broad public launch because it was pasted during setup,
-and production Postmark provider webhook ingestion still needs observed
-`email_provider_events` rows.
+was pasted during setup, and production Postmark provider webhook ingestion
+still needs observed `email_provider_events` rows. The owner has elected not to
+rotate the current live Stripe key at this time; this is documented as an
+owner-accepted risk rather than a remediated risk.
 
 Current production URL:
 
@@ -142,8 +143,11 @@ still had launch-blocking checks marked `pending`, including:
 
 Operational caveats:
 
-- The live Stripe secret key must be rotated before broad public launch because
-  it was pasted during setup.
+- The live Stripe secret key was pasted during setup. The owner has elected not
+  to rotate it at this time. This is documented as an owner-accepted risk rather
+  than a remediated risk. Secret scans must continue to show no key values in
+  tracked files, logs intended for users, production HTML, or client
+  JavaScript. Live Checkout remains feature-flag controlled.
 - Production Postmark send succeeded and provider activity showed delivery, but
   production webhook ingestion should remain Yellow until
   `email_provider_events` records are observed.
@@ -234,8 +238,9 @@ Safe for broad public launch: No, not until launch-blocking readiness rows are
 closed and the remaining caveats are resolved.
 
 Safe to keep live Stripe enabled: Yellow. It was explicitly approved and a
-controlled live checkout succeeded, but the live Stripe secret should be
-rotated before broad public launch and readiness rows need evidence updates.
+controlled live checkout succeeded. The live Stripe key retention decision is
+now owner-accepted risk, not a remediated risk, and readiness rows still need
+evidence updates.
 
 Safe to enable production email: No. Controlled Postmark sends worked and
 safe-off was restored, but production email should remain disabled until
@@ -244,7 +249,10 @@ are reviewed, and readiness rows are closed.
 
 ## Remaining Risks
 
-- Live Stripe secret rotation is required before broad public launch.
+- The live Stripe secret key was pasted during setup and is being retained by
+  owner decision. This remains an owner-accepted risk, not a remediated risk.
+- Secret scans must continue to show no key values in tracked files, logs
+  intended for users, production HTML, or client JavaScript.
 - Launch-blocking readiness rows remain pending.
 - Production Postmark webhook delivery ingestion has not yet been observed in
   `email_provider_events`.
@@ -257,16 +265,13 @@ are reviewed, and readiness rows are closed.
 
 ## Recommended Next Step
 
-1. Rotate the live Stripe secret key, update Netlify production
-   `STRIPE_SECRET_KEY`, and redeploy.
-2. Update `/admin/ops/readiness` evidence/status rows for completed legal,
+1. Update `/admin/ops/readiness` evidence/status rows for completed legal,
    support, Stripe, email, leak-check, backup/restore, and admin-smoke items.
-3. Confirm Postmark production webhook ingestion by observing
+2. Confirm Postmark production webhook ingestion by observing
    `email_provider_events`.
-4. Decide whether to keep the shared prelaunch Supabase project or create a
+3. Decide whether to keep the shared prelaunch Supabase project or create a
    dedicated production project.
-5. Resolve custom domain ownership/DNS or explicitly defer it.
-6. Review stale queued email rows and QA/test records before enabling any
+4. Resolve custom domain ownership/DNS or explicitly defer it.
+5. Review stale queued email rows and QA/test records before enabling any
    scheduler.
 7. Run a final Green go/no-go gate after blockers are closed.
-

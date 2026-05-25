@@ -208,7 +208,8 @@ FEATURE_CUSTOMER_PORTAL_ENABLED=false
 2. Redeploy or confirm Netlify runtime picks up the disabled flags.
 3. Confirm `/pricing` no longer starts Checkout.
 4. Confirm `/account/billing` no longer opens Customer Portal.
-5. Remove or rotate live Stripe env vars if exposure or account mismatch is suspected.
+5. Remove live Stripe env vars if account mismatch is suspected or if the
+   owner chooses to stop live billing.
 6. Disable the production Stripe webhook endpoint if it is misconfigured or unsafe.
 7. Create an incident record in `/admin/ops/incidents`.
 8. Capture evidence in `/admin/ops/readiness` or the incident record.

@@ -71,10 +71,23 @@ Controlled live checkout result:
 
 Remaining caveat:
 
-- The live Stripe secret key must be rotated before broad public launch because
-  it was pasted during setup.
+- The live Stripe secret key was pasted during setup. The owner has elected not
+  to rotate it at this time. This is documented as an owner-accepted risk rather
+  than a remediated risk. Secret scans must continue to show no key values in
+  tracked files, logs intended for users, production HTML, or client
+  JavaScript. Live Checkout remains feature-flag controlled.
 - Launch readiness remains Yellow until owner readiness evidence is updated and
   remaining legal/domain/Supabase decisions are closed.
+
+Readiness evidence guidance:
+
+- `live_stripe_keys_configured` should note that live keys are configured, the
+  current key is retained by owner decision, no key value was found in tracked
+  files or production client assets during the last scan, and Checkout/Customer
+  Portal remain controlled by `FEATURE_CHECKOUT_ENABLED` and
+  `FEATURE_CUSTOMER_PORTAL_ENABLED`.
+- This evidence records an accepted risk. It does not claim the exposure risk
+  is eliminated.
 
 ## Approval Required
 

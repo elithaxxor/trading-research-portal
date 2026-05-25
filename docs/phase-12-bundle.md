@@ -13,10 +13,11 @@ The final launch posture is **Yellow**, not Green. The production application is
 healthy, the controlled live Stripe and production Postmark tests ran after
 explicit approval, and rollback paths are documented. The launch gate remains
 Yellow because several launch-blocking readiness rows still need owner evidence
-or final status updates, the live Stripe secret must be rotated before broad
-public launch because it was pasted during setup, and production Postmark
-webhook ingestion should be confirmed with observed `email_provider_events`
-rows before scheduler activation.
+or final status updates, the live Stripe secret was pasted during setup, and
+production Postmark webhook ingestion should be confirmed with observed
+`email_provider_events` rows before scheduler activation. The owner has elected
+not to rotate the current live Stripe key at this time; this is documented as
+an owner-accepted risk rather than a remediated risk.
 
 Phase 12 did not add broker integrations, order execution, copy trading, live
 market data feeds, performance promises, automatic TradingView invite
@@ -191,8 +192,11 @@ Live Stripe:
 - The temporary subscription was canceled after verification.
 - The temporary price was made inactive.
 - The normal Premium monthly live price was restored.
-- The live Stripe secret key must be rotated before broad public launch because
-  it was pasted during setup.
+- The live Stripe secret key was pasted during setup. The owner has elected not
+  to rotate it at this time. This is documented as an owner-accepted risk rather
+  than a remediated risk. Secret scans must continue to show no key values in
+  tracked files, logs intended for users, production HTML, or client
+  JavaScript. Live Checkout remains feature-flag controlled.
 
 Custom domain:
 
@@ -232,7 +236,8 @@ Rollback readiness:
 
 - `FEATURE_CHECKOUT_ENABLED=false` disables new Checkout starts.
 - `FEATURE_CUSTOMER_PORTAL_ENABLED=false` disables Customer Portal access.
-- Live Stripe env vars can be removed or rotated if needed.
+- Live Stripe env vars can be removed if account mismatch is suspected or if
+  the owner chooses to stop live billing.
 - Live webhook can be disabled in Stripe if needed.
 - Incident/runbook path is documented.
 
@@ -274,14 +279,14 @@ Launch readiness:
 Safe for public launch:
 
 - **No**, not until launch-blocking readiness rows are updated with evidence,
-  live Stripe key rotation is completed, and remaining production-readiness
-  follow-ups are resolved.
+  the owner-accepted live Stripe key retention risk is documented in readiness
+  evidence, and remaining production-readiness follow-ups are resolved.
 
 Safe to enable live Stripe:
 
 - **Yes for controlled approved testing only.**
-- Broader public live billing should wait for key rotation and readiness-row
-  updates.
+- Broader public live billing should wait for readiness-row updates and owner
+  acceptance of the retained-key risk to be reflected in launch evidence.
 
 Safe to enable production email:
 
@@ -417,7 +422,10 @@ checks still need owner evidence/status updates:
 
 ## Remaining Risks
 
-- Live Stripe secret key rotation is required before broad public launch.
+- The live Stripe secret key was pasted during setup and is being retained by
+  owner decision. This remains an owner-accepted risk, not a remediated risk.
+- Secret scans must continue to show no key values in tracked files, logs
+  intended for users, production HTML, or client JavaScript.
 - Production Postmark webhook ingestion should be confirmed by observing
   `email_provider_events` rows.
 - Custom domain ownership and DNS plan are not complete.
@@ -430,14 +438,13 @@ checks still need owner evidence/status updates:
 
 ## Recommended Next Step
 
-1. Rotate the live Stripe secret and update Netlify production env vars.
-2. Confirm production Postmark webhook events are stored in
+1. Confirm production Postmark webhook events are stored in
    `email_provider_events`.
-3. Update launch-blocking readiness rows with owner-approved evidence.
-4. Decide whether to keep the shared prelaunch Supabase project or create a
+2. Update launch-blocking readiness rows with owner-approved evidence,
+   including the owner-accepted live Stripe key retention risk.
+3. Decide whether to keep the shared prelaunch Supabase project or create a
    dedicated production Supabase project.
-5. Resolve custom domain ownership, DNS strategy, and primary-domain approval.
-6. Review and approve cleanup for QA/test records before deleting anything.
-7. Review older queued email rows before enabling any scheduler.
-8. Run a final Green go/no-go gate after blockers are resolved.
-
+4. Resolve custom domain ownership, DNS strategy, and primary-domain approval.
+5. Review and approve cleanup for QA/test records before deleting anything.
+6. Review older queued email rows before enabling any scheduler.
+7. Run a final Green go/no-go gate after blockers are resolved.

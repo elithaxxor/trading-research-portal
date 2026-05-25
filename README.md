@@ -2,7 +2,7 @@
 
 A professional trading research portal built with Next.js App Router, TypeScript, Tailwind CSS, shadcn/ui, Netlify, and Supabase.
 
-The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, Phase 7 idea lifecycle refinement, Phase 8 advanced member dashboard/software library implementation, Phase 9 Stripe subscription implementation, Phase 10 email notification infrastructure, Phase 11 operations/launch-readiness tooling, and Phase 12 production launch controls are in place. Phase 9 hosted Stripe test-mode deploy-preview QA passed for Checkout, Customer Portal, webhook sync, idempotency, cancellation, payment-failure access downgrade, and access automation. Phase 10 deploy-preview QA completed with Postmark as the active provider, and Phase 11 deploy-preview QA completed for operations dashboards, health routes, readiness/incident workflows, safe metrics, feature flags, leak checks, regression checks, cleanup, build, lint, and typecheck. Phase 12 created approval-gated production launch plans and runbooks, audited custom domain/Supabase/Stripe/email/legal/data/feature-flag readiness, completed an approval-gated live Stripe activation and controlled live checkout test, completed a controlled production Postmark send test, restored production email safe-off, and ran post-launch smoke/rollback drills. Production email sending remains disabled; no production queue/digest scheduler is enabled. Live Stripe Checkout and Customer Portal are enabled only after explicit approval, but the final launch gate remains Yellow until readiness rows are closed and the live Stripe secret is rotated. Broker integrations, order execution, copy trading, live market data feeds, performance promises, automatic TradingView invite automation, SMS, and push notifications remain intentionally out of scope for the current build.
+The public site is live as a marketing experience. Supabase schema, RLS, seed data, typed client utilities, Phase 3 authentication, Phase 4 content routes, Phase 5 admin content management, Phase 6 TradingView chart display, Phase 7 idea lifecycle refinement, Phase 8 advanced member dashboard/software library implementation, Phase 9 Stripe subscription implementation, Phase 10 email notification infrastructure, Phase 11 operations/launch-readiness tooling, and Phase 12 production launch controls are in place. Phase 9 hosted Stripe test-mode deploy-preview QA passed for Checkout, Customer Portal, webhook sync, idempotency, cancellation, payment-failure access downgrade, and access automation. Phase 10 deploy-preview QA completed with Postmark as the active provider, and Phase 11 deploy-preview QA completed for operations dashboards, health routes, readiness/incident workflows, safe metrics, feature flags, leak checks, regression checks, cleanup, build, lint, and typecheck. Phase 12 created approval-gated production launch plans and runbooks, audited custom domain/Supabase/Stripe/email/legal/data/feature-flag readiness, completed an approval-gated live Stripe activation and controlled live checkout test, completed a controlled production Postmark send test, restored production email safe-off, and ran post-launch smoke/rollback drills. Production email sending remains disabled; no production queue/digest scheduler is enabled. Live Stripe Checkout and Customer Portal are enabled only after explicit approval, but the final launch gate remains Yellow until readiness rows are closed and the owner-accepted live Stripe key retention risk is documented in readiness evidence. Broker integrations, order execution, copy trading, live market data feeds, performance promises, automatic TradingView invite automation, SMS, and push notifications remain intentionally out of scope for the current build.
 
 ## Phase Status
 
@@ -19,7 +19,7 @@ The public site is live as a marketing experience. Supabase schema, RLS, seed da
 - Phase 9: Complete. Stripe Checkout, Customer Portal, webhook route, billing schema migration, subscription sync helpers, pricing/account billing UI, and webhook-driven Premium/Pro access automation are implemented. Phase 9 migrations are applied, generated types are updated, hosted Stripe test-mode Checkout and Customer Portal QA passed, webhook sync/idempotency/cancellation/payment-failure downgrade QA passed, and access automation/leak checks passed.
 - Phase 10: Complete for deploy-preview QA. Postmark-backed email provider support, a Resend-compatible provider abstraction, notification preferences, unsubscribe flow, content/lifecycle notification queueing, weekly digest generation, software access request emails, billing/access status emails, provider webhook event handling, and admin notification center are implemented. Local queue-only, deploy-preview route smoke, authenticated preferences/unsubscribe/admin UI, hosted queue-only direct queue processing, controlled Postmark provider-send, hosted Postmark webhook, admin content notification publish, mobile, suppression, leak-check, cleanup, build, lint, and typecheck QA passed. Production sending remains disabled and still requires Postmark sender/domain deliverability, SPF/DKIM/DMARC review, legal/business review, and explicit send approval.
 - Phase 11: Complete for deploy-preview QA. Admin operations dashboards, public and protected health checks, readiness checklists, incident tracking, ops event logging, safe product metrics, Stripe live-readiness dashboard, email production-readiness dashboard, launch checklist, feature flags, optional no-op PostHog/Sentry integrations, and production runbooks are implemented. Deploy-preview route smoke, anonymous protection checks, authenticated admin ops checks, readiness/incident server-action QA, metrics/leak checks, regression checks, cleanup, build, lint, and typecheck passed. Live Stripe and production email activation remain gated by explicit legal/business/operations approval.
-- Phase 12: Complete for launch-control documentation, approval-gated activation drills, and production go/no-go reporting. Phase 12 delivered launch-scope approval gates, custom-domain readiness, Supabase production-project decision support, live Stripe activation planning and controlled activation, production email activation planning and controlled Postmark send testing, legal/support review, production data cleanup planning, feature-flag safe-off review, post-launch smoke/rollback drill, and handoff documentation. Production email sending is restored safe-off and schedulers remain disabled. Live Stripe Checkout and Customer Portal are enabled only because explicit approval was provided. Final public-launch readiness remains Yellow until launch-blocking readiness rows are resolved, the live Stripe secret is rotated, and remaining owner decisions are closed.
+- Phase 12: Complete for launch-control documentation, approval-gated activation drills, and production go/no-go reporting. Phase 12 delivered launch-scope approval gates, custom-domain readiness, Supabase production-project decision support, live Stripe activation planning and controlled activation, production email activation planning and controlled Postmark send testing, legal/support review, production data cleanup planning, feature-flag safe-off review, post-launch smoke/rollback drill, and handoff documentation. Production email sending is restored safe-off and schedulers remain disabled. Live Stripe Checkout and Customer Portal are enabled only because explicit approval was provided. Final public-launch readiness remains Yellow until launch-blocking readiness rows are resolved, the owner-accepted live Stripe key retention risk is documented, and remaining owner decisions are closed.
 
 ## Phase 1 Public Site
 
@@ -1133,8 +1133,8 @@ Phase 12 QA status:
 - Production HTML/client JS and tracked-file secret-value scans passed.
 - Local `npm run build`, `npm run lint`, and `npx tsc --noEmit` passed.
 - Launch readiness remains Yellow until owners update launch-blocking
-  readiness evidence/status, rotate the live Stripe key that was pasted during
-  setup, confirm provider webhook ingestion, and close remaining owner
+  readiness evidence/status, document the owner-accepted live Stripe key
+  retention risk, confirm provider webhook ingestion, and close remaining owner
   decisions.
 
 ## Security Notes
@@ -1159,12 +1159,12 @@ Phase 12 QA status:
 ## Next Phase
 
 Recommended next work after Phase 12: close the remaining launch-blocking
-readiness rows, rotate the live Stripe secret key that was pasted during setup,
-confirm production Postmark webhook ingestion in `email_provider_events`, decide
-whether to keep the shared prelaunch Supabase project or create a dedicated
-production project, resolve custom domain ownership/DNS, and review/clean
-leftover QA records. Production email sending and scheduler jobs must remain
-disabled until separate explicit approval.
+readiness rows, document the owner-accepted live Stripe key retention risk in
+readiness evidence, confirm production Postmark webhook ingestion in
+`email_provider_events`, decide whether to keep the shared prelaunch Supabase
+project or create a dedicated production project, resolve custom domain
+ownership/DNS, and review/clean leftover QA records. Production email sending
+and scheduler jobs must remain disabled until separate explicit approval.
 
 Future planned phases:
 
