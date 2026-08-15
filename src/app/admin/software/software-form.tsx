@@ -254,7 +254,7 @@ export function SoftwareProductForm({ mode, product }: SoftwareProductFormProps)
           </div>
           <AdminTextInput
             defaultValue={product?.download_url ?? ""}
-            description="Phase 8 does not add protected storage. Leave blank unless the URL is safe for the intended access model."
+            description="The portal does not provide protected file storage. Leave blank unless the URL is safe for the intended access model."
             error={fieldError("download_url")}
             id="download_url"
             label="Download URL"

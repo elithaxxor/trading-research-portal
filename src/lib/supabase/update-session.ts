@@ -8,6 +8,28 @@ import { getSupabaseServerConfig } from "./env";
 
 const protectedRoutePrefixes = ["/dashboard", "/account", "/admin"];
 const authRoutes = ["/login", "/register"];
+const authRequestTimeoutMs = 3_000;
+
+async function fetchWithAuthTimeout(
+  input: Parameters<typeof fetch>[0],
+  init?: Parameters<typeof fetch>[1]
+) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), authRequestTimeoutMs);
+  const abortFromCaller = () => controller.abort();
+
+  init?.signal?.addEventListener("abort", abortFromCaller, { once: true });
+
+  try {
+    return await fetch(input, {
+      ...init,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+    init?.signal?.removeEventListener("abort", abortFromCaller);
+  }
+}
 
 function matchesRoutePrefix(pathname: string, prefix: string) {
   return pathname === prefix || pathname.startsWith(`${prefix}/`);
@@ -110,6 +132,9 @@ export async function updateSession(request: NextRequest) {
     supabaseUrl,
     supabasePublishableKey,
     {
+      global: {
+        fetch: fetchWithAuthTimeout,
+      },
       cookies: {
         getAll() {
           return request.cookies.getAll();

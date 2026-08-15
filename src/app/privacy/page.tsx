@@ -29,7 +29,7 @@ const privacyNotes = [
   {
     title: "Email and support communications",
     description:
-      "Email notification backend work is not part of the current phase. Account email addresses may still be used for authentication, billing records, and support workflows.",
+      "Email notification infrastructure exists, but production sending remains disabled until provider-domain, support, legal, and business approval are complete. Account email addresses may still be used for authentication, billing records, notification preferences, unsubscribe records, and support workflows.",
   },
   {
     title: "Stripe payment processing",
