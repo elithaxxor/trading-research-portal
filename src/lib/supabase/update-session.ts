@@ -31,6 +31,26 @@ async function fetchWithAuthTimeout(
   }
 }
 
+async function withAuthTimeout<T>(request: Promise<T>) {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+
+  try {
+    return await Promise.race([
+      request,
+      new Promise<never>((_, reject) => {
+        timeout = setTimeout(
+          () => reject(new Error("Supabase auth request timed out.")),
+          authRequestTimeoutMs
+        );
+      }),
+    ]);
+  } finally {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+  }
+}
+
 function matchesRoutePrefix(pathname: string, prefix: string) {
   return pathname === prefix || pathname.startsWith(`${prefix}/`);
 }
@@ -162,7 +182,7 @@ export async function updateSession(request: NextRequest) {
 
   try {
     const result: { data: { user: User | null } } =
-      await supabase.auth.getUser();
+      await withAuthTimeout(supabase.auth.getUser());
     user = result.data.user;
   } catch {
     user = null;
