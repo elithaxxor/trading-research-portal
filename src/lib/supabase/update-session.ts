@@ -7,7 +7,6 @@ import type { Database } from "@/types/database.types";
 import { getSupabaseServerConfig } from "./env";
 
 const protectedRoutePrefixes = ["/dashboard", "/account", "/admin"];
-const authRoutes = ["/login", "/register"];
 const authRequestTimeoutMs = 3_000;
 
 async function fetchWithAuthTimeout(
@@ -61,12 +60,8 @@ function isProtectedRoute(pathname: string) {
   );
 }
 
-function isAuthRoute(pathname: string) {
-  return authRoutes.includes(pathname);
-}
-
 function isAuthAwareRoute(pathname: string) {
-  return isProtectedRoute(pathname) || isAuthRoute(pathname);
+  return isProtectedRoute(pathname);
 }
 
 function createPassThroughResponse(request: NextRequest) {
@@ -90,22 +85,6 @@ function copySessionState(source: NextResponse, destination: NextResponse) {
       destination.headers.set(key, value);
     }
   });
-}
-
-function createRedirectWithSessionCookies(
-  request: NextRequest,
-  responseWithSessionCookies: NextResponse,
-  pathname: string
-) {
-  const redirectUrl = request.nextUrl.clone();
-  redirectUrl.pathname = pathname;
-  redirectUrl.search = "";
-
-  const redirectResponse = NextResponse.redirect(redirectUrl);
-
-  copySessionState(responseWithSessionCookies, redirectResponse);
-
-  return redirectResponse;
 }
 
 function createLoginRedirect(
@@ -190,10 +169,6 @@ export async function updateSession(request: NextRequest) {
 
   if (!user && isProtectedRoute(pathname)) {
     return createLoginRedirect(request, response);
-  }
-
-  if (user && isAuthRoute(pathname)) {
-    return createRedirectWithSessionCookies(request, response, "/dashboard");
   }
 
   return response;
