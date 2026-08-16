@@ -28,10 +28,6 @@ export type SoftwareProductActionState = {
   status: "idle" | "error";
 };
 
-export const initialSoftwareProductActionState: SoftwareProductActionState = {
-  status: "idle",
-};
-
 function getFormValue(formData: FormData, key: string) {
   const value = formData.get(key);
 

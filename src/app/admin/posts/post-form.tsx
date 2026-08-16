@@ -20,11 +20,15 @@ import { cn } from "@/lib/utils";
 import {
   createResearchPostAction,
   deleteResearchPostAction,
-  initialResearchPostActionState,
   publishResearchPostAction,
   unpublishResearchPostAction,
   updateResearchPostAction,
 } from "./actions";
+import type { ResearchPostActionState } from "./actions";
+
+const initialResearchPostActionState: ResearchPostActionState = {
+  status: "idle",
+};
 
 type ResearchPostFormProps =
   | {

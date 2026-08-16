@@ -30,11 +30,15 @@ import { cn } from "@/lib/utils";
 import {
   createSoftwareProductAction,
   deleteSoftwareProductAction,
-  initialSoftwareProductActionState,
   publishSoftwareProductAction,
   unpublishSoftwareProductAction,
   updateSoftwareProductAction,
 } from "./actions";
+import type { SoftwareProductActionState } from "./actions";
+
+const initialSoftwareProductActionState: SoftwareProductActionState = {
+  status: "idle",
+};
 
 type SoftwareProductFormProps =
   | {

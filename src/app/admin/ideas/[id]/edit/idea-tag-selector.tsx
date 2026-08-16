@@ -11,10 +11,12 @@ import { buttonVariants } from "@/components/ui/button";
 import type { AdminTag } from "@/lib/admin/types";
 import { cn } from "@/lib/utils";
 
-import {
-  initialTagActionState,
-  setIdeaTagsAction,
-} from "@/app/admin/tags/actions";
+import { setIdeaTagsAction } from "@/app/admin/tags/actions";
+import type { TagActionState } from "@/app/admin/tags/actions";
+
+const initialTagActionState: TagActionState = {
+  status: "idle",
+};
 
 type IdeaTagSelectorProps = {
   ideaId: string;

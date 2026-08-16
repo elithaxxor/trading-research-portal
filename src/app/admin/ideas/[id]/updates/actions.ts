@@ -30,10 +30,6 @@ export type IdeaUpdateActionState = {
   status: "idle" | "error";
 };
 
-export const initialIdeaUpdateActionState: IdeaUpdateActionState = {
-  status: "idle",
-};
-
 function getFormValue(formData: FormData, key: string) {
   const value = formData.get(key);
 

@@ -18,9 +18,13 @@ import { cn } from "@/lib/utils";
 import {
   createTagAction,
   deleteTagAction,
-  initialTagActionState,
   updateTagAction,
 } from "./actions";
+import type { TagActionState } from "./actions";
+
+const initialTagActionState: TagActionState = {
+  status: "idle",
+};
 
 type TagManagementProps = {
   tags: AdminTagWithUsage[];
