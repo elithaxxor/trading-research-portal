@@ -1,0 +1,968 @@
+[
+  {
+    "slug": "algorithmic-trading-pairs-trading-statistical-arbitrage-advanced-playbook-ebdfc547",
+    "title": "Pairs Trading Statistical Arbitrage Advanced Playbook",
+    "category": "Algorithmic Trading",
+    "pdfPath": "/tutorials/algorithmic-trading/pairs-trading-statistical-arbitrage-advanced-playbook-ebdfc547.pdf"
+  },
+  {
+    "slug": "algorithmic-trading-pine-screener-whitepaper-bc45f608",
+    "title": "Pine Screener Whitepaper",
+    "category": "Algorithmic Trading",
+    "pdfPath": "/tutorials/algorithmic-trading/pine-screener-whitepaper-bc45f608.pdf"
+  },
+  {
+    "slug": "crypto-cross-market-guideline-gold-bitcoin-e9b944e5",
+    "title": "Cross Market Guideline Gold Bitcoin",
+    "category": "Crypto",
+    "pdfPath": "/tutorials/crypto/cross-market-guideline-gold-bitcoin-e9b944e5.pdf"
+  },
+  {
+    "slug": "crypto-cross-market-strategy-playbook-gold-bitcoin-1-0ed1664a",
+    "title": "Cross Market Strategy Playbook Gold Bitcoin",
+    "category": "Crypto",
+    "pdfPath": "/tutorials/crypto/cross-market-strategy-playbook-gold-bitcoin-1-0ed1664a.pdf"
+  },
+  {
+    "slug": "crypto-cross-market-tutorial-gold-bitcoin-542c6af1",
+    "title": "Cross Market Tutorial Gold Bitcoin",
+    "category": "Crypto",
+    "pdfPath": "/tutorials/crypto/cross-market-tutorial-gold-bitcoin-542c6af1.pdf"
+  },
+  {
+    "slug": "crypto-professional-btc-algorithmic-trading-guide-aa5feff7",
+    "title": "Professional BTC Algorithmic Trading Guide",
+    "category": "Crypto",
+    "pdfPath": "/tutorials/crypto/professional-btc-algorithmic-trading-guide-aa5feff7.pdf"
+  },
+  {
+    "slug": "crypto-section-13-bitcoin-and-crypto-market-structure-feea726d",
+    "title": "Section 13 Bitcoin And Crypto Market Structure",
+    "category": "Crypto",
+    "pdfPath": "/tutorials/crypto/section-13-bitcoin-and-crypto-market-structure-feea726d.pdf"
+  },
+  {
+    "slug": "frameworks-cross-asset-ratio-framework-3e383f6d",
+    "title": "Cross Asset Ratio Framework",
+    "category": "Frameworks",
+    "pdfPath": "/tutorials/frameworks/cross-asset-ratio-framework-3e383f6d.pdf"
+  },
+  {
+    "slug": "frameworks-intraday-trader-training-framework-3a0a45cc",
+    "title": "Intraday Trader Training Framework",
+    "category": "Frameworks",
+    "pdfPath": "/tutorials/frameworks/intraday-trader-training-framework-3a0a45cc.pdf"
+  },
+  {
+    "slug": "frameworks-intraday-trading-framework-guide-f80f42fc",
+    "title": "Intraday Trading Framework Guide",
+    "category": "Frameworks",
+    "pdfPath": "/tutorials/frameworks/intraday-trading-framework-guide-f80f42fc.pdf"
+  },
+  {
+    "slug": "frameworks-moving-average-trader-framework-4434bf1b",
+    "title": "Moving Average Trader Framework",
+    "category": "Frameworks",
+    "pdfPath": "/tutorials/frameworks/moving-average-trader-framework-4434bf1b.pdf"
+  },
+  {
+    "slug": "frameworks-multi-timeframe-trading-framework-4887586b",
+    "title": "Multi Timeframe Trading Framework",
+    "category": "Frameworks",
+    "pdfPath": "/tutorials/frameworks/multi-timeframe-trading-framework-4887586b.pdf"
+  },
+  {
+    "slug": "frameworks-swing-trading-framework-guide-final-50d3e47c",
+    "title": "Swing Trading Framework Guide Final",
+    "category": "Frameworks",
+    "pdfPath": "/tutorials/frameworks/swing-trading-framework-guide-final-50d3e47c.pdf"
+  },
+  {
+    "slug": "frameworks-three-trade-framework-63a02d72",
+    "title": "Three Trade Framework",
+    "category": "Frameworks",
+    "pdfPath": "/tutorials/frameworks/three-trade-framework-63a02d72.pdf"
+  },
+  {
+    "slug": "frameworks-trader-development-framework-1-bc661e6c",
+    "title": "Trader Development Framework",
+    "category": "Frameworks",
+    "pdfPath": "/tutorials/frameworks/trader-development-framework-1-bc661e6c.pdf"
+  },
+  {
+    "slug": "frameworks-trader-development-framework-2-1ff4fd53",
+    "title": "Trader Development Framework",
+    "category": "Frameworks",
+    "pdfPath": "/tutorials/frameworks/trader-development-framework-2-1ff4fd53.pdf"
+  },
+  {
+    "slug": "frameworks-trader-development-framework-final-cac6c789",
+    "title": "Trader Development Framework Final",
+    "category": "Frameworks",
+    "pdfPath": "/tutorials/frameworks/trader-development-framework-final-cac6c789.pdf"
+  },
+  {
+    "slug": "frameworks-trader-development-framework-outline2-f974117d",
+    "title": "Trader Development Framework Outline2",
+    "category": "Frameworks",
+    "pdfPath": "/tutorials/frameworks/trader-development-framework-outline2-f974117d.pdf"
+  },
+  {
+    "slug": "frameworks-trading-framework-guide-36317701",
+    "title": "Trading Framework Guide",
+    "category": "Frameworks",
+    "pdfPath": "/tutorials/frameworks/trading-framework-guide-36317701.pdf"
+  },
+  {
+    "slug": "frameworks-trading-framework-outline-1-49840523",
+    "title": "Trading Framework Outline",
+    "category": "Frameworks",
+    "pdfPath": "/tutorials/frameworks/trading-framework-outline-1-49840523.pdf"
+  },
+  {
+    "slug": "frameworks-trading-framework-outline-72501771",
+    "title": "Trading Framework Outline",
+    "category": "Frameworks",
+    "pdfPath": "/tutorials/frameworks/trading-framework-outline-72501771.pdf"
+  },
+  {
+    "slug": "frameworks-volatile-market-trading-framework-final-1-1f09d34c",
+    "title": "Volatile Market Trading Framework Final",
+    "category": "Frameworks",
+    "pdfPath": "/tutorials/frameworks/volatile-market-trading-framework-final-1-1f09d34c.pdf"
+  },
+  {
+    "slug": "fundamental-analysis-hedge-fund-macro-framework-1597ce84",
+    "title": "Hedge Fund Macro Framework",
+    "category": "Fundamental Analysis",
+    "pdfPath": "/tutorials/fundamental-analysis/hedge-fund-macro-framework-1597ce84.pdf"
+  },
+  {
+    "slug": "fundamental-analysis-macro-gold-bias-tutorial-35513c48",
+    "title": "Macro Gold Bias Tutorial",
+    "category": "Fundamental Analysis",
+    "pdfPath": "/tutorials/fundamental-analysis/macro-gold-bias-tutorial-35513c48.pdf"
+  },
+  {
+    "slug": "fundamental-analysis-macro-gold-bias-whitepaper-fb297ae1",
+    "title": "Macro Gold Bias Whitepaper",
+    "category": "Fundamental Analysis",
+    "pdfPath": "/tutorials/fundamental-analysis/macro-gold-bias-whitepaper-fb297ae1.pdf"
+  },
+  {
+    "slug": "fundamental-analysis-section-5-full-market-bias-ta-sector-macro-fundamentals-18e90e0f",
+    "title": "Section 5 Full Market Bias Ta Sector Macro Fundamentals",
+    "category": "Fundamental Analysis",
+    "pdfPath": "/tutorials/fundamental-analysis/section-5-full-market-bias-ta-sector-macro-fundamentals-18e90e0f.pdf"
+  },
+  {
+    "slug": "fundamental-analysis-tutorial-3-earnings-sector-catalysts-read-through-9745cf79",
+    "title": "Tutorial 3 Earnings Sector Catalysts Read Through",
+    "category": "Fundamental Analysis",
+    "pdfPath": "/tutorials/fundamental-analysis/tutorial-3-earnings-sector-catalysts-read-through-9745cf79.pdf"
+  },
+  {
+    "slug": "futures-ag-commodities-trading-playbook-final-332c626e",
+    "title": "Ag Commodities Trading Playbook Final",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/ag-commodities-trading-playbook-final-332c626e.pdf"
+  },
+  {
+    "slug": "futures-arb-research-engine-v2-whitepaper-tutorial-e039ae98",
+    "title": "Arb Research Engine V2 Whitepaper Tutorial",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/arb-research-engine-v2-whitepaper-tutorial-e039ae98.pdf"
+  },
+  {
+    "slug": "futures-contraction-expansion-exhaustion-pro-tutorial-v2-3e328cb3",
+    "title": "Contraction Expansion Exhaustion Pro Tutorial V2",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/contraction-expansion-exhaustion-pro-tutorial-v2-3e328cb3.pdf"
+  },
+  {
+    "slug": "futures-contraction-expansion-exhaustion-pro-whitepaper-v2-b1530698",
+    "title": "Contraction Expansion Exhaustion Pro Whitepaper V2",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/contraction-expansion-exhaustion-pro-whitepaper-v2-b1530698.pdf"
+  },
+  {
+    "slug": "futures-cross-asset-research-suite-tutorial-193c828f",
+    "title": "Cross Asset Research Suite Tutorial",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/cross-asset-research-suite-tutorial-193c828f.pdf"
+  },
+  {
+    "slug": "futures-cross-asset-research-suite-whitepaper-d12edfc0",
+    "title": "Cross Asset Research Suite Whitepaper",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/cross-asset-research-suite-whitepaper-d12edfc0.pdf"
+  },
+  {
+    "slug": "futures-cross-asset-trading-playbook-prop-desk-edition-532f2574",
+    "title": "Cross Asset Trading Playbook Prop Desk Edition",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/cross-asset-trading-playbook-prop-desk-edition-532f2574.pdf"
+  },
+  {
+    "slug": "futures-oil-cross-asset-playbook-apr2026-eb53d458",
+    "title": "Oil Cross Asset Playbook Apr2026",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/oil-cross-asset-playbook-apr2026-eb53d458.pdf"
+  },
+  {
+    "slug": "futures-professional-cross-asset-market-outlook-fa3ce039",
+    "title": "Professional Cross Asset Market Outlook",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/professional-cross-asset-market-outlook-fa3ce039.pdf"
+  },
+  {
+    "slug": "futures-professional-gold-trading-playbook-17203ba2",
+    "title": "Professional Gold Trading Playbook",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/professional-gold-trading-playbook-17203ba2.pdf"
+  },
+  {
+    "slug": "futures-session-vwap-us-equities-report-54dc6204",
+    "title": "Session VWAP Us Equities Report",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/session-vwap-us-equities-report-54dc6204.pdf"
+  },
+  {
+    "slug": "futures-tutorial-06-moving-averages-9-21-50-200-92abe926",
+    "title": "Tutorial 06 Moving Averages 9 21 50 200",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/tutorial-06-moving-averages-9-21-50-200-92abe926.pdf"
+  },
+  {
+    "slug": "futures-tutorial-09-intraday-sessions-and-market-participation-42cb905f",
+    "title": "Tutorial 09 Intraday Sessions And Market Participation",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/tutorial-09-intraday-sessions-and-market-participation-42cb905f.pdf"
+  },
+  {
+    "slug": "futures-tutorial-1-ai-as-morning-operations-desk-apr23-75bb6864",
+    "title": "Tutorial 1 AI As Morning Operations Desk Apr23",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/tutorial-1-ai-as-morning-operations-desk-apr23-75bb6864.pdf"
+  },
+  {
+    "slug": "futures-tutorial-13-ai-research-social-sentiment-verification-dd12d8b5",
+    "title": "Tutorial 13 AI Research Social Sentiment Verification",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/tutorial-13-ai-research-social-sentiment-verification-dd12d8b5.pdf"
+  },
+  {
+    "slug": "futures-tutorial-4-trading-vs-investing-circle-of-competence-b027691f",
+    "title": "Tutorial 4 Trading Vs Investing Circle Of Competence",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/tutorial-4-trading-vs-investing-circle-of-competence-b027691f.pdf"
+  },
+  {
+    "slug": "futures-tutorial-5-company-thesis-lab-blackberry-marvell-hims-tesla-059234e6",
+    "title": "Tutorial 5 Company Thesis Lab Blackberry Marvell Hims Tesla",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/tutorial-5-company-thesis-lab-blackberry-marvell-hims-tesla-059234e6.pdf"
+  },
+  {
+    "slug": "futures-vwap-cme-equity-index-futures-playbook-694b22ab",
+    "title": "VWAP Cme Equity Index Futures Playbook",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/vwap-cme-equity-index-futures-playbook-694b22ab.pdf"
+  },
+  {
+    "slug": "futures-vwap-session-stack-playbook-05483052",
+    "title": "VWAP Session Stack Playbook",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/vwap-session-stack-playbook-05483052.pdf"
+  },
+  {
+    "slug": "futures-vwap-single-name-us-equities-playbook-86a14c1b",
+    "title": "VWAP Single Name Us Equities Playbook",
+    "category": "Futures",
+    "pdfPath": "/tutorials/futures/vwap-single-name-us-equities-playbook-86a14c1b.pdf"
+  },
+  {
+    "slug": "gap-trading-gap-trading-mastery-framework-a2a6fe4b",
+    "title": "Gap Trading Mastery Framework",
+    "category": "Gap Trading",
+    "pdfPath": "/tutorials/gap-trading/gap-trading-mastery-framework-a2a6fe4b.pdf"
+  },
+  {
+    "slug": "gap-trading-intraday-gap-trading-framework-64431d5a",
+    "title": "Intraday Gap Trading Framework",
+    "category": "Gap Trading",
+    "pdfPath": "/tutorials/gap-trading/intraday-gap-trading-framework-64431d5a.pdf"
+  },
+  {
+    "slug": "gap-trading-overnight-intraday-reversal-gap-fade-advanced-playbook-fdefc402",
+    "title": "Overnight Intraday Reversal Gap Fade Advanced Playbook",
+    "category": "Gap Trading",
+    "pdfPath": "/tutorials/gap-trading/overnight-intraday-reversal-gap-fade-advanced-playbook-fdefc402.pdf"
+  },
+  {
+    "slug": "market-structure-market-structure-trading-framework-1-1325a3ba",
+    "title": "Market Structure Trading Framework",
+    "category": "Market Structure",
+    "pdfPath": "/tutorials/market-structure/market-structure-trading-framework-1-1325a3ba.pdf"
+  },
+  {
+    "slug": "market-structure-market-structure-trading-framework-b5a9b39f",
+    "title": "Market Structure Trading Framework",
+    "category": "Market Structure",
+    "pdfPath": "/tutorials/market-structure/market-structure-trading-framework-b5a9b39f.pdf"
+  },
+  {
+    "slug": "market-structure-traderdaddy-market-structure-playbook-6b4ac374",
+    "title": "Traderdaddy Market Structure Playbook",
+    "category": "Market Structure",
+    "pdfPath": "/tutorials/market-structure/traderdaddy-market-structure-playbook-6b4ac374.pdf"
+  },
+  {
+    "slug": "options-dealer-gamma-hedging-spy-field-guide-6411bb22",
+    "title": "Dealer Gamma Hedging Spy Field Guide",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/dealer-gamma-hedging-spy-field-guide-6411bb22.pdf"
+  },
+  {
+    "slug": "options-dealer-gamma-spread-internal-playbook-96d916dd",
+    "title": "Dealer Gamma Spread Internal Playbook",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/dealer-gamma-spread-internal-playbook-96d916dd.pdf"
+  },
+  {
+    "slug": "options-divergence-playbook-elite-1-12427577",
+    "title": "Divergence Playbook Elite",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/divergence-playbook-elite-1-12427577.pdf"
+  },
+  {
+    "slug": "options-elite-divergence-playbook-1046792b",
+    "title": "Elite Divergence Playbook",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/elite-divergence-playbook-1046792b.pdf"
+  },
+  {
+    "slug": "options-event-driven-trading-framework-155023e0",
+    "title": "Event Driven Trading Framework",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/event-driven-trading-framework-155023e0.pdf"
+  },
+  {
+    "slug": "options-gamma-squeeze-traders-toolbook-01d52f2c",
+    "title": "Gamma Squeeze Traders Toolbook",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/gamma-squeeze-traders-toolbook-01d52f2c.pdf"
+  },
+  {
+    "slug": "options-market-environment-framework-for-traders-final-97e0e135",
+    "title": "Market Environment Framework For Traders Final",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/market-environment-framework-for-traders-final-97e0e135.pdf"
+  },
+  {
+    "slug": "options-options-calculator-beginner-guide-c48a4faa",
+    "title": "Options Calculator Beginner Guide",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/options-calculator-beginner-guide-c48a4faa.pdf"
+  },
+  {
+    "slug": "options-options-chain-and-calculators-tutorial-76980187",
+    "title": "Options Chain And Calculators Tutorial",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/options-chain-and-calculators-tutorial-76980187.pdf"
+  },
+  {
+    "slug": "options-options-iv-internal-playbook-bffaf6ec",
+    "title": "Options IV Internal Playbook",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/options-iv-internal-playbook-bffaf6ec.pdf"
+  },
+  {
+    "slug": "options-section-14-options-spreads-condors-butterflies-defined-risk-7f8b761b",
+    "title": "Section 14 Options Spreads Condors Butterflies Defined Risk",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/section-14-options-spreads-condors-butterflies-defined-risk-7f8b761b.pdf"
+  },
+  {
+    "slug": "options-section-7-tradingview-heatmaps-and-etf-heatmaps-4bcdbe95",
+    "title": "Section 7 Tradingview Heatmaps And ETF Heatmaps",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/section-7-tradingview-heatmaps-and-etf-heatmaps-4bcdbe95.pdf"
+  },
+  {
+    "slug": "options-section-9-relative-volume-live-data-and-watchlist-automation-95f83338",
+    "title": "Section 9 Relative Volume Live Data And Watchlist Automation",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/section-9-relative-volume-live-data-and-watchlist-automation-95f83338.pdf"
+  },
+  {
+    "slug": "options-stock-options-trading-framework-cd8021b3",
+    "title": "Stock Options Trading Framework",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/stock-options-trading-framework-cd8021b3.pdf"
+  },
+  {
+    "slug": "options-tutorial-10-delta-gamma-pinning-market-maker-hedging-1acf439e",
+    "title": "Tutorial 10 Delta Gamma Pinning Market Maker Hedging",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/tutorial-10-delta-gamma-pinning-market-maker-hedging-1acf439e.pdf"
+  },
+  {
+    "slug": "options-tutorial-10-liquidity-pockets-options-context-86bf7053",
+    "title": "Tutorial 10 Liquidity Pockets Options Context",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/tutorial-10-liquidity-pockets-options-context-86bf7053.pdf"
+  },
+  {
+    "slug": "options-tutorial-11-earnings-catalysts-iv-crush-55310629",
+    "title": "Tutorial 11 Earnings Catalysts IV Crush",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/tutorial-11-earnings-catalysts-iv-crush-55310629.pdf"
+  },
+  {
+    "slug": "options-tutorial-3-bitcoin-across-venues-spot-etf-futures-options-apr23-ee77c7b3",
+    "title": "Tutorial 3 Bitcoin Across Venues Spot ETF Futures Options Apr23",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/tutorial-3-bitcoin-across-venues-spot-etf-futures-options-apr23-ee77c7b3.pdf"
+  },
+  {
+    "slug": "options-tutorial-8-instruments-etf-futures-options-c23a1f01",
+    "title": "Tutorial 8 Instruments ETF Futures Options",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/tutorial-8-instruments-etf-futures-options-c23a1f01.pdf"
+  },
+  {
+    "slug": "options-tutorial-8-options-directional-traders-apr23-9a39e629",
+    "title": "Tutorial 8 Options Directional Traders Apr23",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/tutorial-8-options-directional-traders-apr23-9a39e629.pdf"
+  },
+  {
+    "slug": "options-tutorial-9-options-chain-basics-172c2856",
+    "title": "Tutorial 9 Options Chain Basics",
+    "category": "Options",
+    "pdfPath": "/tutorials/options/tutorial-9-options-chain-basics-172c2856.pdf"
+  },
+  {
+    "slug": "order-flow-arb-basket-fair-value-tutorial-whitepaper-1cf14fe8",
+    "title": "Arb Basket Fair Value Tutorial Whitepaper",
+    "category": "Order Flow",
+    "pdfPath": "/tutorials/order-flow/arb-basket-fair-value-tutorial-whitepaper-1cf14fe8.pdf"
+  },
+  {
+    "slug": "order-flow-arb-basket-fair-value-whitepaper-and-tutorial-59f8a405",
+    "title": "Arb Basket Fair Value Whitepaper And Tutorial",
+    "category": "Order Flow",
+    "pdfPath": "/tutorials/order-flow/arb-basket-fair-value-whitepaper-and-tutorial-59f8a405.pdf"
+  },
+  {
+    "slug": "order-flow-hybrid-liquidity-pockets-tutorial-printable-a7f615f2",
+    "title": "Hybrid Liquidity Pockets Tutorial Printable",
+    "category": "Order Flow",
+    "pdfPath": "/tutorials/order-flow/hybrid-liquidity-pockets-tutorial-printable-a7f615f2.pdf"
+  },
+  {
+    "slug": "order-flow-hybrid-liquidity-pockets-whitepaper-25adb7cc",
+    "title": "Hybrid Liquidity Pockets Whitepaper",
+    "category": "Order Flow",
+    "pdfPath": "/tutorials/order-flow/hybrid-liquidity-pockets-whitepaper-25adb7cc.pdf"
+  },
+  {
+    "slug": "order-flow-intraday-liquidity-playbook-dd580f7c",
+    "title": "Intraday Liquidity Playbook",
+    "category": "Order Flow",
+    "pdfPath": "/tutorials/order-flow/intraday-liquidity-playbook-dd580f7c.pdf"
+  },
+  {
+    "slug": "order-flow-liquidity-trading-framework-final-c285b7dc",
+    "title": "Liquidity Trading Framework Final",
+    "category": "Order Flow",
+    "pdfPath": "/tutorials/order-flow/liquidity-trading-framework-final-c285b7dc.pdf"
+  },
+  {
+    "slug": "order-flow-order-imbalance-continuation-advanced-playbook-38dc44c3",
+    "title": "Order Imbalance Continuation Advanced Playbook",
+    "category": "Order Flow",
+    "pdfPath": "/tutorials/order-flow/order-imbalance-continuation-advanced-playbook-38dc44c3.pdf"
+  },
+  {
+    "slug": "order-flow-tutorial-11-bid-ask-market-makers-liquidity-fa6c0d06",
+    "title": "Tutorial 11 Bid Ask Market Makers Liquidity",
+    "category": "Order Flow",
+    "pdfPath": "/tutorials/order-flow/tutorial-11-bid-ask-market-makers-liquidity-fa6c0d06.pdf"
+  },
+  {
+    "slug": "order-flow-tutorial-3-order-mechanics-23fcf495",
+    "title": "Tutorial 3 Order Mechanics",
+    "category": "Order Flow",
+    "pdfPath": "/tutorials/order-flow/tutorial-3-order-mechanics-23fcf495.pdf"
+  },
+  {
+    "slug": "playbooks-ai-supply-chain-trade-playbook-mar-2026-6503ce15",
+    "title": "AI Supply Chain Trade Playbook Mar 2026",
+    "category": "Playbooks",
+    "pdfPath": "/tutorials/playbooks/ai-supply-chain-trade-playbook-mar-2026-6503ce15.pdf"
+  },
+  {
+    "slug": "playbooks-cross-asset-trading-playbook-elite-9cb9d3ea",
+    "title": "Cross Asset Trading Playbook Elite",
+    "category": "Playbooks",
+    "pdfPath": "/tutorials/playbooks/cross-asset-trading-playbook-elite-9cb9d3ea.pdf"
+  },
+  {
+    "slug": "playbooks-higher-for-longer-ai-credit-playbook-1-79ba1338",
+    "title": "Higher For Longer AI Credit Playbook",
+    "category": "Playbooks",
+    "pdfPath": "/tutorials/playbooks/higher-for-longer-ai-credit-playbook-1-79ba1338.pdf"
+  },
+  {
+    "slug": "playbooks-news-trading-playbook-15737cc3",
+    "title": "News Trading Playbook",
+    "category": "Playbooks",
+    "pdfPath": "/tutorials/playbooks/news-trading-playbook-15737cc3.pdf"
+  },
+  {
+    "slug": "playbooks-orb-stocks-in-play-advanced-playbook-8c48ca58",
+    "title": "ORB Stocks In Play Advanced Playbook",
+    "category": "Playbooks",
+    "pdfPath": "/tutorials/playbooks/orb-stocks-in-play-advanced-playbook-8c48ca58.pdf"
+  },
+  {
+    "slug": "playbooks-triple-witching-trading-playbook-v2-003ede0c",
+    "title": "Triple Witching Trading Playbook V2",
+    "category": "Playbooks",
+    "pdfPath": "/tutorials/playbooks/triple-witching-trading-playbook-v2-003ede0c.pdf"
+  },
+  {
+    "slug": "playbooks-tutorial-6-scalping-playbook-e0e0ae21",
+    "title": "Tutorial 6 Scalping Playbook",
+    "category": "Playbooks",
+    "pdfPath": "/tutorials/playbooks/tutorial-6-scalping-playbook-e0e0ae21.pdf"
+  },
+  {
+    "slug": "playbooks-vwap-advanced-playbook-33d06537",
+    "title": "VWAP Advanced Playbook",
+    "category": "Playbooks",
+    "pdfPath": "/tutorials/playbooks/vwap-advanced-playbook-33d06537.pdf"
+  },
+  {
+    "slug": "playbooks-vwap-elite-playbook-541151d2",
+    "title": "VWAP Elite Playbook",
+    "category": "Playbooks",
+    "pdfPath": "/tutorials/playbooks/vwap-elite-playbook-541151d2.pdf"
+  },
+  {
+    "slug": "risk-management-section-15-risk-management-grade-first-risk-reward-second-af568553",
+    "title": "Section 15 Risk Management Grade First Risk Reward Second",
+    "category": "Risk Management",
+    "pdfPath": "/tutorials/risk-management/section-15-risk-management-grade-first-risk-reward-second-af568553.pdf"
+  },
+  {
+    "slug": "risk-management-section-8-semiconductors-inverse-etfs-and-leveraged-etf-caution-deecb63e",
+    "title": "Section 8 Semiconductors Inverse Etfs And Leveraged ETF Caution",
+    "category": "Risk Management",
+    "pdfPath": "/tutorials/risk-management/section-8-semiconductors-inverse-etfs-and-leveraged-etf-caution-deecb63e.pdf"
+  },
+  {
+    "slug": "risk-management-trader-risk-management-framework-d8241f73",
+    "title": "Trader Risk Management Framework",
+    "category": "Risk Management",
+    "pdfPath": "/tutorials/risk-management/trader-risk-management-framework-d8241f73.pdf"
+  },
+  {
+    "slug": "risk-management-tutorial-07-atr-volatility-and-statistics-confirm-ta-30040ab8",
+    "title": "Tutorial 07 ATR Volatility And Statistics Confirm Ta",
+    "category": "Risk Management",
+    "pdfPath": "/tutorials/risk-management/tutorial-07-atr-volatility-and-statistics-confirm-ta-30040ab8.pdf"
+  },
+  {
+    "slug": "risk-management-tutorial-08-vix-fear-risk-sentiment-and-rotation-9d01fc0e",
+    "title": "Tutorial 08 Vix Fear Risk Sentiment And Rotation",
+    "category": "Risk Management",
+    "pdfPath": "/tutorials/risk-management/tutorial-08-vix-fear-risk-sentiment-and-rotation-9d01fc0e.pdf"
+  },
+  {
+    "slug": "risk-management-tutorial-7-dynamic-stop-losses-risk-control-40756fe8",
+    "title": "Tutorial 7 Dynamic Stop Losses Risk Control",
+    "category": "Risk Management",
+    "pdfPath": "/tutorials/risk-management/tutorial-7-dynamic-stop-losses-risk-control-40756fe8.pdf"
+  },
+  {
+    "slug": "risk-management-tutorial-7-telehealth-glp1-peptides-regulatory-risk-3c8ca305",
+    "title": "Tutorial 7 Telehealth Glp1 Peptides Regulatory Risk",
+    "category": "Risk Management",
+    "pdfPath": "/tutorials/risk-management/tutorial-7-telehealth-glp1-peptides-regulatory-risk-3c8ca305.pdf"
+  },
+  {
+    "slug": "technical-analysis-candlestick-pattern-framework-guide-07a518b6",
+    "title": "Candlestick Pattern Framework Guide",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/candlestick-pattern-framework-guide-07a518b6.pdf"
+  },
+  {
+    "slug": "technical-analysis-chart-pattern-handbook-1-744c6876",
+    "title": "Chart Pattern Handbook",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/chart-pattern-handbook-1-744c6876.pdf"
+  },
+  {
+    "slug": "technical-analysis-ema-sma-playbook-6858fea6",
+    "title": "Ema Sma Playbook",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/ema-sma-playbook-6858fea6.pdf"
+  },
+  {
+    "slug": "technical-analysis-intraday-momentum-0dte-trading-framework-5ea868f4",
+    "title": "Intraday Momentum 0Dte Trading Framework",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/intraday-momentum-0dte-trading-framework-5ea868f4.pdf"
+  },
+  {
+    "slug": "technical-analysis-intraday-momentum-framework-guide-8d10e26d",
+    "title": "Intraday Momentum Framework Guide",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/intraday-momentum-framework-guide-8d10e26d.pdf"
+  },
+  {
+    "slug": "technical-analysis-power-hour-intraday-momentum-advanced-playbook-0894147c",
+    "title": "Power Hour Intraday Momentum Advanced Playbook",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/power-hour-intraday-momentum-advanced-playbook-0894147c.pdf"
+  },
+  {
+    "slug": "technical-analysis-premarket-movers-pro-whitepaper-and-tutorial-3738da64",
+    "title": "Premarket Movers Pro Whitepaper And Tutorial",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/premarket-movers-pro-whitepaper-and-tutorial-3738da64.pdf"
+  },
+  {
+    "slug": "technical-analysis-rsi-volume-sr-price-framework-tutorial-1b60418d",
+    "title": "RSI Volume Sr Price Framework Tutorial",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/rsi-volume-sr-price-framework-tutorial-1b60418d.pdf"
+  },
+  {
+    "slug": "technical-analysis-section-1-clean-chart-setup-and-candles-b9ea1888",
+    "title": "Section 1 Clean Chart Setup And Candles",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/section-1-clean-chart-setup-and-candles-b9ea1888.pdf"
+  },
+  {
+    "slug": "technical-analysis-section-11-strategy-selection-scalp-breakout-trend-swing-position-f9e8771b",
+    "title": "Section 11 Strategy Selection Scalp Breakout Trend Swing Position",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/section-11-strategy-selection-scalp-breakout-trend-swing-position-f9e8771b.pdf"
+  },
+  {
+    "slug": "technical-analysis-section-2-support-resistance-channels-accumulation-90782ce8",
+    "title": "Section 2 Support Resistance Channels Accumulation",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/section-2-support-resistance-channels-accumulation-90782ce8.pdf"
+  },
+  {
+    "slug": "technical-analysis-section-3-vwap-sma-ema-confluence-fff3c442",
+    "title": "Section 3 VWAP Sma Ema Confluence",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/section-3-vwap-sma-ema-confluence-fff3c442.pdf"
+  },
+  {
+    "slug": "technical-analysis-supply-demand-trading-framework-1-ce4ec359",
+    "title": "Supply Demand Trading Framework",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/supply-demand-trading-framework-1-ce4ec359.pdf"
+  },
+  {
+    "slug": "technical-analysis-supply-demand-trading-framework-3f89af39",
+    "title": "Supply Demand Trading Framework",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/supply-demand-trading-framework-3f89af39.pdf"
+  },
+  {
+    "slug": "technical-analysis-support-resistance-pattern-guide-bde20e99",
+    "title": "Support Resistance Pattern Guide",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/support-resistance-pattern-guide-bde20e99.pdf"
+  },
+  {
+    "slug": "technical-analysis-tradingview-premarket-inplay-whitepaper-e0a059d0",
+    "title": "Tradingview Premarket Inplay Whitepaper",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/tradingview-premarket-inplay-whitepaper-e0a059d0.pdf"
+  },
+  {
+    "slug": "technical-analysis-trend-quality-screener-pro-tutorial-83bbfcb4",
+    "title": "Trend Quality Screener Pro Tutorial",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/trend-quality-screener-pro-tutorial-83bbfcb4.pdf"
+  },
+  {
+    "slug": "technical-analysis-trend-quality-screener-pro-whitepaper-6c0f508b",
+    "title": "Trend Quality Screener Pro Whitepaper",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/trend-quality-screener-pro-whitepaper-6c0f508b.pdf"
+  },
+  {
+    "slug": "technical-analysis-trendline-support-resistance-playbook-9db1a85f",
+    "title": "Trendline Support Resistance Playbook",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/trendline-support-resistance-playbook-9db1a85f.pdf"
+  },
+  {
+    "slug": "technical-analysis-tutorial-02-scalping-and-mean-reversion-585b40d8",
+    "title": "Tutorial 02 Scalping And Mean Reversion",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/tutorial-02-scalping-and-mean-reversion-585b40d8.pdf"
+  },
+  {
+    "slug": "technical-analysis-tutorial-12-technical-analysis-reports-paper-trading-workflow-5d17a0ec",
+    "title": "Tutorial 12 Technical Analysis Reports Paper Trading Workflow",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/tutorial-12-technical-analysis-reports-paper-trading-workflow-5d17a0ec.pdf"
+  },
+  {
+    "slug": "technical-analysis-tutorial-2-backtesting-regime-filters-mean-reversion-apr23-44eb2fad",
+    "title": "Tutorial 2 Backtesting Regime Filters Mean Reversion Apr23",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/tutorial-2-backtesting-regime-filters-mean-reversion-apr23-44eb2fad.pdf"
+  },
+  {
+    "slug": "technical-analysis-tutorial-4-top-down-technical-analysis-weekly-to-intraday-apr23-197f2c68",
+    "title": "Tutorial 4 Top Down Technical Analysis Weekly To Intraday Apr23",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/tutorial-4-top-down-technical-analysis-weekly-to-intraday-apr23-197f2c68.pdf"
+  },
+  {
+    "slug": "technical-analysis-tutorial-5-setup-grading-gaps-touch-count-volume-context-apr23-269d0012",
+    "title": "Tutorial 5 Setup Grading Gaps Touch Count Volume Context Apr23",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/tutorial-5-setup-grading-gaps-touch-count-volume-context-apr23-269d0012.pdf"
+  },
+  {
+    "slug": "technical-analysis-tutorial-7-compression-breakouts-patterns-apr23-b407b064",
+    "title": "Tutorial 7 Compression Breakouts Patterns Apr23",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/tutorial-7-compression-breakouts-patterns-apr23-b407b064.pdf"
+  },
+  {
+    "slug": "technical-analysis-tutorial-8-regime-shift-scalping-to-momentum-0f9fea3d",
+    "title": "Tutorial 8 Regime Shift Scalping To Momentum",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/tutorial-8-regime-shift-scalping-to-momentum-0f9fea3d.pdf"
+  },
+  {
+    "slug": "technical-analysis-tutorial-9-liquidity-dark-pools-pfof-smart-money-apr23-5e97759b",
+    "title": "Tutorial 9 Liquidity Dark Pools Pfof Smart Money Apr23",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/tutorial-9-liquidity-dark-pools-pfof-smart-money-apr23-5e97759b.pdf"
+  },
+  {
+    "slug": "technical-analysis-tutorial-9-volume-profile-price-acceptance-72f54a4f",
+    "title": "Tutorial 9 Volume Profile Price Acceptance",
+    "category": "Technical Analysis",
+    "pdfPath": "/tutorials/technical-analysis/tutorial-9-volume-profile-price-acceptance-72f54a4f.pdf"
+  },
+  {
+    "slug": "trading-foundations-section-10-time-of-day-regimen-open-10am-lunch-power-hour-4b7b7e97",
+    "title": "Section 10 Time Of Day Regimen Open 10Am Lunch Power Hour",
+    "category": "Trading Foundations",
+    "pdfPath": "/tutorials/trading-foundations/section-10-time-of-day-regimen-open-10am-lunch-power-hour-4b7b7e97.pdf"
+  },
+  {
+    "slug": "trading-foundations-section-12-breakout-confirmation-and-avoiding-fakeouts-bf4d79d4",
+    "title": "Section 12 Breakout Confirmation And Avoiding Fakeouts",
+    "category": "Trading Foundations",
+    "pdfPath": "/tutorials/trading-foundations/section-12-breakout-confirmation-and-avoiding-fakeouts-bf4d79d4.pdf"
+  },
+  {
+    "slug": "trading-foundations-section-4-multi-timeframe-analysis-noise-reduction-5ba3002d",
+    "title": "Section 4 Multi Timeframe Analysis Noise Reduction",
+    "category": "Trading Foundations",
+    "pdfPath": "/tutorials/trading-foundations/section-4-multi-timeframe-analysis-noise-reduction-5ba3002d.pdf"
+  },
+  {
+    "slug": "trading-foundations-section-6-market-sector-stock-hierarchy-5a867b65",
+    "title": "Section 6 Market Sector Stock Hierarchy",
+    "category": "Trading Foundations",
+    "pdfPath": "/tutorials/trading-foundations/section-6-market-sector-stock-hierarchy-5a867b65.pdf"
+  },
+  {
+    "slug": "trading-psychology-section-16-trading-psychology-decision-fatigue-and-journaling-c8d876a7",
+    "title": "Section 16 Trading Psychology Decision Fatigue And Journaling",
+    "category": "Trading Psychology",
+    "pdfPath": "/tutorials/trading-psychology/section-16-trading-psychology-decision-fatigue-and-journaling-c8d876a7.pdf"
+  },
+  {
+    "slug": "trading-psychology-tutorial-10-trader-psychology-dopamine-fomo-tuition-apr23-cdaf8e5e",
+    "title": "Tutorial 10 Trader Psychology Dopamine Fomo Tuition Apr23",
+    "category": "Trading Psychology",
+    "pdfPath": "/tutorials/trading-psychology/tutorial-10-trader-psychology-dopamine-fomo-tuition-apr23-cdaf8e5e.pdf"
+  },
+  {
+    "slug": "trading-strategy-price-action-entry-framework-for-traders-73935877",
+    "title": "Price Action Entry Framework For Traders",
+    "category": "Trading Strategy",
+    "pdfPath": "/tutorials/trading-strategy/price-action-entry-framework-for-traders-73935877.pdf"
+  },
+  {
+    "slug": "trading-strategy-trader-entry-execution-framework-1af650e3",
+    "title": "Trader Entry Execution Framework",
+    "category": "Trading Strategy",
+    "pdfPath": "/tutorials/trading-strategy/trader-entry-execution-framework-1af650e3.pdf"
+  },
+  {
+    "slug": "trading-strategy-tutorial-10-entry-planning-vwap-pullbacks-and-clean-closes-f811cff6",
+    "title": "Tutorial 10 Entry Planning VWAP Pullbacks And Clean Closes",
+    "category": "Trading Strategy",
+    "pdfPath": "/tutorials/trading-strategy/tutorial-10-entry-planning-vwap-pullbacks-and-clean-closes-f811cff6.pdf"
+  },
+  {
+    "slug": "tutorials-breakout-swing-scanner-pro-tutorial-v3-fe833026",
+    "title": "Breakout Swing Scanner Pro Tutorial V3",
+    "category": "Tutorials",
+    "pdfPath": "/tutorials/tutorials/breakout-swing-scanner-pro-tutorial-v3-fe833026.pdf"
+  },
+  {
+    "slug": "tutorials-cross-asset-overlay-interpretation-tutorial-c23ba1a9",
+    "title": "Cross Asset Overlay Interpretation Tutorial",
+    "category": "Tutorials",
+    "pdfPath": "/tutorials/tutorials/cross-asset-overlay-interpretation-tutorial-c23ba1a9.pdf"
+  },
+  {
+    "slug": "tutorials-may-3-execution-skills-tutorial-packet-1-15-cc06ba6f",
+    "title": "May 3 Execution Skills Tutorial Packet 1 15",
+    "category": "Tutorials",
+    "pdfPath": "/tutorials/tutorials/may-3-execution-skills-tutorial-packet-1-15-cc06ba6f.pdf"
+  },
+  {
+    "slug": "tutorials-tutorial-01-market-regime-first-5dd12c3b",
+    "title": "Tutorial 01 Market Regime First",
+    "category": "Tutorials",
+    "pdfPath": "/tutorials/tutorials/tutorial-01-market-regime-first-5dd12c3b.pdf"
+  },
+  {
+    "slug": "tutorials-tutorial-03-breakout-vs-fakeout-0cecf7ca",
+    "title": "Tutorial 03 Breakout Vs Fakeout",
+    "category": "Tutorials",
+    "pdfPath": "/tutorials/tutorials/tutorial-03-breakout-vs-fakeout-0cecf7ca.pdf"
+  },
+  {
+    "slug": "tutorials-tutorial-04-multi-timeframe-confirmation-e1e6c745",
+    "title": "Tutorial 04 Multi Timeframe Confirmation",
+    "category": "Tutorials",
+    "pdfPath": "/tutorials/tutorials/tutorial-04-multi-timeframe-confirmation-e1e6c745.pdf"
+  },
+  {
+    "slug": "tutorials-tutorial-1-daily-market-map-7a3821b2",
+    "title": "Tutorial 1 Daily Market Map",
+    "category": "Tutorials",
+    "pdfPath": "/tutorials/tutorials/tutorial-1-daily-market-map-7a3821b2.pdf"
+  },
+  {
+    "slug": "tutorials-tutorial-14-hedging-vs-arbitrage-9e04b449",
+    "title": "Tutorial 14 Hedging Vs Arbitrage",
+    "category": "Tutorials",
+    "pdfPath": "/tutorials/tutorials/tutorial-14-hedging-vs-arbitrage-9e04b449.pdf"
+  },
+  {
+    "slug": "tutorials-tutorial-2-daily-market-briefing-routine-08360ce3",
+    "title": "Tutorial 2 Daily Market Briefing Routine",
+    "category": "Tutorials",
+    "pdfPath": "/tutorials/tutorials/tutorial-2-daily-market-briefing-routine-08360ce3.pdf"
+  },
+  {
+    "slug": "tutorials-tutorial-6-ev-robotics-semiconductors-policy-06df4939",
+    "title": "Tutorial 6 Ev Robotics Semiconductors Policy",
+    "category": "Tutorials",
+    "pdfPath": "/tutorials/tutorials/tutorial-6-ev-robotics-semiconductors-policy-06df4939.pdf"
+  },
+  {
+    "slug": "tutorials-tutorial-6-timing-participation-observe-first-trade-later-apr23-d9ed6859",
+    "title": "Tutorial 6 Timing Participation Observe First Trade Later Apr23",
+    "category": "Tutorials",
+    "pdfPath": "/tutorials/tutorials/tutorial-6-timing-participation-observe-first-trade-later-apr23-d9ed6859.pdf"
+  },
+  {
+    "slug": "tutorials-vwap-reclaim-value-reclaim-v2-2-tutorial-b0db6656",
+    "title": "VWAP Reclaim Value Reclaim V2 2 Tutorial",
+    "category": "Tutorials",
+    "pdfPath": "/tutorials/tutorials/vwap-reclaim-value-reclaim-v2-2-tutorial-b0db6656.pdf"
+  },
+  {
+    "slug": "tutorials-vwap-reclaim-value-reclaim-v2-tutorial-98e04b50",
+    "title": "VWAP Reclaim Value Reclaim V2 Tutorial",
+    "category": "Tutorials",
+    "pdfPath": "/tutorials/tutorials/vwap-reclaim-value-reclaim-v2-tutorial-98e04b50.pdf"
+  },
+  {
+    "slug": "vwap-tutorial-05-vwap-and-anchored-vwap-48dc5a6a",
+    "title": "Tutorial 05 VWAP And Anchored VWAP",
+    "category": "VWAP",
+    "pdfPath": "/tutorials/vwap/tutorial-05-vwap-and-anchored-vwap-48dc5a6a.pdf"
+  },
+  {
+    "slug": "vwap-tutorial-4-vwap-anchored-vwap-fc821dd1",
+    "title": "Tutorial 4 VWAP Anchored VWAP",
+    "category": "VWAP",
+    "pdfPath": "/tutorials/vwap/tutorial-4-vwap-anchored-vwap-fc821dd1.pdf"
+  },
+  {
+    "slug": "vwap-vwap-avwap-trading-framework-153ca72d",
+    "title": "VWAP AVWAP Trading Framework",
+    "category": "VWAP",
+    "pdfPath": "/tutorials/vwap/vwap-avwap-trading-framework-153ca72d.pdf"
+  },
+  {
+    "slug": "whitepapers-atr-first-hour-50-retracement-whitepaper-tutorial-aaf83d1c",
+    "title": "ATR First Hour 50 Retracement Whitepaper Tutorial",
+    "category": "Whitepapers",
+    "pdfPath": "/tutorials/whitepapers/atr-first-hour-50-retracement-whitepaper-tutorial-aaf83d1c.pdf"
+  },
+  {
+    "slug": "whitepapers-atr-first-hour-retracement-whitepaper-d82d4b63",
+    "title": "ATR First Hour Retracement Whitepaper",
+    "category": "Whitepapers",
+    "pdfPath": "/tutorials/whitepapers/atr-first-hour-retracement-whitepaper-d82d4b63.pdf"
+  },
+  {
+    "slug": "whitepapers-breakout-swing-scanner-pro-whitepaper-be01ad4a",
+    "title": "Breakout Swing Scanner Pro Whitepaper",
+    "category": "Whitepapers",
+    "pdfPath": "/tutorials/whitepapers/breakout-swing-scanner-pro-whitepaper-be01ad4a.pdf"
+  },
+  {
+    "slug": "whitepapers-breakout-swing-scanner-whitepaper-v4-7e973e2b",
+    "title": "Breakout Swing Scanner Whitepaper V4",
+    "category": "Whitepapers",
+    "pdfPath": "/tutorials/whitepapers/breakout-swing-scanner-whitepaper-v4-7e973e2b.pdf"
+  },
+  {
+    "slug": "whitepapers-catalyst-reaction-screener-whitepaper-38b9acfc",
+    "title": "Catalyst Reaction Screener Whitepaper",
+    "category": "Whitepapers",
+    "pdfPath": "/tutorials/whitepapers/catalyst-reaction-screener-whitepaper-38b9acfc.pdf"
+  },
+  {
+    "slug": "whitepapers-day3-gap-failure-screener-whitepaper-b09216ed",
+    "title": "Day3 Gap Failure Screener Whitepaper",
+    "category": "Whitepapers",
+    "pdfPath": "/tutorials/whitepapers/day3-gap-failure-screener-whitepaper-b09216ed.pdf"
+  },
+  {
+    "slug": "whitepapers-indexscore-whitepaper-8054c85c",
+    "title": "Indexscore Whitepaper",
+    "category": "Whitepapers",
+    "pdfPath": "/tutorials/whitepapers/indexscore-whitepaper-8054c85c.pdf"
+  },
+  {
+    "slug": "whitepapers-vwap-reclaim-value-reclaim-v2-2-whitepaper-a5977623",
+    "title": "VWAP Reclaim Value Reclaim V2 2 Whitepaper",
+    "category": "Whitepapers",
+    "pdfPath": "/tutorials/whitepapers/vwap-reclaim-value-reclaim-v2-2-whitepaper-a5977623.pdf"
+  },
+  {
+    "slug": "whitepapers-vwap-reclaim-value-reclaim-v2-whitepaper-2580fcb3",
+    "title": "VWAP Reclaim Value Reclaim V2 Whitepaper",
+    "category": "Whitepapers",
+    "pdfPath": "/tutorials/whitepapers/vwap-reclaim-value-reclaim-v2-whitepaper-2580fcb3.pdf"
+  }
+]

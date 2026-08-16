@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { BookOpenText, Library, Layers3 } from "lucide-react";
+import { BookOpenText, GraduationCap, Library, Layers3 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 type ResearchSectionTabsProps = {
-  active: "playbooks" | "research" | "stacks";
+  active: "playbooks" | "research" | "stacks" | "tutorials";
 };
 
 const tabs = [
@@ -26,12 +26,18 @@ const tabs = [
     id: "stacks" as const,
     label: "Fundamental Research Stack",
   },
+  {
+    href: "/research/tutorials",
+    icon: GraduationCap,
+    id: "tutorials" as const,
+    label: "Tutorials",
+  },
 ];
 
 export function ResearchSectionTabs({ active }: ResearchSectionTabsProps) {
   return (
     <nav aria-label="Research sections" className="flex">
-      <div className="grid w-full grid-cols-3 gap-1 rounded-lg border border-border bg-secondary/35 p-1 sm:w-auto">
+      <div className="grid w-full grid-cols-2 gap-1 rounded-lg border border-border bg-secondary/35 p-1 sm:w-auto sm:grid-cols-4">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = tab.id === active;
