@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   Bell,
+  BookOpen,
   Bookmark,
   CheckCircle2,
   Clock3,
@@ -19,6 +20,11 @@ const dashboardLinks = [
     href: "/dashboard",
     icon: LayoutDashboard,
     label: "Overview",
+  },
+  {
+    href: "/research",
+    icon: BookOpen,
+    label: "Research Library",
   },
   {
     href: "/dashboard/watchlist",
