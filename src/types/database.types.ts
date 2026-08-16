@@ -898,10 +898,15 @@ export type Database = {
           created_by: string | null
           delivery_type: Database["public"]["Enums"]["software_delivery_type"]
           documentation: string | null
+          download_file_name: string | null
+          download_storage_path: string | null
           download_url: string | null
           external_url: string | null
           full_description: string | null
           id: string
+          individual_price_cents: number | null
+          individual_purchase_enabled: boolean
+          member_download_enabled: boolean
           published: boolean
           published_at: string | null
           release_notes: string | null
@@ -922,10 +927,15 @@ export type Database = {
           created_by?: string | null
           delivery_type?: Database["public"]["Enums"]["software_delivery_type"]
           documentation?: string | null
+          download_file_name?: string | null
+          download_storage_path?: string | null
           download_url?: string | null
           external_url?: string | null
           full_description?: string | null
           id?: string
+          individual_price_cents?: number | null
+          individual_purchase_enabled?: boolean
+          member_download_enabled?: boolean
           published?: boolean
           published_at?: string | null
           release_notes?: string | null
@@ -946,10 +956,15 @@ export type Database = {
           created_by?: string | null
           delivery_type?: Database["public"]["Enums"]["software_delivery_type"]
           documentation?: string | null
+          download_file_name?: string | null
+          download_storage_path?: string | null
           download_url?: string | null
           external_url?: string | null
           full_description?: string | null
           id?: string
+          individual_price_cents?: number | null
+          individual_purchase_enabled?: boolean
+          member_download_enabled?: boolean
           published?: boolean
           published_at?: string | null
           release_notes?: string | null
@@ -1435,6 +1450,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      list_public_pinescripts: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          individual_purchase_enabled: boolean
+          published_at: string | null
+          short_description: string | null
+          slug: string
+          title: string
+          updated_at: string
+          version: string | null
+        }[]
+      }
       can_access_content: {
         Args: {
           required_visibility: Database["public"]["Enums"]["content_visibility"]

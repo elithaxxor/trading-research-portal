@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft, Download, ExternalLink } from "lucide-react";
 
 import { CardShell } from "@/components/card-shell";
 import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
@@ -151,6 +151,24 @@ export default async function SoftwareProductPage({
         productId={product.id}
         slug={product.slug}
       />
+
+      {product.software_type === "pinescript" &&
+      product.member_download_enabled &&
+      product.download_storage_path ? (
+        <DashboardSection title="Member download">
+          <CardShell padding="md" tone="subtle">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm leading-6 text-muted-foreground">
+                This protected file link is generated after a fresh Premium or Pro access check.
+              </p>
+              <a className={cn(buttonVariants({ size: "lg" }))} href={`/api/software/${product.id}/download`}>
+                <Download data-icon="inline-start" />
+                Download Pine Script
+              </a>
+            </div>
+          </CardShell>
+        </DashboardSection>
+      ) : null}
 
       <DashboardSection title="Documentation">
         <SoftwareSetupInstructions

@@ -26,10 +26,24 @@ export type SoftwareProductPreview = Pick<
   | "access_tier"
   | "delivery_type"
   | "id"
+  | "individual_purchase_enabled"
+  | "member_download_enabled"
   | "published_at"
   | "short_description"
   | "slug"
   | "software_type"
+  | "title"
+  | "updated_at"
+  | "version"
+>;
+
+export type PublicPineScriptPreview = Pick<
+  SoftwareProduct,
+  | "id"
+  | "individual_purchase_enabled"
+  | "published_at"
+  | "short_description"
+  | "slug"
   | "title"
   | "updated_at"
   | "version"

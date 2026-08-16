@@ -21,6 +21,7 @@ import {
   validateSoftwareType,
 } from "@/lib/software/validation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export type SoftwareProductActionState = {
   fieldErrors?: Record<string, string>;
@@ -183,6 +184,10 @@ function revalidateSoftwarePaths(slugs: (string | null | undefined)[] = []) {
   revalidatePath("/admin/software");
   revalidatePath("/admin/software/requests");
   revalidatePath("/dashboard/software");
+  revalidatePath("/dashboard/pinescripts");
+  revalidatePath("/dashboard/tools");
+  revalidatePath("/dashboard/strat-lab");
+  revalidatePath("/pinescripts");
 
   for (const slug of new Set(slugs.filter(Boolean))) {
     revalidatePath(`/dashboard/software/${slug}`);
@@ -325,12 +330,20 @@ async function buildSoftwarePayload({
   return {
     fieldErrors,
     payload: {
-      access_tier: accessTier,
+      access_tier:
+        softwareType === "tool" || softwareType === "strategy"
+          ? "pro"
+          : accessTier,
       delivery_type: deliveryType,
       documentation,
       download_url: getOptionalUrl(formData, "download_url", fieldErrors),
       external_url: getOptionalUrl(formData, "external_url", fieldErrors),
       full_description: fullDescription,
+      individual_purchase_enabled:
+        formData.get("individual_purchase_enabled") === "on",
+      member_download_enabled:
+        softwareType === "pinescript" &&
+        formData.get("member_download_enabled") === "on",
       published,
       published_at: getPublishedAtValue({
         currentPublishedAt,
@@ -585,6 +598,113 @@ export async function deleteSoftwareProductAction(formData: FormData) {
     .eq("id", product.id)
     .throwOnError();
 
+  if (product.download_storage_path) {
+    await createSupabaseAdminClient().storage
+      .from("pinescript-files")
+      .remove([product.download_storage_path]);
+  }
+
   revalidateSoftwarePaths([product.slug]);
   redirect("/admin/software?notice=deleted");
+}
+
+export async function uploadPineScriptFileAction(formData: FormData) {
+  await requireAdmin("/admin/software");
+  const id = getRequiredId(formData);
+  const product = await getSoftwareProductById(id);
+  const file = formData.get("pinescript_file");
+
+  if (!product || product.software_type !== "pinescript") {
+    throw new Error("Pine Script product not found.");
+  }
+
+  if (!(file instanceof File) || file.size === 0) {
+    throw new Error("Choose a Pine Script file to upload.");
+  }
+
+  if (file.size > 1_048_576) {
+    throw new Error("Pine Script files must be 1 MB or smaller.");
+  }
+
+  const extension = file.name.toLowerCase().split(".").pop();
+
+  if (extension !== "pine" && extension !== "txt") {
+    throw new Error("Only .pine and .txt files are accepted.");
+  }
+
+  const bytes = new Uint8Array(await file.arrayBuffer());
+
+  if (bytes.includes(0)) {
+    throw new Error("The uploaded file must be plain text.");
+  }
+
+  const safeName = file.name
+    .replace(/[^a-zA-Z0-9._-]/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 120);
+  const storagePath = `${product.id}/${crypto.randomUUID()}-${safeName}`;
+  const admin = createSupabaseAdminClient();
+  const { error: uploadError } = await admin.storage
+    .from("pinescript-files")
+    .upload(storagePath, bytes, {
+      contentType: "text/plain",
+      upsert: false,
+    });
+
+  if (uploadError) {
+    throw new Error("Unable to store the Pine Script file.");
+  }
+
+  const { error: updateError } = await admin
+    .from("software_products")
+    .update({
+      delivery_type: "protected_download",
+      download_file_name: safeName,
+      download_storage_path: storagePath,
+      member_download_enabled: true,
+    })
+    .eq("id", product.id);
+
+  if (updateError) {
+    await admin.storage.from("pinescript-files").remove([storagePath]);
+    throw new Error("Unable to attach the Pine Script file to this product.");
+  }
+
+  if (product.download_storage_path) {
+    await admin.storage
+      .from("pinescript-files")
+      .remove([product.download_storage_path]);
+  }
+
+  revalidateSoftwarePaths([product.slug]);
+  redirect(`/admin/software/${product.id}/edit?notice=file-uploaded`);
+}
+
+export async function removePineScriptFileAction(formData: FormData) {
+  await requireAdmin("/admin/software");
+  const product = await getSoftwareProductById(getRequiredId(formData));
+
+  if (!product || product.software_type !== "pinescript") {
+    throw new Error("Pine Script product not found.");
+  }
+
+  const admin = createSupabaseAdminClient();
+  await admin
+    .from("software_products")
+    .update({
+      download_file_name: null,
+      download_storage_path: null,
+      member_download_enabled: false,
+    })
+    .eq("id", product.id)
+    .throwOnError();
+
+  if (product.download_storage_path) {
+    await admin.storage
+      .from("pinescript-files")
+      .remove([product.download_storage_path]);
+  }
+
+  revalidateSoftwarePaths([product.slug]);
+  redirect(`/admin/software/${product.id}/edit?notice=file-removed`);
 }

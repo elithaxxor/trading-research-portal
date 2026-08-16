@@ -5,6 +5,7 @@ import { Container } from "@/components/container";
 const footerLinks = [
   { label: "Home", href: "/" },
   { label: "Free Research", href: "/free" },
+  { label: "Indicators", href: "/pinescripts" },
   { label: "Pricing", href: "/pricing" },
   { label: "About", href: "/about" },
   { label: "Disclaimer", href: "/disclaimer" },

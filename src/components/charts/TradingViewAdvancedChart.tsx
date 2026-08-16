@@ -19,6 +19,7 @@ type TradingViewAdvancedChartProps = {
   autosize?: boolean;
   caption?: null | string;
   className?: string;
+  embedded?: boolean;
   height?: number | string;
   interval?: null | string;
   studies?: readonly string[] | null;
@@ -89,6 +90,7 @@ export function TradingViewAdvancedChart({
   autosize = true,
   caption,
   className,
+  embedded = false,
   height = 420,
   interval,
   studies,
@@ -184,7 +186,10 @@ export function TradingViewAdvancedChart({
   return (
     <figure
       className={cn(
-        "w-full min-w-0 overflow-hidden rounded-lg border border-border bg-card/72 shadow-[0_22px_70px_oklch(0.05_0.02_235_/_30%)]",
+        "w-full min-w-0 overflow-hidden bg-card/72",
+        embedded
+          ? "border-y border-border"
+          : "rounded-lg border border-border shadow-[0_22px_70px_oklch(0.05_0.02_235_/_30%)]",
         className
       )}
       aria-busy={status === "loading"}

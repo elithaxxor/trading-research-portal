@@ -7,6 +7,8 @@ import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 type DashboardShellProps = {
   accessLabel: string;
   accountTierLabel: string;
+  canAccessPineScripts: boolean;
+  canAccessTools: boolean;
   children: ReactNode;
   statusLabel: string;
   workspaceLabel: string;
@@ -16,6 +18,8 @@ type DashboardShellProps = {
 export function DashboardShell({
   accessLabel,
   accountTierLabel,
+  canAccessPineScripts,
+  canAccessTools,
   children,
   statusLabel,
   workspaceLabel,
@@ -24,7 +28,11 @@ export function DashboardShell({
   return (
     <div className="w-full min-w-0 max-w-full border-y border-border bg-background">
       <div className="mx-auto grid w-full min-w-0 max-w-full lg:min-h-[calc(100vh-8rem)] lg:max-w-7xl lg:grid-cols-[17rem_minmax(0,1fr)]">
-        <DashboardSidebar tierLabel={workspaceLabel} />
+        <DashboardSidebar
+          canAccessPineScripts={canAccessPineScripts}
+          canAccessTools={canAccessTools}
+          tierLabel={workspaceLabel}
+        />
         <div className="min-w-0 max-w-full">
           <DashboardHeader
             accessLabel={accessLabel}

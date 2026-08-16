@@ -8,6 +8,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 import type {
   SoftwareAccessTier,
+  SoftwareProduct,
   SubscriptionTier,
 } from "./types";
 
@@ -67,6 +68,41 @@ export async function getCurrentSoftwareAccessTier() {
       isAdmin
     ),
   };
+}
+
+export function canAccessPineScriptLibrary(
+  userTier: SubscriptionTier | null,
+  isAdmin = false
+) {
+  return isAdmin || userTier === "premium" || userTier === "pro";
+}
+
+export function canAccessToolsLibrary(
+  userTier: SubscriptionTier | null,
+  isAdmin = false
+) {
+  return isAdmin || userTier === "pro";
+}
+
+export const canAccessStratLab = canAccessToolsLibrary;
+
+export function canAccessSoftwareProduct(
+  product: Pick<SoftwareProduct, "access_tier" | "software_type">,
+  userTier: SubscriptionTier | null,
+  isAdmin = false
+) {
+  if (
+    product.software_type === "tool" ||
+    product.software_type === "strategy"
+  ) {
+    return canAccessToolsLibrary(userTier, isAdmin);
+  }
+
+  if (product.software_type === "pinescript") {
+    return canAccessPineScriptLibrary(userTier, isAdmin);
+  }
+
+  return canAccessSoftwareTier(product.access_tier, userTier, isAdmin);
 }
 
 export function canAccessSoftwareTier(

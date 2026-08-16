@@ -27,6 +27,7 @@ const defaultLevels = [
 
 export function IdeaPreviewCard({
   bias = "Constructive",
+  children,
   className,
   levels = defaultLevels,
   riskLevel = "Moderate",
@@ -59,6 +60,8 @@ export function IdeaPreviewCard({
             <Badge tone="muted">{status}</Badge>
           </div>
         </div>
+
+        {children ? <div className="min-w-0">{children}</div> : null}
 
         <div className="grid gap-3 sm:grid-cols-2">
           <Metric label="Timeframe" value={timeframe} />

@@ -81,7 +81,7 @@ export default async function SoftwareLibraryPage({
         <SoftwareLockedPanel message={accessMessage} />
       ) : (
         <DashboardSection
-          description="Premium members can access Lite software. Pro members can access Lite and Pro software."
+          description="Premium members can access Lite software and every Pine Script. Pro members can access Lite, Pro, and every Pine Script."
           title="Available software"
         >
           {products.length > 0 ? (
@@ -148,11 +148,11 @@ function getSoftwareAccessMessage(
   }
 
   if (access.userTier === "premium") {
-    return "Premium: Lite software access.";
+    return "Premium: Lite software plus the Indicators library.";
   }
 
   if (access.userTier === "pro") {
-    return "Pro: Lite + Pro software access.";
+    return "Pro: Lite + Pro software plus the Indicators library.";
   }
 
   return "Software access requires Premium or Pro.";

@@ -19,6 +19,12 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_SENTRY_ENABLED: sentryRuntimeEnabled ? "true" : "false",
   },
+  outputFileTracingIncludes: {
+    "/api/pinescripts/*/download": ["./private/pinescripts/**/*"],
+    "/api/research/fundamental-stack/*": [
+      "./private/research/fundamental-research-stack/**/*",
+    ],
+  },
 };
 
 export default sentryRuntimeEnabled

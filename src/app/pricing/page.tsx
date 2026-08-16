@@ -86,10 +86,11 @@ const paidPlans: PaidPlan[] = [
     tier: "Premium",
     price: process.env.NEXT_PUBLIC_PREMIUM_MONTHLY_PRICE_LABEL || "Premium",
     description:
-      "For members who want structured trading ideas, Lite software access, watchlists, and member dashboard workflows.",
+      "For members who want structured trading ideas, every published Pine Script, Lite software access, watchlists, and member dashboard workflows.",
     features: [
       "Premium trading ideas and content",
       "Lite software library access",
+      "Indicators library access",
       "Saved ideas, followed tickers, and watchlist workflows",
       "Premium chart breakdowns",
       "Update logs and closed idea reviews",
@@ -102,11 +103,14 @@ const paidPlans: PaidPlan[] = [
     tier: "Pro",
     price: process.env.NEXT_PUBLIC_PRO_MONTHLY_PRICE_LABEL || "Pro",
     description:
-      "For members who want Pro research access, Lite + Pro software, and deeper research context.",
+      "For members who want Pro research access, Lite + Pro software, a Pro-only tools workspace, and deeper research context.",
     features: [
       "Everything in Premium",
       "Pro-only research notes",
       "Lite + Pro software library access",
+      "Indicators library access",
+      "Pro-only tools workspace",
+      "Pro-only Strat Lab",
       "Advanced research access",
       "Pro lifecycle reviews",
       "Full member dashboard workflows",
@@ -115,6 +119,21 @@ const paidPlans: PaidPlan[] = [
 ];
 
 const comparisonRows = [
+  {
+    feature: "Strat Lab",
+    free: false,
+    premium: "Pro only",
+  },
+  {
+    feature: "Pro tools workspace",
+    free: false,
+    premium: "Pro only",
+  },
+  {
+    feature: "Indicators library",
+    free: "Individual pricing later",
+    premium: true,
+  },
   {
     feature: "Public market notes",
     free: true,
@@ -171,7 +190,7 @@ const faqs = [
   {
     question: "What is included in Premium?",
     answer:
-      "Premium includes structured trading ideas, the member dashboard, Lite software access, watchlists, update logs, premium chart breakdowns, and closed idea reviews.",
+      "Premium includes structured trading ideas, the member dashboard, every published Pine Script, Lite software access, watchlists, update logs, premium chart breakdowns, and closed idea reviews.",
   },
   {
     question: "Can I upgrade to Pro?",
@@ -186,7 +205,7 @@ const faqs = [
   {
     question: "How does software access work?",
     answer:
-      "Premium unlocks Lite software, and Pro unlocks Lite + Pro software. Software is educational research tooling, and TradingView invite-only access may require manual admin approval.",
+      "Premium and Pro both include every published Pine Script. Premium also unlocks Lite software, while Pro unlocks Lite + Pro software. Individual Pine Script pricing for free accounts will be added later. TradingView invite-only access may require manual admin approval.",
   },
 ];
 

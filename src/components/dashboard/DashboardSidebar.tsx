@@ -4,10 +4,13 @@ import {
   BookOpen,
   Bookmark,
   CheckCircle2,
+  Code2,
   Clock3,
   Eye,
   LayoutDashboard,
+  PackageSearch,
   Settings,
+  FlaskConical,
   Star,
   UserCircle,
   Wrench,
@@ -74,11 +77,15 @@ const dashboardLinks = [
 ];
 
 type DashboardSidebarProps = {
+  canAccessPineScripts: boolean;
+  canAccessTools: boolean;
   className?: string;
   tierLabel: string;
 };
 
 export function DashboardSidebar({
+  canAccessPineScripts,
+  canAccessTools,
   className,
   tierLabel,
 }: DashboardSidebarProps) {
@@ -104,7 +111,19 @@ export function DashboardSidebar({
           className="-mx-4 max-w-full overflow-x-auto px-4 sm:-mx-6 sm:px-6 lg:mx-0 lg:overflow-visible lg:px-0"
         >
           <div className="flex w-max min-w-full gap-2 lg:grid lg:w-full lg:min-w-0 lg:grid-cols-1">
-            {dashboardLinks.map((link) => {
+            {[
+              ...dashboardLinks.slice(0, 8),
+              ...(canAccessPineScripts
+                ? [{ href: "/dashboard/pinescripts", icon: Code2, label: "Indicators" }]
+                : []),
+              ...(canAccessTools
+                ? [{ href: "/dashboard/tools", icon: PackageSearch, label: "Tools" }]
+                : []),
+              ...(canAccessTools
+                ? [{ href: "/dashboard/strat-lab", icon: FlaskConical, label: "Strat Lab" }]
+                : []),
+              ...dashboardLinks.slice(8),
+            ].map((link) => {
               const Icon = link.icon;
 
               return (

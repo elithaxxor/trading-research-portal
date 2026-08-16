@@ -1,0 +1,1321 @@
+Fundamental Analysis Prompt Suite for Supplementing Technical Analysis
+
+Use these prompts with a web-enabled AI research tool, market data platform, or finance-focused agent. Replace the placeholders before running each prompt.
+
+Placeholders
+
+{TICKER} = stock ticker
+{COMPANY} = company name
+{EXCHANGE} = exchange, if known
+{AS_OF_DATE} = today’s date
+{TIMEFRAME} = trading/investing timeframe, e.g. swing trade, 3–6 months, 1–3 years
+{PEERS} = direct competitors or peer tickers
+{TECHNICAL_SETUP} = your technical analysis view, e.g. breakout, support retest, downtrend reversal
+{RISK_TOLERANCE} = low, medium, high
+
+============================================================
+1. MASTER FUNDAMENTAL ANALYSIS PROMPT
+============================================================
+
+Use this when you want a full fundamental report.
+
+Act as an institutional equity research analyst.
+
+I want a fundamental analysis of {COMPANY} / {TICKER} listed on {EXCHANGE}, as of {AS_OF_DATE}. The purpose is to supplement my technical analysis, not replace it.
+
+Use current and reliable sources, prioritizing:
+1. Latest annual report / 10-K
+2. Latest quarterly report / 10-Q
+3. Latest earnings release
+4. Latest investor presentation
+5. Earnings call transcript
+6. Company investor relations website
+7. Reputable financial data sources
+8. Industry or macro data where relevant
+
+Important rules:
+- Cite every major financial figure.
+- Clearly separate reported facts from your interpretation.
+- Do not invent numbers.
+- If a metric is unavailable, say so.
+- Use the latest available data.
+- Compare recent results against prior periods.
+- Highlight both bullish and bearish evidence.
+
+Analyze the company across these sections:
+
+1. Business overview
+   - What the company does
+   - Main products/services
+   - Revenue segments
+   - Geographic exposure
+   - Customer concentration, if available
+
+2. Revenue and growth
+   - Revenue trend over the last 3–5 years
+   - Latest quarterly revenue growth
+   - Organic vs acquisition-driven growth, if available
+   - Growth consistency
+   - Key growth drivers
+
+3. Profitability
+   - Gross margin
+   - Operating margin
+   - Net margin
+   - EBITDA margin, if relevant
+   - Margin trend and explanation
+
+4. Balance sheet strength
+   - Cash
+   - Debt
+   - Net debt
+   - Current ratio
+   - Debt-to-equity
+   - Interest coverage, if available
+   - Liquidity risk
+
+5. Cash flow quality
+   - Operating cash flow
+   - Free cash flow
+   - Capital expenditures
+   - Free cash flow margin
+   - Cash conversion quality
+   - Whether earnings are backed by cash flow
+
+6. Valuation
+   - Market cap
+   - Enterprise value
+   - P/E
+   - Forward P/E
+   - EV/EBITDA
+   - EV/Sales
+   - Price/free cash flow
+   - Compare valuation to historical average and peers
+
+7. Competitive position
+   - Moat
+   - Pricing power
+   - Brand strength
+   - Switching costs
+   - Scale advantages
+   - Network effects, if applicable
+   - Threats from competitors
+
+8. Management and capital allocation
+   - CEO/CFO background
+   - Insider ownership
+   - Share buybacks
+   - Dividends
+   - Acquisitions
+   - Share dilution
+   - Debt management
+
+9. Risks
+   - Business risks
+   - Financial risks
+   - Regulatory risks
+   - Macro risks
+   - Customer/product concentration
+   - Execution risks
+
+10. Catalysts
+   - Upcoming earnings
+   - Product launches
+   - Regulatory decisions
+   - Guidance updates
+   - Investor day
+   - Buybacks/dividends
+   - Industry events
+
+11. Fundamental scorecard
+   Score each category from 1 to 10:
+   - Growth
+   - Profitability
+   - Balance sheet
+   - Cash flow
+   - Valuation
+   - Competitive advantage
+   - Management quality
+   - Risk profile
+
+12. Technical analysis integration
+   Given my technical setup is: {TECHNICAL_SETUP}
+   Explain whether the fundamentals:
+   - Confirm the technical setup
+   - Contradict the technical setup
+   - Are neutral
+   - Suggest this is better suited for a short-term trade, medium-term swing, or long-term investment
+
+End with:
+- Bull case
+- Bear case
+- Base case
+- Key numbers to monitor next quarter
+- Final fundamental rating: Strong, Good, Mixed, Weak, or Avoid
+
+============================================================
+2. FAST COMPANY SNAPSHOT PROMPT
+============================================================
+
+Use this before doing deeper work.
+
+Give me a fast but useful fundamental snapshot of {COMPANY} / {TICKER} as of {AS_OF_DATE}.
+
+Include:
+- Business description
+- Market cap
+- Revenue
+- Revenue growth
+- Gross margin
+- Operating margin
+- Net income
+- Free cash flow
+- Cash and debt
+- Valuation multiples
+- Latest earnings summary
+- Main bullish points
+- Main bearish points
+- Upcoming catalysts
+- Biggest risk
+
+Use current sources and cite all financial data.
+
+At the end, tell me whether this company deserves deeper fundamental research before I rely on my technical analysis setup: {TECHNICAL_SETUP}.
+
+============================================================
+3. FINANCIAL STATEMENT TREND PROMPT
+============================================================
+
+Use this to analyze the income statement, balance sheet, and cash flow statement.
+
+Analyze the financial statements of {COMPANY} / {TICKER} over the last 5 fiscal years and latest trailing twelve months if available.
+
+Create a table with:
+- Revenue
+- Gross profit
+- Operating income
+- Net income
+- EPS
+- Operating cash flow
+- Capital expenditures
+- Free cash flow
+- Cash
+- Total debt
+- Share count
+
+Then analyze:
+1. Revenue trend
+2. Margin trend
+3. Earnings quality
+4. Cash flow quality
+5. Balance sheet strength
+6. Share dilution or buybacks
+7. Any obvious red flags
+
+Use primary filings where possible. Cite sources for all figures.
+
+End with a plain-English conclusion:
+“Are the fundamentals improving, deteriorating, or mixed?”
+
+============================================================
+4. REVENUE QUALITY PROMPT
+============================================================
+
+Use this to understand whether growth is real and sustainable.
+
+Analyze the revenue quality of {COMPANY} / {TICKER}.
+
+Focus on:
+- Revenue growth over the last 3–5 years
+- Latest quarterly revenue growth
+- Organic growth vs acquisition growth
+- Recurring vs one-time revenue
+- Pricing power
+- Volume growth
+- Customer retention, if available
+- Geographic concentration
+- Segment concentration
+- Customer concentration
+- Cyclicality
+- Exposure to macroeconomic conditions
+
+Answer these questions:
+1. Is revenue growth accelerating or slowing?
+2. Is growth high quality or low quality?
+3. Is the company dependent on one product, region, or customer?
+4. What could cause revenue to miss expectations?
+5. What revenue metric should I monitor next quarter?
+
+End with a revenue quality score from 1 to 10.
+
+============================================================
+5. PROFITABILITY AND MARGIN PROMPT
+============================================================
+
+Use this to check whether the company can convert sales into profits.
+
+Analyze the profitability of {COMPANY} / {TICKER}.
+
+Include:
+- Gross margin
+- Operating margin
+- Net margin
+- EBITDA margin, if relevant
+- Return on equity
+- Return on invested capital, if available
+- Return on assets
+- Margin trend over the last 3–5 years
+- Latest quarterly margin performance
+
+Explain:
+1. Are margins expanding or contracting?
+2. What is driving the change?
+3. Does the company have pricing power?
+4. Are costs under control?
+5. Are profits dependent on temporary factors?
+6. How does profitability compare to peers: {PEERS}?
+
+End with:
+- Profitability score from 1 to 10
+- Whether profitability supports or weakens the current technical setup: {TECHNICAL_SETUP}
+
+============================================================
+6. BALANCE SHEET STRENGTH PROMPT
+============================================================
+
+Use this to identify financial risk.
+
+Analyze the balance sheet strength of {COMPANY} / {TICKER}.
+
+Include:
+- Cash and equivalents
+- Short-term investments
+- Total debt
+- Net debt
+- Current assets
+- Current liabilities
+- Current ratio
+- Quick ratio, if available
+- Debt-to-equity
+- Net debt / EBITDA
+- Interest coverage
+- Debt maturity schedule, if available
+
+Answer:
+1. Does the company have enough liquidity?
+2. Is debt manageable?
+3. Could rising interest rates or refinancing hurt the company?
+4. Is the company dependent on capital markets?
+5. Is bankruptcy or dilution risk material?
+6. Is the balance sheet a strength, neutral factor, or weakness?
+
+End with a balance sheet risk score:
+- Low risk
+- Moderate risk
+- High risk
+- Distressed
+
+============================================================
+7. CASH FLOW QUALITY PROMPT
+============================================================
+
+Use this to separate accounting earnings from real cash generation.
+
+Analyze the cash flow quality of {COMPANY} / {TICKER}.
+
+Include:
+- Operating cash flow
+- Capital expenditures
+- Free cash flow
+- Free cash flow margin
+- Net income vs operating cash flow
+- Stock-based compensation
+- Working capital changes
+- Cash conversion
+- Free cash flow trend over the last 3–5 years
+
+Answer:
+1. Are earnings backed by cash flow?
+2. Is free cash flow consistent or volatile?
+3. Is the business capital intensive?
+4. Is stock-based compensation inflating cash flow?
+5. Is free cash flow enough to fund dividends, buybacks, and debt repayment?
+6. What is the biggest cash flow red flag?
+
+End with:
+- Cash flow quality score from 1 to 10
+- One sentence explaining whether the company is a cash generator or cash consumer.
+
+============================================================
+8. VALUATION PROMPT
+============================================================
+
+Use this to decide whether the stock is expensive, cheap, or fairly valued.
+
+Perform a valuation analysis of {COMPANY} / {TICKER} as of {AS_OF_DATE}.
+
+Use:
+- Current share price
+- Market cap
+- Enterprise value
+- Revenue
+- EBITDA
+- EBIT
+- Net income
+- Free cash flow
+- Analyst estimates, if available
+- Peer comparison: {PEERS}
+
+Calculate and interpret:
+- P/E
+- Forward P/E
+- PEG ratio, if available
+- EV/Sales
+- EV/EBITDA
+- Price/free cash flow
+- Price/book, if relevant
+- Dividend yield, if relevant
+
+Compare valuation against:
+1. Its own historical valuation range
+2. Direct peers
+3. Sector average
+4. Growth rate
+5. Profitability level
+6. Balance sheet risk
+
+Then create:
+- Bull-case valuation
+- Base-case valuation
+- Bear-case valuation
+
+Explain what assumptions would justify today’s price.
+
+End with:
+- Overvalued, fairly valued, undervalued, or impossible to determine
+- Valuation risk score from 1 to 10
+- Whether valuation supports or conflicts with my technical setup: {TECHNICAL_SETUP}
+
+============================================================
+9. REVERSE DCF PROMPT
+============================================================
+
+Use this to understand what expectations are already priced in.
+
+Run a reverse discounted cash flow analysis for {COMPANY} / {TICKER}.
+
+Goal:
+Determine what revenue growth, margin, and free cash flow assumptions are implied by the current stock price.
+
+Use reasonable assumptions for:
+- Revenue base
+- Free cash flow margin
+- Discount rate
+- Terminal growth rate
+- Share count
+- Net debt or net cash
+
+Show:
+1. Current market-implied assumptions
+2. Conservative scenario
+3. Base scenario
+4. Optimistic scenario
+5. What has to go right for the current valuation to make sense
+6. What could cause downside if expectations are too high
+
+End with:
+- “Priced for perfection”
+- “Priced for solid execution”
+- “Priced conservatively”
+- or “Unclear due to insufficient data”
+
+Clearly state all assumptions.
+
+============================================================
+10. PEER COMPARISON PROMPT
+============================================================
+
+Use this to compare one company against alternatives.
+
+Compare {COMPANY} / {TICKER} against these peers: {PEERS}.
+
+Create a table comparing:
+- Market cap
+- Revenue growth
+- Gross margin
+- Operating margin
+- Net margin
+- Free cash flow margin
+- Return on invested capital
+- Debt level
+- P/E
+- Forward P/E
+- EV/Sales
+- EV/EBITDA
+- Price/free cash flow
+
+Then answer:
+1. Which company is growing fastest?
+2. Which company is most profitable?
+3. Which has the strongest balance sheet?
+4. Which has the best valuation relative to growth?
+5. Which has the highest risk?
+6. Which company looks fundamentally strongest?
+7. Which stock has the best fundamental support for a technical breakout?
+
+End with a ranked list from strongest to weakest based on fundamentals.
+
+============================================================
+11. COMPETITIVE ADVANTAGE / MOAT PROMPT
+============================================================
+
+Use this for quality companies and long-term setups.
+
+Analyze the competitive advantage of {COMPANY} / {TICKER}.
+
+Evaluate:
+- Brand strength
+- Switching costs
+- Network effects
+- Economies of scale
+- Cost advantages
+- Intellectual property
+- Regulatory barriers
+- Distribution advantages
+- Data advantages
+- Customer loyalty
+- Pricing power
+
+Also analyze:
+- Main competitors
+- Threat of new entrants
+- Supplier power
+- Customer power
+- Substitution risk
+- Industry growth outlook
+
+Answer:
+1. Does the company have a real moat?
+2. Is the moat expanding or shrinking?
+3. Is the company a leader, challenger, niche player, or declining incumbent?
+4. What could damage the moat?
+5. How important is the moat to the investment thesis?
+
+End with:
+- Moat rating: None, Weak, Moderate, Strong, or Exceptional
+- Confidence level: Low, Medium, or High
+
+============================================================
+12. MANAGEMENT AND CAPITAL ALLOCATION PROMPT
+============================================================
+
+Use this to analyze leadership quality.
+
+Analyze the management and capital allocation quality of {COMPANY} / {TICKER}.
+
+Research:
+- CEO background
+- CFO background
+- Tenure
+- Insider ownership
+- Insider buying or selling
+- Executive compensation
+- Share buybacks
+- Dividends
+- Acquisitions
+- Debt issuance or repayment
+- Share dilution
+- Guidance history
+- Whether management has met past targets
+
+Answer:
+1. Does management communicate clearly?
+2. Does management allocate capital well?
+3. Are shareholders being diluted?
+4. Are buybacks being done at attractive prices?
+5. Is executive compensation aligned with shareholders?
+6. Has management overpromised or underdelivered?
+7. Are insiders buying, holding, or selling?
+
+End with:
+- Management quality score from 1 to 10
+- Biggest management-related risk
+
+============================================================
+13. EARNINGS QUALITY PROMPT
+============================================================
+
+Use this around earnings season.
+
+Analyze the latest earnings report for {COMPANY} / {TICKER}.
+
+Include:
+- Report date
+- Revenue
+- Revenue growth
+- EPS
+- EPS growth
+- Gross margin
+- Operating margin
+- Net income
+- Free cash flow
+- Guidance
+- Analyst expectations, if available
+- Whether the company beat or missed expectations
+
+Then analyze:
+1. Was the earnings beat or miss high quality?
+2. Did revenue, margins, and cash flow all move in the same direction?
+3. Did management raise, lower, or maintain guidance?
+4. Were there any one-time items?
+5. What did the market react to?
+6. What should investors monitor next quarter?
+
+End with:
+- Earnings quality: Strong, Good, Mixed, Weak, or Poor
+- Whether the earnings report supports the current chart setup: {TECHNICAL_SETUP}
+
+============================================================
+14. EARNINGS CALL TRANSCRIPT PROMPT
+============================================================
+
+Use this to extract management tone and hidden signals.
+
+Analyze the latest earnings call transcript for {COMPANY} / {TICKER}.
+
+Focus on:
+- Management tone
+- Confidence level
+- Demand trends
+- Pricing trends
+- Cost pressures
+- Margin outlook
+- Inventory issues
+- Customer behavior
+- Competitive pressure
+- Capital allocation comments
+- Guidance language
+- Analyst concerns during Q&A
+
+Extract:
+1. Five most important management statements
+2. Three most important analyst questions
+3. Any changes in tone compared with prior calls
+4. Bullish signals
+5. Bearish signals
+6. Topics management avoided or answered vaguely
+7. Key phrases I should monitor in future calls
+
+End with:
+- Management tone: Positive, Neutral, Cautious, or Negative
+- Fundamental implication for the stock
+
+============================================================
+15. RED FLAG PROMPT
+============================================================
+
+Use this before entering a trade.
+
+Search for fundamental red flags for {COMPANY} / {TICKER}.
+
+Look for:
+- Revenue decline
+- Margin compression
+- Negative free cash flow
+- Rising debt
+- Liquidity problems
+- Covenant risk
+- Share dilution
+- Insider selling
+- Auditor concerns
+- SEC investigations
+- Regulatory issues
+- Customer concentration
+- Inventory buildup
+- Accounts receivable growth faster than revenue
+- Goodwill impairments
+- Aggressive accounting
+- Repeated guidance cuts
+- Executive departures
+- Lawsuits
+- Short-seller reports
+- Dividend cuts or buyback suspension
+
+For each red flag found, provide:
+- Evidence
+- Source
+- Severity: Low, Medium, High
+- Whether it is temporary or structural
+
+End with:
+- Top 3 risks
+- Overall red flag rating: Clean, Minor Concerns, Moderate Risk, High Risk, or Avoid
+
+============================================================
+16. CATALYST PROMPT
+============================================================
+
+Use this when timing matters.
+
+Identify upcoming fundamental catalysts for {COMPANY} / {TICKER} over the next 3–12 months.
+
+Look for:
+- Earnings dates
+- Guidance updates
+- Investor days
+- Product launches
+- Regulatory decisions
+- M&A activity
+- Buybacks
+- Dividend announcements
+- Index inclusion/removal
+- Analyst days
+- Industry conferences
+- Legal decisions
+- Macro events affecting the company
+
+For each catalyst, provide:
+- Date or expected timing
+- Description
+- Bullish potential
+- Bearish risk
+- Expected impact level: Low, Medium, High
+- Whether it could align with or disrupt my technical setup: {TECHNICAL_SETUP}
+
+End with a catalyst calendar table.
+
+============================================================
+17. FUNDAMENTAL + TECHNICAL CONFIRMATION PROMPT
+============================================================
+
+This is one of the most useful prompts for your specific goal.
+
+I have the following technical analysis setup for {COMPANY} / {TICKER}:
+
+{TECHNICAL_SETUP}
+
+Now analyze whether the fundamentals support this setup.
+
+Check:
+- Latest earnings trend
+- Revenue growth
+- Margin direction
+- Free cash flow
+- Balance sheet
+- Valuation
+- Guidance
+- Catalysts
+- Institutional sentiment, if available
+- Insider activity, if available
+- Peer performance
+- Sector trend
+
+Answer in this format:
+
+1. Fundamental confirmation
+   - What supports the technical setup?
+
+2. Fundamental contradiction
+   - What weakens or contradicts the technical setup?
+
+3. Timing risk
+   - Are there upcoming events that could invalidate the chart?
+
+4. Trade quality
+   - Does this look like a technical-only trade, a fundamentally supported trade, or a potential investment?
+
+5. Risk level
+   - Low, medium, or high
+
+6. Final view
+   - Fundamentals confirm, partially confirm, are neutral, or contradict the technical setup.
+
+Do not give a guaranteed buy or sell recommendation. Give a research-based assessment.
+
+============================================================
+18. FUNDAMENTAL TRADE FILTER PROMPT
+============================================================
+
+Use this to avoid technically attractive but fundamentally weak stocks.
+
+Create a fundamental trade filter for {COMPANY} / {TICKER}.
+
+My technical setup is:
+{TECHNICAL_SETUP}
+
+My timeframe is:
+{TIMEFRAME}
+
+Evaluate whether this stock passes or fails these filters:
+
+1. Revenue growth positive?
+2. Margins stable or improving?
+3. Free cash flow positive?
+4. Balance sheet safe?
+5. Debt manageable?
+6. Valuation reasonable relative to growth?
+7. No major upcoming binary event?
+8. No severe red flags?
+9. Industry trend supportive?
+10. Recent earnings not deteriorating?
+
+For each filter, mark:
+- Pass
+- Fail
+- Mixed
+- Unknown
+
+Then summarize:
+- Number of passes
+- Number of fails
+- Biggest concern
+- Strongest fundamental support
+- Whether I should treat this as:
+  - High-quality setup
+  - Speculative setup
+  - Technical-only setup
+  - Avoid due to fundamentals
+
+============================================================
+19. BULL / BASE / BEAR CASE PROMPT
+============================================================
+
+Use this to frame risk and reward.
+
+Build a bull case, base case, and bear case for {COMPANY} / {TICKER}.
+
+For each case, include:
+- Revenue growth assumptions
+- Margin assumptions
+- Earnings or free cash flow assumptions
+- Valuation multiple assumptions
+- Key catalysts
+- Key risks
+- What would make the case more likely
+- What would invalidate the case
+
+Then estimate:
+- Upside drivers
+- Downside drivers
+- Most important metric to watch
+- Probability-weighted interpretation, using reasonable assumptions
+
+End with:
+- Which case the current market price appears to reflect
+- Whether the chart setup aligns more with the bull, base, or bear case
+
+============================================================
+20. ONE-PAGE FUNDAMENTAL BRIEF PROMPT
+============================================================
+
+Use this when you want a quick decision aid.
+
+Create a one-page fundamental brief for {COMPANY} / {TICKER}.
+
+Keep it concise but data-driven.
+
+Include:
+- Company summary
+- Current valuation
+- Revenue trend
+- Profitability trend
+- Cash flow trend
+- Balance sheet health
+- Growth drivers
+- Key risks
+- Upcoming catalysts
+- Peer comparison
+- Fundamental score out of 100
+- Final rating: Strong, Good, Mixed, Weak, or Avoid
+
+Also include:
+- “What the bulls believe”
+- “What the bears believe”
+- “What matters most next quarter”
+- “How this supports or conflicts with my technical setup: {TECHNICAL_SETUP}”
+
+============================================================
+21. SECTOR AND MACRO CONTEXT PROMPT
+============================================================
+
+Use this when the stock is heavily influenced by industry or macro conditions.
+
+Analyze the sector and macro backdrop for {COMPANY} / {TICKER}.
+
+Include:
+- Industry growth rate
+- Demand trends
+- Pricing trends
+- Input cost trends
+- Interest rate sensitivity
+- Inflation sensitivity
+- Currency exposure
+- Regulatory environment
+- Consumer/business spending exposure
+- Commodity exposure, if relevant
+- Competitive intensity
+
+Answer:
+1. Is the sector currently expanding, stable, or contracting?
+2. Is the company benefiting from or fighting against macro trends?
+3. Are peers seeing similar trends?
+4. Could macro conditions overpower the technical setup?
+5. What sector data should I monitor?
+
+End with:
+- Sector support rating: Supportive, Neutral, Mixed, or Negative
+
+============================================================
+22. INSTITUTIONAL OWNERSHIP AND SENTIMENT PROMPT
+============================================================
+
+Use this to understand ownership pressure.
+
+Analyze institutional ownership and market sentiment for {COMPANY} / {TICKER}.
+
+Look for:
+- Institutional ownership percentage
+- Major holders
+- Recent 13F activity, if available
+- Insider buying/selling
+- Short interest
+- Days to cover
+- Analyst ratings
+- Recent upgrades/downgrades
+- Price target changes
+- Options activity, if available and reliable
+
+Answer:
+1. Are institutions accumulating or reducing exposure?
+2. Are insiders aligned with shareholders?
+3. Is short interest elevated?
+4. Is analyst sentiment improving or deteriorating?
+5. Could sentiment amplify a technical breakout or breakdown?
+
+End with:
+- Sentiment rating: Bullish, Neutral, Mixed, or Bearish
+- Reliability level of the data
+
+============================================================
+23. DIVIDEND AND BUYBACK PROMPT
+============================================================
+
+Use this for mature companies.
+
+Analyze the dividend and buyback profile of {COMPANY} / {TICKER}.
+
+Include:
+- Dividend yield
+- Dividend growth history
+- Payout ratio
+- Free cash flow payout ratio
+- Buyback history
+- Share count trend
+- Debt used for buybacks, if any
+- Dividend safety
+- Capital allocation priorities
+
+Answer:
+1. Is the dividend safe?
+2. Are buybacks reducing share count meaningfully?
+3. Is management returning capital wisely?
+4. Could the dividend or buyback support the stock price?
+5. Are capital returns masking weak growth?
+
+End with:
+- Capital return quality: Strong, Good, Mixed, Weak, or Risky
+
+============================================================
+24. DILUTION AND SHARE COUNT PROMPT
+============================================================
+
+Very useful for growth stocks, biotech, small caps, and speculative names.
+
+Analyze dilution risk for {COMPANY} / {TICKER}.
+
+Review:
+- Basic shares outstanding
+- Diluted shares outstanding
+- Share count trend over 3–5 years
+- Stock-based compensation
+- Convertible debt
+- Warrants
+- ATM offerings
+- Secondary offerings
+- Insider compensation
+- Free cash flow status
+- Cash runway, if the company is unprofitable
+
+Answer:
+1. Is the company diluting shareholders?
+2. Is dilution reasonable or excessive?
+3. Does the company need to raise capital soon?
+4. Could dilution pressure the stock despite a bullish chart?
+5. What filings should I monitor?
+
+End with:
+- Dilution risk: Low, Moderate, High, or Severe
+
+============================================================
+25. SMALL-CAP / SPECULATIVE STOCK PROMPT
+============================================================
+
+Use this for riskier names where standard valuation may not be enough.
+
+Analyze {COMPANY} / {TICKER} as a speculative or small-cap stock.
+
+Focus on:
+- Cash balance
+- Cash burn
+- Cash runway
+- Debt
+- Revenue traction
+- Gross margin
+- Product-market fit
+- Customer concentration
+- Share dilution
+- Insider ownership
+- Recent financings
+- Going concern language
+- Exchange listing compliance
+- Reverse split risk
+- Promotional activity
+- Short interest
+- Upcoming binary catalysts
+
+Answer:
+1. Can the company fund itself for the next 12 months?
+2. Is the business model proven?
+3. Is revenue meaningful or mostly speculative?
+4. Is dilution likely?
+5. Is this fundamentally investable or only tradable?
+6. What could go wrong quickly?
+
+End with:
+- Speculative risk rating: Low, Medium, High, Extreme
+- Whether fundamentals support holding beyond a technical trade
+
+============================================================
+26. SAAS / SOFTWARE COMPANY PROMPT
+============================================================
+
+Use this for cloud, software, and subscription businesses.
+
+Analyze {COMPANY} / {TICKER} as a software or SaaS business.
+
+Focus on:
+- Annual recurring revenue, if disclosed
+- Revenue growth
+- Net revenue retention
+- Gross retention
+- Customer count
+- Large customer growth
+- Gross margin
+- Operating margin
+- Rule of 40
+- Sales and marketing efficiency
+- Free cash flow margin
+- Stock-based compensation
+- Remaining performance obligations
+- Dollar-based expansion rate
+- Churn
+
+Answer:
+1. Is growth efficient?
+2. Is retention strong?
+3. Is the company scaling profitably?
+4. Is stock-based compensation excessive?
+5. Is valuation justified by growth and margins?
+6. How does it compare to SaaS peers?
+
+End with:
+- SaaS quality score from 1 to 10
+
+============================================================
+27. BANK / FINANCIAL STOCK PROMPT
+============================================================
+
+Use this for banks, lenders, insurers, and financial firms.
+
+Analyze {COMPANY} / {TICKER} as a financial company.
+
+Focus on:
+- Net interest income
+- Net interest margin
+- Loan growth
+- Deposit growth
+- Deposit costs
+- Credit quality
+- Non-performing loans
+- Charge-offs
+- Loan loss provisions
+- Capital ratios
+- Book value per share
+- Tangible book value
+- Return on equity
+- Return on assets
+- Efficiency ratio
+- Exposure to commercial real estate
+- Liquidity position
+
+Answer:
+1. Is the balance sheet safe?
+2. Is credit risk rising?
+3. Are deposits stable?
+4. Is profitability improving or deteriorating?
+5. Is the stock cheap or expensive relative to book value?
+6. What macro risks matter most?
+
+End with:
+- Financial strength rating: Strong, Good, Mixed, Weak, or High Risk
+
+============================================================
+28. BIOTECH / PHARMA PROMPT
+============================================================
+
+Use this for biotech, pharma, and clinical-stage companies.
+
+Analyze {COMPANY} / {TICKER} as a biotech or pharmaceutical company.
+
+Focus on:
+- Approved products
+- Pipeline
+- Clinical trial stages
+- Upcoming data readouts
+- FDA/PDUFA dates
+- Patent protection
+- Revenue, if commercial-stage
+- R&D spending
+- Cash balance
+- Cash burn
+- Cash runway
+- Debt
+- Partnership agreements
+- Licensing deals
+- Dilution risk
+- Competitive drugs
+- Addressable market
+
+Answer:
+1. Is the company commercial-stage or clinical-stage?
+2. What is the main value driver?
+3. What are the binary catalysts?
+4. How long is the cash runway?
+5. Is dilution likely before the next major catalyst?
+6. What would make the stock collapse?
+7. What would make the stock re-rate higher?
+
+End with:
+- Biotech risk rating: Low, Medium, High, or Binary/Speculative
+
+============================================================
+29. RETAIL / CONSUMER COMPANY PROMPT
+============================================================
+
+Use this for restaurants, apparel, consumer brands, and retailers.
+
+Analyze {COMPANY} / {TICKER} as a consumer or retail company.
+
+Focus on:
+- Same-store sales
+- Comparable sales
+- Revenue growth
+- Store count growth
+- E-commerce growth
+- Gross margin
+- Inventory levels
+- Markdown risk
+- Operating margin
+- Brand strength
+- Customer demand
+- Pricing power
+- Consumer spending sensitivity
+- Debt and lease obligations
+- Free cash flow
+
+Answer:
+1. Is demand improving or weakening?
+2. Are margins under pressure?
+3. Is inventory healthy?
+4. Is the brand gaining or losing relevance?
+5. Is expansion profitable?
+6. Could consumer weakness hurt the technical setup?
+
+End with:
+- Consumer business quality score from 1 to 10
+
+============================================================
+30. FINAL DECISION MATRIX PROMPT
+============================================================
+
+Use this after running the other prompts.
+
+Using all available fundamental data on {COMPANY} / {TICKER}, create a final decision matrix to supplement my technical analysis.
+
+My technical setup:
+{TECHNICAL_SETUP}
+
+My timeframe:
+{TIMEFRAME}
+
+My risk tolerance:
+{RISK_TOLERANCE}
+
+Score the company from 1 to 10 on:
+- Revenue growth
+- Earnings growth
+- Margin trend
+- Free cash flow
+- Balance sheet
+- Valuation
+- Competitive advantage
+- Management
+- Catalysts
+- Risk/reward
+- Alignment with technical setup
+
+Then classify the setup as one of the following:
+
+1. Fundamentally supported technical setup
+2. Technical setup with mixed fundamentals
+3. Technical-only trade
+4. Fundamentally weak despite good chart
+5. Avoid
+
+Give:
+- Best argument for the trade
+- Best argument against the trade
+- Key invalidation point from fundamentals
+- Key metric to watch next earnings report
+- Main event risk
+- Final fundamental confidence level: Low, Medium, or High
+
+Do not present this as guaranteed investment advice. Present it as a research framework.
+
+============================================================
+SUGGESTED WORKFLOW
+============================================================
+
+Use the prompts in this order:
+
+1. Fast Company Snapshot
+2. Financial Statement Trend
+3. Revenue Quality
+4. Profitability and Margin
+5. Balance Sheet Strength
+6. Cash Flow Quality
+7. Valuation
+8. Red Flag Check
+9. Catalyst Check
+10. Fundamental + Technical Confirmation
+11. Final Decision Matrix
+
+For quick trades, use only:
+
+1. Fast Company Snapshot
+2. Red Flag Prompt
+3. Catalyst Prompt
+4. Fundamental Trade Filter
+5. Fundamental + Technical Confirmation
+
+For longer-term investments, use:
+
+1. Master Fundamental Analysis Prompt
+2. Financial Statement Trend
+3. Competitive Advantage / Moat
+4. Management and Capital Allocation
+5. Valuation
+6. Bull / Base / Bear Case
+7. Final Decision Matrix
+
+============================================================
+REUSABLE ANTI-HALLUCINATION CLAUSE
+============================================================
+
+Add this to the end of any prompt:
+
+Important: Do not guess or fabricate financial data. Use current sources and cite them. If a number is unavailable, write “not available.” Clearly distinguish between reported numbers, analyst estimates, and your own interpretation. Prioritize primary sources such as SEC filings, company reports, earnings releases, and investor presentations.
+
+============================================================
+REUSABLE OUTPUT FORMAT
+============================================================
+
+Add this when you want cleaner results:
+
+Format your answer as:
+
+1. Executive summary
+2. Key financial table
+3. Bullish evidence
+4. Bearish evidence
+5. Red flags
+6. Catalysts
+7. Fundamental scorecard
+8. Technical analysis confirmation
+9. Final conclusion
+
+Use tables where helpful. Keep the conclusion practical and decision-oriented.
+
+============================================================
+BEST ALL-IN-ONE PROMPT
+============================================================
+
+This is the one I would use most often:
+
+Act as an equity research analyst helping me supplement technical analysis with fundamental analysis.
+
+Analyze {COMPANY} / {TICKER} as of {AS_OF_DATE}.
+
+My technical setup is:
+{TECHNICAL_SETUP}
+
+My timeframe is:
+{TIMEFRAME}
+
+Use current sources and cite all important financial data. Prioritize SEC filings, earnings releases, investor presentations, earnings call transcripts, and reputable financial data providers.
+
+Analyze:
+1. Business model
+2. Revenue growth
+3. Profitability
+4. Balance sheet
+5. Cash flow
+6. Valuation
+7. Competitive position
+8. Management quality
+9. Insider/institutional activity, if available
+10. Upcoming catalysts
+11. Red flags
+12. Peer comparison
+13. Bull/base/bear case
+14. Whether fundamentals confirm or contradict the technical setup
+
+Create a scorecard from 1 to 10 for:
+- Growth
+- Margins
+- Cash flow
+- Balance sheet
+- Valuation
+- Moat
+- Management
+- Risk
+- Technical/fundamental alignment
+
+End with:
+- Strongest bullish argument
+- Strongest bearish argument
+- Key risk
+- Key catalyst
+- Metric to watch next quarter
+- Final classification:
+  1. Fundamentally supported technical setup
+  2. Mixed fundamentals but tradable
+  3. Technical-only trade
+  4. Weak fundamentals, high risk
+  5. Avoid
+
+Do not give a guaranteed buy/sell call. Give a research-based view that helps me decide whether the chart setup has fundamental support.
+
+============================================================
+
+This suite gives you a full process: fetch the data, verify it, analyze quality, compare valuation, identify risks, then decide whether the fundamentals support your technical setup.

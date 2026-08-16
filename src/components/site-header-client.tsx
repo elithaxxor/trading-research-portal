@@ -13,6 +13,8 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Research", href: "/research" },
+  { label: "Indicators", href: "/pinescripts" },
+  { label: "Strat Lab", href: "/strat-lab" },
   { label: "Pricing", href: "/pricing" },
   { label: "About", href: "/about" },
   { label: "Disclaimer", href: "/disclaimer" },
@@ -44,7 +46,7 @@ export function SiteHeaderClient({ isAuthenticated }: SiteHeaderClientProps) {
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-7 md:flex" aria-label="Main">
+        <nav className="hidden items-center gap-5 md:flex xl:gap-7" aria-label="Main">
           {navItems.map((item) => (
             <Link
               className="text-sm text-muted-foreground transition-colors hover:text-foreground"

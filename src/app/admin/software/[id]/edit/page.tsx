@@ -63,5 +63,13 @@ function parseNotice(value?: string | string[]) {
     return "Software product created. Review publishing and access settings before sharing it with members.";
   }
 
+  if (firstValue === "file-uploaded") {
+    return "Protected Pine Script file uploaded. Premium and Pro members can download it when the product is published.";
+  }
+
+  if (firstValue === "file-removed") {
+    return "Protected Pine Script file removed and member downloads disabled.";
+  }
+
   return null;
 }

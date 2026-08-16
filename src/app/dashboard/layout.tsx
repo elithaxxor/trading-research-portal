@@ -56,6 +56,9 @@ async function getDashboardLayoutContext() {
       ? "Admin management access"
       : formatSubscriptionAccessState(subscription?.tier, subscription?.status),
     accountTierLabel: formatSubscriptionTier(subscription?.tier),
+    canAccessPineScripts:
+      isAdmin || effectiveTier === "premium" || effectiveTier === "pro",
+    canAccessTools: isAdmin || effectiveTier === "pro",
     statusLabel: formatSubscriptionStatus(subscription?.status),
     userEmail: user.email ?? "Signed-in member",
     workspaceLabel: isAdmin
@@ -70,6 +73,8 @@ export default async function DashboardLayout({
   const {
     accessLabel,
     accountTierLabel,
+    canAccessPineScripts,
+    canAccessTools,
     statusLabel,
     userEmail,
     workspaceLabel,
@@ -79,6 +84,8 @@ export default async function DashboardLayout({
     <DashboardShell
       accessLabel={accessLabel}
       accountTierLabel={accountTierLabel}
+      canAccessPineScripts={canAccessPineScripts}
+      canAccessTools={canAccessTools}
       statusLabel={statusLabel}
       userEmail={userEmail}
       workspaceLabel={workspaceLabel}

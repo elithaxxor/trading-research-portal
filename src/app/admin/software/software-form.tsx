@@ -31,7 +31,9 @@ import {
   createSoftwareProductAction,
   deleteSoftwareProductAction,
   publishSoftwareProductAction,
+  removePineScriptFileAction,
   unpublishSoftwareProductAction,
+  uploadPineScriptFileAction,
   updateSoftwareProductAction,
 } from "./actions";
 import type { SoftwareProductActionState } from "./actions";
@@ -65,6 +67,9 @@ function toDateTimeLocalValue(value: string | null | undefined) {
 }
 
 export function SoftwareProductForm({ mode, product }: SoftwareProductFormProps) {
+  const [softwareType, setSoftwareType] = useState(
+    product?.software_type ?? "pinescript"
+  );
   const [title, setTitle] = useState(product?.title ?? "");
   const [state, formAction] = useActionState(
     mode === "create" ? createSoftwareProductAction : updateSoftwareProductAction,
@@ -125,6 +130,7 @@ export function SoftwareProductForm({ mode, product }: SoftwareProductFormProps)
               id="software_type"
               label="Software type"
               name="software_type"
+              onChange={(event) => setSoftwareType(event.currentTarget.value as SoftwareProduct["software_type"])}
               options={softwareTypeValues.map((value) => ({
                 label: formatSoftwareType(value),
                 value,
@@ -133,6 +139,11 @@ export function SoftwareProductForm({ mode, product }: SoftwareProductFormProps)
             />
             <AdminSelect
               defaultValue={product?.access_tier ?? "premium_lite"}
+              description={
+                softwareType === "tool" || softwareType === "strategy"
+                  ? "Tools and strategies are always saved as Pro-only."
+                  : undefined
+              }
               error={fieldError("access_tier")}
               id="access_tier"
               label="Access tier"
@@ -176,6 +187,28 @@ export function SoftwareProductForm({ mode, product }: SoftwareProductFormProps)
             />
           </div>
         </AdminFormSection>
+
+        {softwareType === "pinescript" ? (
+          <AdminFormSection
+            description="All published Pine Scripts are included for active Premium and Pro members. Individual purchases remain unavailable until pricing and checkout are added later."
+            title="Pine Script distribution"
+          >
+            <AdminCheckbox
+              defaultChecked={product?.member_download_enabled ?? false}
+              description="Allow protected member download when a private file has been uploaded."
+              id="member_download_enabled"
+              label="Enable Premium + Pro member download"
+              name="member_download_enabled"
+            />
+            <AdminCheckbox
+              defaultChecked={product?.individual_purchase_enabled ?? false}
+              description="Show that an individual purchase option is planned. This does not add pricing, checkout, or access."
+              id="individual_purchase_enabled"
+              label="Show individual purchase as coming soon"
+              name="individual_purchase_enabled"
+            />
+          </AdminFormSection>
+        ) : null}
 
         <AdminFormSection
           description="Member pages render this content as plain text. Software tools are educational and are not trade execution."
@@ -306,8 +339,55 @@ export function SoftwareProductForm({ mode, product }: SoftwareProductFormProps)
         </div>
       </form>
 
+      {product?.software_type === "pinescript" ? (
+        <PineScriptFileManager product={product} />
+      ) : null}
       {product ? <SoftwareProductManagement product={product} /> : null}
     </div>
+  );
+}
+
+function PineScriptFileManager({ product }: { product: SoftwareProduct }) {
+  return (
+    <CardShell padding="lg" tone="subtle">
+      <div className="grid gap-5">
+        <div>
+          <h2 className="text-xl font-semibold text-foreground">Protected Pine Script file</h2>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            Files are stored privately and delivered through short-lived signed links after a server-side Premium or Pro check.
+          </p>
+          <p className="mt-2 text-sm font-medium text-foreground">
+            Current file: {product.download_file_name ?? "None uploaded"}
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
+          <form action={uploadPineScriptFileAction} className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-end">
+            <input name="id" type="hidden" value={product.id} />
+            <label className="flex flex-1 flex-col gap-2 text-sm font-medium text-foreground">
+              Pine Script file (.pine or .txt, max 1 MB)
+              <input
+                accept=".pine,.txt,text/plain"
+                className="min-h-11 rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground file:mr-3 file:rounded file:border-0 file:bg-secondary file:px-3 file:py-1 file:text-foreground"
+                name="pinescript_file"
+                required
+                type="file"
+              />
+            </label>
+            <button className={cn(buttonVariants({ variant: "outline" }))} type="submit">
+              {product.download_storage_path ? "Replace file" : "Upload file"}
+            </button>
+          </form>
+          {product.download_storage_path ? (
+            <form action={removePineScriptFileAction}>
+              <input name="id" type="hidden" value={product.id} />
+              <button className={cn(buttonVariants({ variant: "destructive" }))} type="submit">
+                Remove file
+              </button>
+            </form>
+          ) : null}
+        </div>
+      </div>
+    </CardShell>
   );
 }
 

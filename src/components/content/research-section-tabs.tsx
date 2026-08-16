@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { BookOpenText, Library } from "lucide-react";
+import { BookOpenText, Library, Layers3 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 type ResearchSectionTabsProps = {
-  active: "playbooks" | "research";
+  active: "playbooks" | "research" | "stacks";
 };
 
 const tabs = [
@@ -20,12 +20,18 @@ const tabs = [
     id: "playbooks" as const,
     label: "Trading Playbooks",
   },
+  {
+    href: "/research/fundamental-research-stack",
+    icon: Layers3,
+    id: "stacks" as const,
+    label: "Fundamental Research Stack",
+  },
 ];
 
 export function ResearchSectionTabs({ active }: ResearchSectionTabsProps) {
   return (
-    <nav aria-label="Research sections" className="flex overflow-x-auto">
-      <div className="inline-flex min-w-full gap-1 rounded-lg border border-border bg-secondary/35 p-1 sm:min-w-0">
+    <nav aria-label="Research sections" className="flex">
+      <div className="grid w-full grid-cols-3 gap-1 rounded-lg border border-border bg-secondary/35 p-1 sm:w-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = tab.id === active;
@@ -34,7 +40,7 @@ export function ResearchSectionTabs({ active }: ResearchSectionTabsProps) {
             <Link
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-colors sm:flex-none",
+                "flex min-h-11 items-center justify-center gap-2 rounded-md px-2 py-2 text-center text-sm font-semibold transition-colors sm:px-4",
                 isActive
                   ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:bg-background/55 hover:text-foreground"

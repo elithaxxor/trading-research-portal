@@ -49,6 +49,8 @@ function toSoftwareProductPreview(
     access_tier: product.access_tier,
     delivery_type: product.delivery_type,
     id: product.id,
+    individual_purchase_enabled: product.individual_purchase_enabled,
+    member_download_enabled: product.member_download_enabled,
     published_at: product.published_at,
     short_description: product.short_description,
     slug: product.slug,

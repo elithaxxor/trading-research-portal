@@ -1,0 +1,616 @@
+Research Stack Add-On: P/E, EPS Overlay, PEG Analysis, and Sector Peer Position Grade
+====================================================================================
+
+Use this module to expand your existing fundamental-analysis prompt stack. It is designed to help you supplement technical analysis by checking whether the stock's price action is supported by earnings, valuation, growth-adjusted valuation, and relative strength versus relevant sector peers.
+
+Placeholders
+------------
+
+{TICKER} = stock ticker
+{COMPANY} = company name
+{SECTOR} = sector, if known
+{INDUSTRY} = industry or subsector, if known
+{PEER_TICKERS} = peer tickers, if you already know them
+{AS_OF_DATE} = current date
+{LOOKBACK_PERIOD} = e.g. 3 years, 5 years, 10 years
+{TIMEFRAME} = trading/investing timeframe, e.g. swing trade, 3-6 months, 1-3 years
+{TECHNICAL_SETUP} = your technical analysis view, e.g. breakout, support retest, downtrend reversal
+{RISK_TOLERANCE} = low, medium, high
+
+Important Data Rules
+--------------------
+
+Add this clause to any of the prompts below:
+
+Do not guess or fabricate data. Use current sources and cite all financial figures. Clearly state whether EPS is GAAP EPS, adjusted EPS, diluted EPS, trailing twelve-month EPS, or forward estimated EPS. Clearly state whether P/E is trailing P/E or forward P/E. If a company has negative earnings or negative expected growth, explain that P/E or PEG may not be meaningful and use alternative valuation metrics such as EV/Sales, EV/EBITDA, price/book, revenue growth, or free cash flow yield where appropriate.
+
+Key Formulas
+------------
+
+Trailing P/E = Current share price / trailing twelve-month diluted EPS
+Forward P/E = Current share price / next fiscal year expected EPS
+TTM EPS = Sum of the last four quarters of diluted EPS
+EPS growth % = ((Current EPS / Prior-period EPS) - 1) x 100
+PEG ratio = Forward P/E / expected EPS growth rate percentage
+
+Example PEG calculation:
+If forward P/E is 40 and expected EPS growth is 25%, PEG = 40 / 25 = 1.6.
+
+Interpret PEG carefully:
+- PEG below 1.0 can suggest growth is cheap, but only if growth estimates are reliable.
+- PEG around 1.0-2.0 can be reasonable for high-quality growth companies.
+- PEG above 2.0 can suggest the market is paying aggressively for growth.
+- PEG is not useful when EPS is negative, expected EPS growth is negative, or earnings are highly cyclical.
+
+
+31. Price + P/E + EPS Overlay Prompt
+------------------------------------
+
+Use this prompt to create a visual overlay of price, P/E ratio, and EPS trend.
+
+```text
+Act as an equity research analyst and market data analyst.
+
+For {COMPANY} / {TICKER}, fetch and analyze the relationship between stock price, trailing P/E ratio, forward P/E ratio, and EPS over {LOOKBACK_PERIOD}, as of {AS_OF_DATE}.
+
+Use reliable current data sources and cite them. Prioritize:
+1. Company filings and earnings releases for EPS data
+2. Reputable market data sources for historical prices and valuation ratios
+3. Analyst estimate sources for forward EPS and forward P/E, if available
+
+Create a table with these columns:
+- Date
+- Stock price or adjusted close
+- Quarterly diluted EPS
+- TTM diluted EPS
+- Forward EPS estimate, if available
+- Trailing P/E
+- Forward P/E
+- YoY EPS growth
+- Notes on major earnings events
+
+Then create or describe these charts:
+1. Stock price overlaid with trailing P/E ratio
+   - Stock price on the left y-axis
+   - Trailing P/E on the right y-axis
+
+2. Stock price overlaid with TTM EPS
+   - Stock price on the left y-axis
+   - TTM EPS on the right y-axis
+   - Mark major EPS inflection points
+
+3. Optional: Forward P/E vs trailing P/E
+   - Show whether the market is pricing in earnings acceleration or deceleration
+
+Analyze:
+1. Did the stock price rise because EPS rose, because the P/E multiple expanded, or both?
+2. Did the stock price fall because EPS declined, because the P/E multiple compressed, or both?
+3. Is the stock currently trading above or below its historical average P/E?
+4. Is EPS growth confirming the price trend?
+5. Are earnings improving faster or slower than the stock price?
+6. Does the P/E trend support or contradict my technical setup: {TECHNICAL_SETUP}?
+
+End with:
+- Price/EPS confirmation: Strong, Moderate, Weak, or Negative
+- P/E risk: Low, Moderate, High, or Extreme
+- One-paragraph chart interpretation
+```
+
+
+32. P/E Ratio Deep-Dive Prompt
+------------------------------
+
+Use this to decide whether the stock's multiple is justified.
+
+```text
+Analyze the P/E ratio of {COMPANY} / {TICKER} as of {AS_OF_DATE}.
+
+Include:
+- Current trailing P/E
+- Current forward P/E
+- 3-year and 5-year average P/E, if available
+- Historical P/E range
+- Sector median P/E
+- Peer median P/E
+- EPS growth rate
+- Revenue growth rate
+- Margin trend
+- Free cash flow trend
+
+Answer:
+1. Is the current P/E high, low, or normal compared with the company's own history?
+2. Is the current P/E high, low, or normal compared with peers?
+3. Is the P/E being driven by strong earnings growth or by multiple expansion?
+4. Is the P/E vulnerable to compression if growth slows?
+5. Does the current P/E make sense given revenue growth, EPS growth, margins, and balance sheet quality?
+6. Would the stock still look attractive if the P/E reverted to its historical average?
+
+Create a small valuation sensitivity table showing estimated stock price under different P/E multiples:
+- Bear-case P/E
+- Base-case P/E
+- Bull-case P/E
+- Current P/E
+
+Use current or forward EPS assumptions and clearly state them.
+
+End with:
+- P/E verdict: Cheap, Reasonable, Expensive, Very Expensive, or Not Meaningful
+- P/E risk score from 1 to 10
+- Whether P/E supports, weakens, or is neutral to my technical setup: {TECHNICAL_SETUP}
+```
+
+
+33. EPS Trend and Earnings Power Prompt
+---------------------------------------
+
+Use this to determine whether price action is supported by earnings growth.
+
+```text
+Analyze the EPS trend and earnings power of {COMPANY} / {TICKER}.
+
+Fetch:
+- Quarterly GAAP EPS for the last 8 quarters
+- Quarterly adjusted EPS for the last 8 quarters, if available
+- TTM diluted EPS trend
+- Forward EPS estimates for the next 1-3 fiscal years, if available
+- EPS revisions over the last 30, 60, and 90 days, if available
+- Earnings beat/miss history
+
+Create a table with:
+- Quarter
+- Reported EPS
+- Adjusted EPS
+- Analyst estimate
+- Beat or miss
+- YoY EPS growth
+- Sequential EPS growth
+- Management guidance commentary
+
+Analyze:
+1. Is EPS accelerating, decelerating, stable, or declining?
+2. Are EPS gains coming from revenue growth, margin expansion, buybacks, cost cuts, or one-time items?
+3. Are analyst EPS estimates being revised upward or downward?
+4. Is EPS quality high or low?
+5. Is the market paying more for each dollar of earnings than it did historically?
+6. Does EPS momentum confirm my chart setup: {TECHNICAL_SETUP}?
+
+End with:
+- EPS momentum rating: Strong, Positive, Mixed, Weak, or Negative
+- Earnings quality rating: Strong, Good, Mixed, Weak, or Poor
+- Key EPS number to monitor next quarter
+```
+
+
+34. PEG Analysis Prompt
+-----------------------
+
+Use this to evaluate whether the P/E multiple is reasonable relative to growth.
+
+```text
+Perform a PEG analysis for {COMPANY} / {TICKER} as of {AS_OF_DATE}.
+
+Use current data and cite sources. Fetch:
+- Current stock price
+- Trailing P/E
+- Forward P/E
+- Expected EPS growth for next fiscal year
+- Expected EPS CAGR over the next 3-5 years, if available
+- Historical EPS growth over the last 3-5 years
+- Revenue growth
+- Free cash flow growth
+- Peer PEG ratios
+- Sector median PEG ratio
+
+Calculate:
+1. One-year forward PEG = Forward P/E / next-year expected EPS growth percentage
+2. Multi-year PEG = Forward P/E / expected 3-5 year EPS CAGR percentage
+3. Historical PEG = Current P/E / historical EPS CAGR percentage, if meaningful
+
+Explain any limitations:
+- Negative EPS
+- Negative expected growth
+- Unreliable analyst estimates
+- Cyclical earnings
+- One-time earnings effects
+- Major acquisitions or divestitures
+
+Create a PEG sensitivity table:
+- Forward P/E
+- EPS growth assumption
+- Implied PEG
+- Interpretation
+
+Use growth assumptions such as:
+- Bear case
+- Base case
+- Bull case
+- Analyst consensus case
+
+Answer:
+1. Is the stock cheap, fair, or expensive on a growth-adjusted basis?
+2. Is the market pricing in realistic growth?
+3. How much EPS growth is needed to justify the current P/E?
+4. Does the PEG ratio support a long trade, weaken it, or suggest caution?
+5. How does the company's PEG compare with peers: {PEER_TICKERS}?
+
+End with:
+- PEG verdict: Attractive, Reasonable, Stretched, Expensive, or Not Meaningful
+- Growth-adjusted valuation score from 1 to 10
+- Biggest assumption behind the PEG conclusion
+```
+
+
+35. Relevant Sector Peer Research Prompt
+----------------------------------------
+
+Use this to compare the stock against the most relevant companies in its sector or industry.
+
+```text
+Act as a sector analyst.
+
+For {COMPANY} / {TICKER}, identify the most relevant peer companies in the same sector, industry, and business model as of {AS_OF_DATE}.
+
+If I provide peers, use these first: {PEER_TICKERS}.
+If I do not provide peers, select 5-10 relevant peers and explain why each peer is included.
+
+Avoid weak comparisons. Do not compare companies only because they are in the same broad sector. Prefer peers with similar:
+- Products or services
+- End markets
+- Customer base
+- Revenue model
+- Growth profile
+- Margin profile
+- Market capitalization range, where possible
+- Geographic exposure
+
+Create a peer comparison table with:
+- Company
+- Ticker
+- Market cap
+- Revenue growth
+- EPS growth
+- Gross margin
+- Operating margin
+- Net margin
+- Free cash flow margin
+- Return on invested capital, if available
+- Balance sheet risk
+- Trailing P/E
+- Forward P/E
+- PEG ratio
+- EV/Sales
+- EV/EBITDA
+- Price/free cash flow
+- Dividend yield, if relevant
+- Debt/EBITDA, if relevant
+
+Then rank the companies by:
+1. Growth
+2. Profitability
+3. Earnings quality
+4. Balance sheet strength
+5. Valuation
+6. PEG / growth-adjusted value
+7. Free cash flow quality
+8. Risk profile
+9. Overall fundamental quality
+
+Answer:
+1. Which peer is the best growth company?
+2. Which peer is the most profitable?
+3. Which peer has the strongest balance sheet?
+4. Which peer has the best growth-adjusted valuation?
+5. Which peer is most overvalued relative to growth?
+6. Which peer has the best risk/reward?
+7. Does {TICKER} deserve a premium or discount to peers?
+
+End with:
+- Sector-relative rank for {TICKER}
+- Sector-relative grade: A, B, C, D, or F
+- Explanation of whether the stock is a sector leader, average performer, laggard, or speculative outlier
+```
+
+
+36. Sector-Specific Metric Prompt
+---------------------------------
+
+Use this to make sure the peer research uses the right metrics for the industry.
+
+```text
+For {COMPANY} / {TICKER}, identify the sector and industry-specific metrics that matter most.
+
+First classify the company by sector and industry.
+Then select the most relevant metrics from the list below, adding any others that matter:
+
+For software/SaaS:
+- ARR growth
+- Net revenue retention
+- Gross retention
+- Rule of 40
+- Free cash flow margin
+- Remaining performance obligations
+- Stock-based compensation as % of revenue
+
+For semiconductors:
+- Revenue growth
+- Gross margin
+- Operating margin
+- Inventory levels
+- Data center / AI / PC / gaming / embedded exposure
+- Customer concentration
+- Capex intensity
+- Cyclicality
+
+For biotech/pharma:
+- Product revenue growth
+- Pipeline strength
+- Patent cliff risk
+- Clinical catalysts
+- R&D productivity
+- Cash runway
+- Regulatory risk
+
+For banks/financials:
+- Net interest margin
+- Loan growth
+- Deposit trends
+- Credit quality
+- Charge-offs
+- Capital ratios
+- Return on equity
+- Price/tangible book
+
+For retail/consumer:
+- Comparable sales
+- Same-store sales
+- Gross margin
+- Inventory turns
+- Store growth
+- E-commerce growth
+- Consumer demand sensitivity
+
+For energy/materials:
+- Commodity sensitivity
+- Production growth
+- Realized prices
+- Lifting costs
+- Reserve life
+- Free cash flow yield
+- Balance sheet leverage
+
+For industrials:
+- Backlog
+- Book-to-bill
+- Organic growth
+- Operating margin
+- Capex cycle exposure
+- Supply chain risk
+
+Once the relevant metrics are selected, compare {TICKER} against peers: {PEER_TICKERS}.
+
+End with:
+- The 5 most important sector-specific metrics for this company
+- Whether {TICKER} is above average, average, or below average on each metric
+- Sector-specific quality score from 1 to 10
+```
+
+
+37. Position Grade Prompt
+-------------------------
+
+Use this to grade whether fundamentals support the position.
+
+```text
+Create a final fundamental position grade for {COMPANY} / {TICKER} as of {AS_OF_DATE}.
+
+My technical setup is:
+{TECHNICAL_SETUP}
+
+My timeframe is:
+{TIMEFRAME}
+
+My risk tolerance is:
+{RISK_TOLERANCE}
+
+Use the following weighted scorecard:
+
+1. EPS trend and earnings momentum - 15 points
+2. Price/EPS confirmation - 10 points
+3. P/E valuation risk - 10 points
+4. PEG / growth-adjusted valuation - 15 points
+5. Revenue growth and margin trend - 10 points
+6. Free cash flow and balance sheet quality - 10 points
+7. Sector peer ranking - 15 points
+8. Catalysts and event risk - 5 points
+9. Red flags and downside risk - 5 points
+10. Alignment with technical setup - 5 points
+
+Total score: 100 points
+
+Grade scale:
+- A: 85-100 = Fundamentals strongly support the position
+- B: 75-84 = Fundamentals support the position, but watch valuation or risk
+- C: 60-74 = Mixed fundamentals; position depends heavily on timing and risk control
+- D: 45-59 = Weak fundamental support; mostly technical or speculative
+- F: Below 45 = Fundamentals do not support the position
+
+For each category, provide:
+- Score
+- Evidence
+- Bullish interpretation
+- Bearish interpretation
+- Data confidence level
+
+Then answer:
+1. Is this a fundamentally supported technical setup?
+2. Is the current price move earnings-driven or multiple-driven?
+3. Is valuation reasonable relative to growth?
+4. Is the company better or worse than relevant peers?
+5. What would invalidate the position fundamentally?
+6. What should I monitor next earnings report?
+
+End with:
+- Final score out of 100
+- Final grade: A, B, C, D, or F
+- Position classification:
+  1. Fundamentally supported position
+  2. Fundamentally supported but valuation-sensitive
+  3. Mixed fundamentals / technical trade only
+  4. Speculative high-risk position
+  5. Avoid due to weak fundamentals
+- One-paragraph position summary
+```
+
+
+38. All-in-One Research Stack Prompt With P/E, EPS, PEG, and Peers
+------------------------------------------------------------------
+
+Use this as the new master prompt when you want the full updated research stack.
+
+```text
+Act as an institutional equity research analyst and market data analyst.
+
+Analyze {COMPANY} / {TICKER} as of {AS_OF_DATE} to determine whether the fundamentals support my technical analysis setup.
+
+My technical setup is:
+{TECHNICAL_SETUP}
+
+My timeframe is:
+{TIMEFRAME}
+
+My risk tolerance is:
+{RISK_TOLERANCE}
+
+Use current and reliable sources. Prioritize SEC filings, company earnings releases, investor presentations, earnings call transcripts, reputable market data providers, and analyst estimate sources where available. Cite all important figures.
+
+Important:
+- Do not fabricate numbers.
+- Clearly label GAAP EPS, adjusted EPS, diluted EPS, TTM EPS, and forward EPS.
+- Clearly distinguish trailing P/E from forward P/E.
+- If P/E or PEG is not meaningful, explain why.
+- Use peer comparisons only against relevant companies.
+
+Analyze the company across these sections:
+
+1. Business overview
+   - What the company does
+   - Main revenue drivers
+   - Segment exposure
+   - Geographic exposure
+   - Key customers or end markets
+
+2. Stock price, P/E, and EPS overlay
+   - Fetch stock price history over {LOOKBACK_PERIOD}
+   - Fetch quarterly EPS and TTM EPS over the same period
+   - Fetch trailing P/E and forward P/E
+   - Explain whether price movement is driven by EPS growth, P/E expansion, or both
+   - Describe or create a chart overlaying stock price, P/E, and EPS
+
+3. EPS trend and earnings quality
+   - Quarterly EPS trend
+   - TTM EPS trend
+   - EPS growth
+   - Beat/miss history
+   - EPS revisions
+   - Quality of earnings
+
+4. P/E valuation analysis
+   - Current trailing P/E
+   - Current forward P/E
+   - Historical P/E range
+   - Peer median P/E
+   - Sector median P/E
+   - Valuation risk if the multiple compresses
+
+5. PEG analysis
+   - Forward P/E
+   - Expected EPS growth
+   - 3-5 year EPS CAGR estimate, if available
+   - PEG ratio
+   - PEG compared with peers
+   - Sensitivity table using bear/base/bull growth assumptions
+
+6. Revenue, margins, and cash flow
+   - Revenue growth
+   - Gross margin
+   - Operating margin
+   - Net margin
+   - Free cash flow
+   - Free cash flow margin
+   - Balance sheet health
+
+7. Sector and peer comparison
+   - Identify the most relevant peers
+   - Explain why each peer is relevant
+   - Compare growth, margins, EPS growth, P/E, PEG, EV/Sales, EV/EBITDA, free cash flow, debt, and sector-specific metrics
+   - Rank the company versus peers
+
+8. Catalysts and risks
+   - Upcoming earnings
+   - Guidance updates
+   - Product launches
+   - Regulatory or legal events
+   - Macro or sector risks
+   - Red flags
+
+9. Technical setup confirmation
+   - Explain whether fundamentals confirm, partially confirm, are neutral to, or contradict the technical setup
+   - Identify event risks that could break the chart setup
+   - Identify the most important fundamental invalidation point
+
+10. Final position grade
+   Use this 100-point scorecard:
+   - EPS trend and earnings momentum: 15
+   - Price/EPS confirmation: 10
+   - P/E valuation risk: 10
+   - PEG / growth-adjusted valuation: 15
+   - Revenue growth and margin trend: 10
+   - Free cash flow and balance sheet quality: 10
+   - Sector peer ranking: 15
+   - Catalysts and event risk: 5
+   - Red flags and downside risk: 5
+   - Alignment with technical setup: 5
+
+End with:
+- Final score out of 100
+- Final grade: A, B, C, D, or F
+- Sector-relative rank
+- Strongest bullish evidence
+- Strongest bearish evidence
+- Current valuation risk
+- Key EPS metric to monitor
+- Key peer comparison metric to monitor
+- Final classification:
+  1. Fundamentally supported position
+  2. Fundamentally supported but valuation-sensitive
+  3. Mixed fundamentals / technical trade only
+  4. Speculative high-risk position
+  5. Avoid due to weak fundamentals
+
+Do not give a guaranteed buy or sell recommendation. Give a research-based position grade that helps me decide whether the chart setup has fundamental support.
+```
+
+
+Suggested Workflow With This Add-On
+-----------------------------------
+
+For a quick trade check:
+1. Price + P/E + EPS Overlay Prompt
+2. PEG Analysis Prompt
+3. Relevant Sector Peer Research Prompt
+4. Position Grade Prompt
+
+For a full fundamental review:
+1. All-in-One Research Stack Prompt With P/E, EPS, PEG, and Peers
+2. P/E Ratio Deep-Dive Prompt
+3. EPS Trend and Earnings Power Prompt
+4. Sector-Specific Metric Prompt
+5. Position Grade Prompt
+
+For an earnings-season trade:
+1. EPS Trend and Earnings Power Prompt
+2. Price + P/E + EPS Overlay Prompt
+3. PEG Analysis Prompt
+4. Catalysts and event-risk review from your existing stack
+5. Position Grade Prompt
+

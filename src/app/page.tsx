@@ -313,7 +313,7 @@ function ExampleIdeaSection() {
           title="Pair thesis, status, timeframe, and example levels with a live chart."
           description="This educational ES futures preview shows how research context and a live TradingView chart can stay together. It is not financial advice, a recommendation, or a performance claim."
         />
-        <div className="flex min-w-0 flex-col gap-6">
+        <div className="min-w-0">
           <IdeaPreviewCard
             bias="Long Watch"
             levels={[
@@ -326,15 +326,16 @@ function ExampleIdeaSection() {
             thesis="Educational preview: ES1! is used here to demonstrate how a futures research card can organize thesis, levels, chart context, and updates. This is not financial advice."
             ticker="ES1!"
             timeframe="60-minute"
-          />
+          >
           <TradingViewAdvancedChart
-            caption="Live SPY proxy for ES1! market-structure and educational research context. Open the exact ES1! chart below. Data availability and timing are provided by TradingView."
-            height={440}
+            caption="Live SPY market proxy for ES1! educational research context. Use the exact ES1! TradingView link below for the continuous futures chart."
+            embedded
+            height={400}
             interval="60"
             symbol="AMEX:SPY"
           />
           <a
-            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-gold-400/35 bg-gold-400/10 px-4 py-3 text-sm font-semibold text-gold-200 transition hover:border-gold-300/60 hover:bg-gold-400/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:w-fit"
+            className="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-gold-400/35 bg-gold-400/10 px-4 py-3 text-sm font-semibold text-gold-200 transition hover:border-gold-300/60 hover:bg-gold-400/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:w-fit"
             href="https://www.tradingview.com/chart/?symbol=CME_MINI%3AES1%21"
             rel="noreferrer"
             target="_blank"
@@ -342,6 +343,7 @@ function ExampleIdeaSection() {
             Open ES1! on TradingView
             <ExternalLink aria-hidden className="size-4" />
           </a>
+          </IdeaPreviewCard>
         </div>
       </Container>
     </section>
