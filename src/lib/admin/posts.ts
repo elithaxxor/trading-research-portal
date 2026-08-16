@@ -15,20 +15,6 @@ function throwAdminPostsError(action: string): never {
   throw new Error(`Unable to ${action} research post.`);
 }
 
-async function getCurrentUserId() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error || !user) {
-    throwAdminPostsError("identify admin user for");
-  }
-
-  return user.id;
-}
-
 export async function listAdminPosts(
   params: AdminListParams = {}
 ): Promise<AdminListResult<AdminPost>> {
@@ -97,12 +83,14 @@ export async function getAdminPostBySlug(slug: string) {
   return data;
 }
 
-export async function createAdminPost(input: CreateAdminPostInput) {
+export async function createAdminPost(
+  input: CreateAdminPostInput,
+  createdBy: string
+) {
   const supabase = await createSupabaseServerClient();
-  const userId = await getCurrentUserId();
   const payload = {
     ...input,
-    created_by: userId,
+    created_by: createdBy,
     published_at:
       input.published && !input.published_at
         ? new Date().toISOString()
