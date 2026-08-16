@@ -312,7 +312,7 @@ export default async function AdminPage() {
                 {latestPosts.items.map((post) => (
                   <Link
                     className="rounded-lg border border-border bg-background/60 p-4 transition hover:border-gold-400/35 hover:bg-gold-400/10"
-                    href={`/admin/posts`}
+                    href={`/admin/posts/${post.id}/edit`}
                     key={post.id}
                   >
                     <div className="flex flex-col gap-3">

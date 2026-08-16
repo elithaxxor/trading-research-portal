@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  BookOpen,
   FilePlus2,
   FileText,
   FolderKanban,
@@ -33,6 +34,11 @@ const adminLinks = [
     href: "/admin/posts",
     icon: Newspaper,
     label: "Research Posts",
+  },
+  {
+    href: "/research",
+    icon: BookOpen,
+    label: "Public Research",
   },
   {
     href: "/admin/posts/new",
