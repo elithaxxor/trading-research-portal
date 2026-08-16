@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   ArrowRight,
   BookOpenCheck,
-  Download,
   ShieldCheck,
 } from "lucide-react";
 
@@ -12,6 +11,7 @@ import { CardShell } from "@/components/card-shell";
 import { Container } from "@/components/container";
 import { ContentFilterBar } from "@/components/content/content-filter-bar";
 import { EmptyState } from "@/components/content/empty-state";
+import { ResearchSectionTabs } from "@/components/content/research-section-tabs";
 import { ResearchPostCard } from "@/components/content/research-post-card";
 import { PageHero } from "@/components/page-hero";
 import { buttonVariants } from "@/components/ui/button";
@@ -106,6 +106,12 @@ export default async function ResearchPage({ searchParams }: ResearchPageProps) 
         </Container>
       </section>
 
+      <section className="border-b border-border bg-surface/24 py-4">
+        <Container>
+          <ResearchSectionTabs active="research" />
+        </Container>
+      </section>
+
       <section className="border-b border-border bg-surface/38 py-10 sm:py-12">
         <Container className="grid gap-5 lg:grid-cols-3">
           <ResearchNote
@@ -125,32 +131,6 @@ export default async function ResearchPage({ searchParams }: ResearchPageProps) 
 
       <section className="py-12 sm:py-16">
         <Container className="flex flex-col gap-8">
-          <CardShell padding="lg" tone="elevated">
-            <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
-              <div className="space-y-3">
-                <p className="font-mono text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-                  Free downloadable guide
-                </p>
-                <h2 className="text-2xl font-semibold text-foreground">
-                  Trader&apos;s Risk Management Framework
-                </h2>
-                <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-                  A 15-page educational playbook covering stop-first position
-                  sizing, R-multiples, drawdown control, portfolio heat,
-                  correlated exposure, trading kill switches, review templates,
-                  and a practical 30-day improvement plan.
-                </p>
-              </div>
-              <Link
-                className={cn(buttonVariants({ size: "lg" }))}
-                href="/research/trader-risk-management-framework"
-              >
-                View guide
-                <Download data-icon="inline-end" />
-              </Link>
-            </div>
-          </CardShell>
-
           <ContentFilterBar
             action="/research"
             search={query}
