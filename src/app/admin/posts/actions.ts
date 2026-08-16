@@ -266,7 +266,10 @@ async function buildPostPayload({
     addFieldError(fieldErrors, "slug", slug.error);
   }
 
-  if (slug.ok && slug.value !== currentSlug) {
+  // Inserts rely on the database's unique slug constraint. Avoid an extra
+  // preflight request on create; it is race-prone and can block the write when
+  // the read path is temporarily unavailable.
+  if (currentId && slug.ok && slug.value !== currentSlug) {
     const existingPost = await getAdminPostBySlug(slug.value);
 
     if (existingPost && existingPost.id !== currentId) {
@@ -346,7 +349,10 @@ export async function createResearchPostAction(
   let createdSlug: string;
 
   try {
-    const created = await createAdminPost(payload as CreateAdminPostInput);
+    const created = await createAdminPost(
+      payload as CreateAdminPostInput,
+      admin.user.id
+    );
     createdId = created.id;
     createdSlug = created.slug;
     await recordOpsEventSafely({
