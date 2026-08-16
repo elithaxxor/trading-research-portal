@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -13,62 +12,26 @@ import { CardShell } from "@/components/card-shell";
 import { Container } from "@/components/container";
 import { PageHero } from "@/components/page-hero";
 import { buttonVariants } from "@/components/ui/button";
-import { getPublicMetadataUrl } from "@/lib/seo";
+import type { TradingPlaybook } from "@/lib/content/playbooks";
 import { cn } from "@/lib/utils";
 
-const pdfPath = "/downloads/trader-risk-management-framework.pdf";
-const description =
-  "Download a practical educational framework for position sizing, drawdown control, portfolio heat, trading limits, and disciplined review.";
-
-export const metadata: Metadata = {
-  alternates: {
-    canonical: "/research/trader-risk-management-framework",
-  },
-  description,
-  openGraph: {
-    description,
-    images: [
-      {
-        alt: "Trader's Risk Management Framework cover",
-        url: "/images/trader-risk-management-framework-cover.png",
-      },
-    ],
-    title: "Trader's Risk Management Framework",
-    type: "article",
-    url: getPublicMetadataUrl("/research/trader-risk-management-framework"),
-  },
-  title: "Trader's Risk Management Framework",
-};
-
-const frameworkTopics = [
-  "Stop-first position sizing for cash and leveraged products",
-  "R-multiples, expectancy, and drawdown recovery",
-  "Portfolio heat, correlation, volatility, and liquidity risk",
-  "Daily and weekly loss caps with practical kill switches",
-  "Beginner, intermediate, and expert risk-management concepts",
-  "Daily, weekly, and monthly review templates plus a 30-day plan",
-];
-
-export default function TraderRiskManagementFrameworkPage() {
+export function PlaybookResourcePage({ playbook }: { playbook: TradingPlaybook }) {
   return (
     <main className="flex-1">
       <section className="border-b border-border">
         <Container>
           <PageHero
             actions={[
-              {
-                href: pdfPath,
-                label: "Download PDF",
-              },
+              { href: playbook.pdfPath, label: "Download PDF" },
               {
                 href: "/research/playbooks",
                 label: "All Playbooks",
                 variant: "outline",
               },
             ]}
-            description="A practical 15-page guide for defining risk before entry, sizing from the stop, controlling total exposure, and reviewing trading decisions consistently."
-            eyebrow="Free educational guide"
-            title="Trader's Risk Management Framework"
+            description={playbook.description}
+            eyebrow="Free trading playbook"
+            title={playbook.title}
           />
         </Container>
       </section>
@@ -78,12 +41,12 @@ export default function TraderRiskManagementFrameworkPage() {
           <CardShell className="overflow-hidden" padding="none" tone="elevated">
             <div className="relative aspect-[3/4] bg-secondary">
               <Image
-                alt="Cover of the Trader's Risk Management Framework PDF"
+                alt={`Cover of the ${playbook.title} PDF`}
                 className="object-contain"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 42vw"
-                src="/images/trader-risk-management-framework-cover.png"
+                src={playbook.coverPath}
               />
             </div>
           </CardShell>
@@ -92,33 +55,28 @@ export default function TraderRiskManagementFrameworkPage() {
             <CardShell padding="lg" tone="elevated">
               <div className="space-y-5">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-lg border border-border bg-secondary text-primary">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-border bg-secondary text-primary">
                     <BookOpenCheck aria-hidden />
                   </div>
                   <div>
                     <p className="font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-                      PDF guide
+                      {playbook.eyebrow}
                     </p>
                     <p className="font-semibold text-foreground">
-                      15 pages · Beginner through expert
+                      {playbook.pageCount} pages · Free PDF
                     </p>
                   </div>
                 </div>
 
                 <p className="text-sm leading-7 text-muted-foreground">
-                  This framework turns risk management into a repeatable
-                  operating process. It begins with survival and uncertainty,
-                  then develops position sizing, stop placement, R-based review,
-                  drawdown control, portfolio-level exposure, and behavioral
-                  guardrails. The final sections provide reusable planning and
-                  review templates for building more consistent habits.
+                  {playbook.overview}
                 </p>
 
                 <div className="flex flex-col gap-3 sm:flex-row">
                   <a
                     className={cn(buttonVariants({ size: "lg" }))}
-                    download="Trader_Risk_Management_Framework.pdf"
-                    href={pdfPath}
+                    download
+                    href={playbook.pdfPath}
                   >
                     <Download data-icon="inline-start" />
                     Download PDF
@@ -127,7 +85,7 @@ export default function TraderRiskManagementFrameworkPage() {
                     className={cn(
                       buttonVariants({ size: "lg", variant: "outline" })
                     )}
-                    href={pdfPath}
+                    href={playbook.pdfPath}
                     rel="noreferrer"
                     target="_blank"
                   >
@@ -140,10 +98,10 @@ export default function TraderRiskManagementFrameworkPage() {
 
             <CardShell padding="lg">
               <h2 className="text-xl font-semibold text-foreground">
-                What the guide covers
+                What the playbook covers
               </h2>
               <ul className="mt-5 grid gap-3 sm:grid-cols-2">
-                {frameworkTopics.map((topic) => (
+                {playbook.topics.map((topic) => (
                   <li
                     className="flex gap-3 text-sm leading-6 text-muted-foreground"
                     key={topic}
@@ -160,11 +118,10 @@ export default function TraderRiskManagementFrameworkPage() {
 
             <CardShell padding="md" tone="subtle">
               <p className="text-sm leading-6 text-muted-foreground">
-                Educational use only. The percentages, limits, and examples in
-                the guide are illustrative rather than universal rules. They do
-                not account for every trader&apos;s objectives, costs, market,
-                liquidity, or financial circumstances and are not personalized
-                financial advice.
+                Educational use only. Examples and planning frameworks are
+                illustrative, not universal rules or personalized financial,
+                investment, tax, or legal advice. Verify current product rules,
+                market structure, costs, liquidity, and risk before acting.
               </p>
             </CardShell>
 
