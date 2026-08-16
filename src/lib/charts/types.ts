@@ -17,6 +17,12 @@ export type TradingViewInterval =
 
 export type ChartTheme = "dark" | "light";
 
+export type TradingViewStudy =
+  | "STD;SMA"
+  | "STD;EMA"
+  | "STD;RSI"
+  | "STD;MACD";
+
 export type ChartDisplayMode = "widget" | "metadata" | "image" | "placeholder";
 
 export type IdeaChartMetadata =
@@ -30,7 +36,7 @@ export type TradingViewWidgetConfig = {
   hideSideToolbar: boolean;
   interval: TradingViewInterval;
   locale: "en";
-  studies: string[];
+  studies: TradingViewStudy[];
   style: "1";
   symbol: string;
   theme: ChartTheme;

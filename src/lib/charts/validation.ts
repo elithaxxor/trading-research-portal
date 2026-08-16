@@ -4,11 +4,13 @@ import {
   defaultTradingViewInterval,
   supportedChartThemes,
   supportedTradingViewIntervals,
+  supportedTradingViewStudies,
 } from "./constants";
 import type {
   ChartTheme,
   ChartType,
   TradingViewInterval,
+  TradingViewStudy,
   TradingViewWidgetConfig,
 } from "./types";
 
@@ -24,6 +26,7 @@ type ValidationResult<TValue> =
 
 type TradingViewWidgetInput = {
   interval?: null | string;
+  studies?: readonly string[] | null;
   symbol?: null | string;
   theme?: ChartTheme | null | string;
   tradingview_symbol?: null | string;
@@ -133,6 +136,31 @@ export function validateTradingViewInterval(
   );
 }
 
+export function validateTradingViewStudies(
+  value: unknown
+): ValidationResult<TradingViewStudy[]> {
+  if (value === null || value === undefined) {
+    return valid([]);
+  }
+
+  if (!Array.isArray(value)) {
+    return invalid("Choose valid TradingView indicators.");
+  }
+
+  const studies = [...new Set(value.map(getStringValue).filter(Boolean))];
+
+  if (
+    studies.length > supportedTradingViewStudies.length ||
+    studies.some(
+      (study) => !supportedTradingViewStudies.includes(study as TradingViewStudy)
+    )
+  ) {
+    return invalid("Choose only supported TradingView indicators.");
+  }
+
+  return valid(studies as TradingViewStudy[]);
+}
+
 export function validateChartType(value: unknown): ValidationResult<ChartType> {
   return validateAllowedValue(
     value,
@@ -202,6 +230,12 @@ export function buildTradingViewWidgetConfig(
     return themeResult;
   }
 
+  const studiesResult = validateTradingViewStudies(input.studies);
+
+  if (!studiesResult.ok) {
+    return studiesResult;
+  }
+
   return valid({
     allowSymbolChange: false,
     autosize: true,
@@ -210,7 +244,7 @@ export function buildTradingViewWidgetConfig(
     hideSideToolbar: false,
     interval: intervalResult.value,
     locale: "en",
-    studies: [],
+    studies: studiesResult.value,
     style: "1",
     symbol: symbolResult.value,
     theme: themeResult.value,

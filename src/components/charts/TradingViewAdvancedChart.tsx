@@ -21,6 +21,7 @@ type TradingViewAdvancedChartProps = {
   className?: string;
   height?: number | string;
   interval?: null | string;
+  studies?: readonly string[] | null;
   symbol?: null | string;
   theme?: ChartTheme;
 };
@@ -90,6 +91,7 @@ export function TradingViewAdvancedChart({
   className,
   height = 420,
   interval,
+  studies,
   symbol,
   theme = "dark",
 }: TradingViewAdvancedChartProps) {
@@ -107,10 +109,11 @@ export function TradingViewAdvancedChart({
     () =>
       buildTradingViewWidgetConfig({
         interval,
+        studies,
         symbol,
         theme,
       }),
-    [interval, symbol, theme]
+    [interval, studies, symbol, theme]
   );
 
   const chartStyle = {

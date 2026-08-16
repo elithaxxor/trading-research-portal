@@ -8,6 +8,7 @@ import { Trash2 } from "lucide-react";
 import { AuthNotice } from "@/components/auth-notice";
 import { AdminCheckbox } from "@/components/admin/forms/AdminCheckbox";
 import { AdminFormSection } from "@/components/admin/forms/AdminFormSection";
+import { AdminSelect } from "@/components/admin/forms/AdminSelect";
 import { AdminTextInput } from "@/components/admin/forms/AdminTextInput";
 import { AdminTextarea } from "@/components/admin/forms/AdminTextarea";
 import { SlugFieldHelper } from "@/components/admin/forms/SlugFieldHelper";
@@ -15,6 +16,12 @@ import { VisibilitySelect } from "@/components/admin/forms/VisibilitySelect";
 import { CardShell } from "@/components/card-shell";
 import { buttonVariants } from "@/components/ui/button";
 import type { AdminPost } from "@/lib/admin/types";
+import {
+  defaultTradingViewStudies,
+  supportedTradingViewIntervals,
+  tradingViewStudyOptions,
+} from "@/lib/charts/constants";
+import { formatIntervalLabel } from "@/lib/charts/format";
 import { cn } from "@/lib/utils";
 
 import {
@@ -121,6 +128,84 @@ export function ResearchPostForm({ mode, post }: ResearchPostFormProps) {
             name="visibility"
             required
           />
+        </AdminFormSection>
+
+        <AdminFormSection
+          description="Attach a validated TradingView market chart to the full report. Locked previews never receive chart configuration or indicator metadata."
+          title="TradingView chart"
+        >
+          <AdminCheckbox
+            defaultChecked={post?.chart_enabled ?? false}
+            description="Display the chart on the full-access research page. TradingView market data is provided by TradingView."
+            id="chart_enabled"
+            label="Show TradingView chart"
+            name="chart_enabled"
+          />
+
+          <div className="grid gap-5 lg:grid-cols-2">
+            <AdminTextInput
+              defaultValue={post?.tradingview_symbol ?? ""}
+              description="Use an exchange-qualified public symbol when possible, such as NASDAQ:TSLA."
+              error={fieldError("tradingview_symbol")}
+              id="tradingview_symbol"
+              label="TradingView symbol"
+              name="tradingview_symbol"
+              placeholder="NASDAQ:TSLA"
+            />
+            <AdminSelect
+              defaultValue={post?.chart_interval ?? "D"}
+              description="Initial chart timeframe. Members can inspect other timeframes in the widget."
+              error={fieldError("chart_interval")}
+              id="chart_interval"
+              label="Initial interval"
+              name="chart_interval"
+              options={supportedTradingViewIntervals.map((interval) => ({
+                label: formatIntervalLabel(interval),
+                value: interval,
+              }))}
+            />
+          </div>
+
+          <AdminTextarea
+            defaultValue={post?.chart_caption ?? ""}
+            description="Explain what readers should inspect without making performance promises."
+            error={fieldError("chart_caption")}
+            id="chart_caption"
+            label="Chart caption"
+            maxLength={300}
+            name="chart_caption"
+            placeholder="Daily TSLA chart for reviewing range structure and confirmation signals."
+          />
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            {tradingViewStudyOptions.map((study) => (
+              <AdminCheckbox
+                defaultChecked={
+                  post
+                    ? post.chart_studies?.includes(study.value) ?? false
+                    : defaultTradingViewStudies.some(
+                        (defaultStudy) => defaultStudy === study.value
+                      )
+                }
+                description={study.description}
+                id={`chart-study-${study.value.replace(/[^a-zA-Z]/g, "-")}`}
+                key={study.value}
+                label={study.label}
+                name="chart_studies"
+                value={study.value}
+              />
+            ))}
+          </div>
+          {fieldError("chart_studies") ? (
+            <p className="text-xs leading-5 text-destructive">
+              {fieldError("chart_studies")}
+            </p>
+          ) : null}
+
+          <p className="text-xs leading-5 text-muted-foreground">
+            Only standard allowlisted indicators are supported. Private Pine
+            Script and arbitrary embed code are never accepted here.
+          </p>
         </AdminFormSection>
 
         <AdminFormSection
