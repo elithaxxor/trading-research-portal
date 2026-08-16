@@ -338,12 +338,36 @@ export async function createResearchPostAction(
   formData: FormData
 ): Promise<ResearchPostActionState> {
   const admin = await requireAdmin("/admin/posts/new");
+  console.info("[admin-posts] Create action authorized.");
 
-  const { fieldErrors, payload } = await buildPostPayload({ formData });
+  let fieldErrors: Record<string, string>;
+  let payload: Awaited<ReturnType<typeof buildPostPayload>>["payload"];
+
+  try {
+    ({ fieldErrors, payload } = await buildPostPayload({ formData }));
+  } catch (error) {
+    console.error("[admin-posts] Unable to build create payload.", {
+      message: error instanceof Error ? error.message : "Unknown error.",
+    });
+    captureSafeException(error, {
+      area: "admin",
+      route: "/admin/posts/new",
+      stage: "admin_post_payload",
+    });
+    return errorState(
+      "The research post could not be prepared. Please reload and try again."
+    );
+  }
 
   if (!payload) {
+    console.info("[admin-posts] Create payload validation failed.");
     return errorState("Review the highlighted fields and try again.", fieldErrors);
   }
+
+  console.info("[admin-posts] Create payload validated.", {
+    published: payload.published,
+    visibility: payload.visibility,
+  });
 
   let createdId: string;
   let createdSlug: string;
@@ -353,6 +377,7 @@ export async function createResearchPostAction(
       payload as CreateAdminPostInput,
       admin.user.id
     );
+    console.info("[admin-posts] Research post inserted.");
     createdId = created.id;
     createdSlug = created.slug;
     await recordOpsEventSafely({
@@ -371,6 +396,9 @@ export async function createResearchPostAction(
       userId: admin.user.id,
     });
   } catch (error) {
+    console.error("[admin-posts] Research post insert failed.", {
+      message: error instanceof Error ? error.message : "Unknown error.",
+    });
     captureSafeException(error, {
       area: "admin",
       extra: {
@@ -388,7 +416,9 @@ export async function createResearchPostAction(
     );
   }
 
+  console.info("[admin-posts] Revalidating post routes.");
   revalidatePostPaths([createdSlug]);
+  console.info("[admin-posts] Redirecting to edit view.");
   redirect(`/admin/posts/${createdId}/edit`);
 }
 
