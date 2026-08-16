@@ -32,10 +32,6 @@ export type IdeaChartActionState = {
   status: "idle" | "error";
 };
 
-export const initialIdeaChartActionState: IdeaChartActionState = {
-  status: "idle",
-};
-
 function getFormValue(formData: FormData, key: string) {
   const value = formData.get(key);
 

@@ -24,9 +24,13 @@ import { cn } from "@/lib/utils";
 import {
   createIdeaChartAction,
   deleteIdeaChartAction,
-  initialIdeaChartActionState,
   updateIdeaChartAction,
 } from "./actions";
+import type { IdeaChartActionState } from "./actions";
+
+const initialIdeaChartActionState: IdeaChartActionState = {
+  status: "idle",
+};
 
 type IdeaChartsManagerProps = {
   charts: AdminIdeaChart[];

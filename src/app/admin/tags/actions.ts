@@ -23,10 +23,6 @@ export type TagActionState = {
   status: "idle" | "error";
 };
 
-export const initialTagActionState: TagActionState = {
-  status: "idle",
-};
-
 function getRequiredId(formData: FormData, fieldName = "id") {
   const id = formData.get(fieldName);
 

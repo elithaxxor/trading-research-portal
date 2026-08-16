@@ -33,9 +33,13 @@ import { cn } from "@/lib/utils";
 import {
   createIdeaUpdateAction,
   deleteIdeaUpdateAction,
-  initialIdeaUpdateActionState,
   updateIdeaUpdateAction,
 } from "./actions";
+import type { IdeaUpdateActionState } from "./actions";
+
+const initialIdeaUpdateActionState: IdeaUpdateActionState = {
+  status: "idle",
+};
 
 type IdeaUpdatesManagerProps = {
   idea: AdminIdea;

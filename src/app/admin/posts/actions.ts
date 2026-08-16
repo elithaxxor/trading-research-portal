@@ -31,10 +31,6 @@ export type ResearchPostActionState = {
   status: "idle" | "error";
 };
 
-export const initialResearchPostActionState: ResearchPostActionState = {
-  status: "idle",
-};
-
 function getRequiredId(formData: FormData) {
   const id = formData.get("id");
 
@@ -338,7 +334,6 @@ export async function createResearchPostAction(
   formData: FormData
 ): Promise<ResearchPostActionState> {
   const admin = await requireAdmin("/admin/posts/new");
-  console.info("[admin-posts] Create action authorized.");
 
   let fieldErrors: Record<string, string>;
   let payload: Awaited<ReturnType<typeof buildPostPayload>>["payload"];
@@ -360,14 +355,8 @@ export async function createResearchPostAction(
   }
 
   if (!payload) {
-    console.info("[admin-posts] Create payload validation failed.");
     return errorState("Review the highlighted fields and try again.", fieldErrors);
   }
-
-  console.info("[admin-posts] Create payload validated.", {
-    published: payload.published,
-    visibility: payload.visibility,
-  });
 
   let createdId: string;
   let createdSlug: string;
@@ -377,7 +366,6 @@ export async function createResearchPostAction(
       payload as CreateAdminPostInput,
       admin.user.id
     );
-    console.info("[admin-posts] Research post inserted.");
     createdId = created.id;
     createdSlug = created.slug;
     await recordOpsEventSafely({
@@ -416,9 +404,7 @@ export async function createResearchPostAction(
     );
   }
 
-  console.info("[admin-posts] Revalidating post routes.");
   revalidatePostPaths([createdSlug]);
-  console.info("[admin-posts] Redirecting to edit view.");
   redirect(`/admin/posts/${createdId}/edit`);
 }
 
