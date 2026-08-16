@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import {
   Archive,
   BellDot,
+  ExternalLink,
   FileText,
   Layers3,
   LineChart,
@@ -14,6 +15,7 @@ import {
 import { Badge } from "@/components/badge";
 import { AuthNotice } from "@/components/auth-notice";
 import { CardShell } from "@/components/card-shell";
+import { TradingViewAdvancedChart } from "@/components/charts/TradingViewAdvancedChart";
 import { ComparisonTable } from "@/components/comparison-table";
 import { Container } from "@/components/container";
 import { CTASection } from "@/components/cta-section";
@@ -308,22 +310,39 @@ function ExampleIdeaSection() {
       <Container className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
         <SectionHeading
           eyebrow="Example research card"
-          title="Each idea can carry thesis, status, timeframe, and example levels."
-          description="This educational preview shows how a future research card may organize thesis, levels, and risk context. It is not financial advice, a recommendation, or a performance claim."
+          title="Pair thesis, status, timeframe, and example levels with a live chart."
+          description="This educational ES futures preview shows how research context and a live TradingView chart can stay together. It is not financial advice, a recommendation, or a performance claim."
         />
-        <IdeaPreviewCard
-          bias="Long Watch"
-          levels={[
-            { label: "Trigger Zone", value: "Example only" },
-            { label: "Invalidation", value: "Example only" },
-            { label: "Target Zones", value: "Example only" },
-          ]}
-          riskLevel="Medium"
-          status="Watching"
-          thesis="Educational preview: SPY is used here to demonstrate how a future research card may organize thesis, levels, and updates. This is not financial advice."
-          ticker="SPY"
-          timeframe="Swing"
-        />
+        <div className="flex min-w-0 flex-col gap-6">
+          <IdeaPreviewCard
+            bias="Long Watch"
+            levels={[
+              { label: "Trigger Zone", value: "Example only" },
+              { label: "Invalidation", value: "Example only" },
+              { label: "Target Zones", value: "Example only" },
+            ]}
+            riskLevel="Medium"
+            status="Watching"
+            thesis="Educational preview: ES1! is used here to demonstrate how a futures research card can organize thesis, levels, chart context, and updates. This is not financial advice."
+            ticker="ES1!"
+            timeframe="60-minute"
+          />
+          <TradingViewAdvancedChart
+            caption="Live SPY proxy for ES1! market-structure and educational research context. Open the exact ES1! chart below. Data availability and timing are provided by TradingView."
+            height={440}
+            interval="60"
+            symbol="AMEX:SPY"
+          />
+          <a
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-gold-400/35 bg-gold-400/10 px-4 py-3 text-sm font-semibold text-gold-200 transition hover:border-gold-300/60 hover:bg-gold-400/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:w-fit"
+            href="https://www.tradingview.com/chart/?symbol=CME_MINI%3AES1%21"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Open ES1! on TradingView
+            <ExternalLink aria-hidden className="size-4" />
+          </a>
+        </div>
       </Container>
     </section>
   );
