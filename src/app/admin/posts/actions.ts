@@ -22,6 +22,11 @@ import {
   validateSlug,
 } from "@/lib/admin/validation";
 import { requireAdmin } from "@/lib/auth/admin";
+import {
+  normalizeTradingViewSymbol,
+  validateTradingViewInterval,
+  validateTradingViewStudies,
+} from "@/lib/charts/validation";
 import { captureSafeException } from "@/lib/monitoring/sentry";
 import { recordOpsEventSafely } from "@/lib/ops/events";
 
@@ -289,6 +294,50 @@ async function buildPostPayload({
 
   const excerpt = normalizeEmptyString(getFormValue(formData, "excerpt"));
   const body = normalizeEmptyString(getFormValue(formData, "body"));
+  const chartEnabled = formData.get("chart_enabled") === "on";
+  const chartSymbolValue = getFormValue(formData, "tradingview_symbol");
+  const chartInterval = validateTradingViewInterval(
+    getFormValue(formData, "chart_interval")
+  );
+  const chartStudies = validateTradingViewStudies(
+    formData.getAll("chart_studies")
+  );
+  const chartCaption = normalizeEmptyString(
+    getFormValue(formData, "chart_caption")
+  );
+  let tradingviewSymbol: string | null = null;
+
+  if (chartSymbolValue) {
+    const chartSymbol = normalizeTradingViewSymbol(chartSymbolValue);
+
+    if (chartSymbol.ok) {
+      tradingviewSymbol = chartSymbol.value;
+    } else {
+      addFieldError(fieldErrors, "tradingview_symbol", chartSymbol.error);
+    }
+  } else if (chartEnabled) {
+    addFieldError(
+      fieldErrors,
+      "tradingview_symbol",
+      "A TradingView symbol is required when the report chart is enabled."
+    );
+  }
+
+  if (!chartInterval.ok) {
+    addFieldError(fieldErrors, "chart_interval", chartInterval.error);
+  }
+
+  if (!chartStudies.ok) {
+    addFieldError(fieldErrors, "chart_studies", chartStudies.error);
+  }
+
+  if (chartCaption && chartCaption.length > 300) {
+    addFieldError(
+      fieldErrors,
+      "chart_caption",
+      "Chart captions must be 300 characters or fewer."
+    );
+  }
 
   if (visibility.ok) {
     validateExcerptSafety({
@@ -303,7 +352,9 @@ async function buildPostPayload({
     Object.keys(fieldErrors).length > 0 ||
     !slug.ok ||
     !visibility.ok ||
-    !parsedPublishedAt.ok
+    !parsedPublishedAt.ok ||
+    !chartInterval.ok ||
+    !chartStudies.ok
   ) {
     return {
       fieldErrors,
@@ -315,6 +366,10 @@ async function buildPostPayload({
     fieldErrors,
     payload: {
       body,
+      chart_caption: chartCaption,
+      chart_enabled: chartEnabled,
+      chart_interval: chartInterval.value,
+      chart_studies: chartStudies.value,
       excerpt,
       published,
       published_at: getPublishedAtValue({
@@ -324,6 +379,7 @@ async function buildPostPayload({
       }),
       slug: slug.value,
       title,
+      tradingview_symbol: tradingviewSymbol,
       visibility: visibility.value,
     },
   };

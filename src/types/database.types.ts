@@ -719,6 +719,10 @@ export type Database = {
       posts: {
         Row: {
           body: string | null
+          chart_caption: string | null
+          chart_enabled: boolean
+          chart_interval: string
+          chart_studies: string[]
           created_at: string
           created_by: string | null
           excerpt: string | null
@@ -727,11 +731,16 @@ export type Database = {
           published_at: string | null
           slug: string
           title: string
+          tradingview_symbol: string | null
           updated_at: string
           visibility: Database["public"]["Enums"]["content_visibility"]
         }
         Insert: {
           body?: string | null
+          chart_caption?: string | null
+          chart_enabled?: boolean
+          chart_interval?: string
+          chart_studies?: string[]
           created_at?: string
           created_by?: string | null
           excerpt?: string | null
@@ -740,11 +749,16 @@ export type Database = {
           published_at?: string | null
           slug: string
           title: string
+          tradingview_symbol?: string | null
           updated_at?: string
           visibility?: Database["public"]["Enums"]["content_visibility"]
         }
         Update: {
           body?: string | null
+          chart_caption?: string | null
+          chart_enabled?: boolean
+          chart_interval?: string
+          chart_studies?: string[]
           created_at?: string
           created_by?: string | null
           excerpt?: string | null
@@ -753,6 +767,7 @@ export type Database = {
           published_at?: string | null
           slug?: string
           title?: string
+          tradingview_symbol?: string | null
           updated_at?: string
           visibility?: Database["public"]["Enums"]["content_visibility"]
         }

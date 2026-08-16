@@ -1,4 +1,9 @@
-import type { ChartTheme, ChartType, TradingViewInterval } from "./types";
+import type {
+  ChartTheme,
+  ChartType,
+  TradingViewInterval,
+  TradingViewStudy,
+} from "./types";
 
 export const supportedTradingViewIntervals = [
   "1",
@@ -29,3 +34,39 @@ export const defaultTradingViewInterval =
   "D" satisfies TradingViewInterval;
 
 export const defaultChartTheme = "dark" satisfies ChartTheme;
+
+export const tradingViewStudyOptions = [
+  {
+    description: "Overlay a standard simple moving average.",
+    label: "Simple moving average",
+    value: "STD;SMA",
+  },
+  {
+    description: "Overlay a standard exponential moving average.",
+    label: "Exponential moving average",
+    value: "STD;EMA",
+  },
+  {
+    description: "Add the Relative Strength Index pane.",
+    label: "RSI",
+    value: "STD;RSI",
+  },
+  {
+    description: "Add the Moving Average Convergence Divergence pane.",
+    label: "MACD",
+    value: "STD;MACD",
+  },
+] as const satisfies readonly {
+  description: string;
+  label: string;
+  value: TradingViewStudy;
+}[];
+
+export const supportedTradingViewStudies = tradingViewStudyOptions.map(
+  (option) => option.value
+) as TradingViewStudy[];
+
+export const defaultTradingViewStudies = [
+  "STD;EMA",
+  "STD;RSI",
+] as const satisfies readonly TradingViewStudy[];

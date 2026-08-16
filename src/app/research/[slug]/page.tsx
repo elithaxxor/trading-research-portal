@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { CardShell } from "@/components/card-shell";
+import { TradingViewAdvancedChart } from "@/components/charts/TradingViewAdvancedChart";
 import { Container } from "@/components/container";
 import { LockedContentPanel } from "@/components/content/locked-content-panel";
 import { VisibilityBadge } from "@/components/content/visibility-badge";
@@ -312,6 +313,36 @@ function FullResearchPage({ post }: { post: PostDetail }) {
                 ) : null}
               </div>
             </CardShell>
+
+            {post.chart_enabled && post.tradingview_symbol ? (
+              <section
+                aria-labelledby="research-chart-heading"
+                className="flex flex-col gap-4"
+              >
+                <div>
+                  <p className="font-mono text-xs uppercase tracking-[0.18em] text-primary">
+                    Interactive market chart
+                  </p>
+                  <h2
+                    className="mt-2 text-2xl font-semibold text-foreground"
+                    id="research-chart-heading"
+                  >
+                    TradingView analysis workspace
+                  </h2>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                    Review the configured timeframe and indicators alongside the
+                    written research. Market data is supplied by TradingView.
+                  </p>
+                </div>
+                <TradingViewAdvancedChart
+                  caption={post.chart_caption}
+                  height={520}
+                  interval={post.chart_interval}
+                  studies={post.chart_studies}
+                  symbol={post.tradingview_symbol}
+                />
+              </section>
+            ) : null}
 
             <CardShell padding="lg">
               <article className="flex flex-col gap-6">
